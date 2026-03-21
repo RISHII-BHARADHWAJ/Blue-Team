@@ -1,0 +1,1660 @@
+Feb 08 09:31:36 web-03 httpd[notice]: jk2_init() Found child 6751 in scoreboard slot 9
+Feb 08 23:34:45 mail-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23406]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 14:20:28 bastion-01 sshd[1234]: Dec 10 07:27:52 LabSZ sshd[24235]: Failed password for root from 112.95.230.3 port 45378 ssh2
+Feb 08 03:18:31 app-srv-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23397]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 18:30:12 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.250
+Feb 08 18:40:51 web-02 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 04:30:25 firewall-02 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.17
+Feb 08 04:35:03 mail-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20883]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 13:30:59 bastion-01 sshd[1234]: Dec 10 07:07:38 LabSZ sshd[24206]: Invalid user test9 from 52.80.34.196
+Feb 08 19:56:48 db-01 systemd: warning: disk space low on /var/log
+Feb 08 06:30:11 web-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.81
+Feb 08 10:01:11 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 04:37:23 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 18:21:47 firewall-02 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.55
+Feb 08 08:10:16 app-srv-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23394]: check pass; user unknown
+Feb 08 17:06:46 web-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20893]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 07:59:42 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 04:13:08 gateway-01 sshd[1234]: Dec 10 07:08:28 LabSZ sshd[24208]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=173.234.31.186 
+Feb 08 13:12:12 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 16:33:13 firewall-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.84
+Feb 08 14:04:40 web-LB waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 11:08:06 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.178
+Feb 08 08:36:42 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.252
+Feb 08 05:53:32 web-LB waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.202
+Feb 08 14:50:26 mail-01 systemd: warning: disk space low on /var/log
+Feb 08 00:16:54 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 09:05:46 web-01 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 13:36:53 gateway-01 sshd[1234]: Dec 10 07:07:38 LabSZ sshd[24206]: pam_unix(sshd:auth): check pass; user unknown
+Feb 08 21:41:46 db-02 sshd[1234]: Dec 10 07:11:44 LabSZ sshd[24224]: Failed password for invalid user chen from 202.100.179.208 port 32484 ssh2
+Feb 08 07:09:32 firewall-02 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.99
+Feb 08 20:38:35 waf-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.73
+Feb 08 06:51:09 waf-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.78
+Feb 08 12:42:11 firewall-02 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 17:30:50 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 00:04:24 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.122
+Feb 08 14:55:54 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.46
+Feb 08 06:42:11 ids-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 16:32:21 firewall-02 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.245
+Feb 08 16:09:07 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.208
+Feb 08 19:18:08 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 00:51:15 web-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.41
+Feb 08 08:34:22 web-LB waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.170
+Feb 08 05:08:55 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 06:28:45 web-01 httpd[notice]: jk2_init() Found child 6734 in scoreboard slot 9
+Feb 08 08:52:58 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 01:58:35 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 20:08:56 web-02 httpd[notice]: jk2_init() Found child 6738 in scoreboard slot 6
+Feb 08 15:04:34 firewall-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.111
+Feb 08 05:25:46 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 05:58:53 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 13:33:49 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.136
+Feb 08 02:59:56 firewall-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.246
+Feb 08 10:09:20 web-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 04:00:06 bastion-01 sshd[1234]: Dec 10 07:07:45 LabSZ sshd[24206]: Received disconnect from 52.80.34.196: 11: Bye Bye [preauth]
+Feb 08 06:41:14 web-01 sshd[1234]: Dec 10 07:27:55 LabSZ sshd[24237]: Received disconnect from 112.95.230.3: 11: Bye Bye [preauth]
+Feb 08 19:00:30 firewall-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.180
+Feb 08 07:34:52 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 20:44:20 ids-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.14
+Feb 08 20:10:26 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.166
+Feb 08 23:12:24 ids-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 05:07:03 firewall-02 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 11:55:09 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 06:18:58 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 09:15:59 gateway-01 sshd[1234]: Dec 10 07:13:43 LabSZ sshd[24227]: Failed password for root from 5.36.59.76 port 42393 ssh2
+Feb 08 13:39:28 waf-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 16:49:14 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 05:40:30 web-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23403]: check pass; user unknown
+Feb 08 12:29:44 web-02 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23407]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 03:16:40 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 18:32:11 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.11
+Feb 08 00:42:57 web-01 sshd[1234]: Dec 10 07:13:56 LabSZ sshd[24227]: message repeated 5 times: [ Failed password for root from 5.36.59.76 port 42393 ssh2]
+Feb 08 09:53:15 bastion-01 sshd[1234]: Dec 10 07:11:42 LabSZ sshd[24224]: pam_unix(sshd:auth): check pass; user unknown
+Feb 08 19:19:42 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.229
+Feb 08 01:13:56 web-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.56
+Feb 08 11:56:37 bastion-01 sshd[1234]: Dec 10 07:11:42 LabSZ sshd[24224]: input_userauth_request: invalid user chen [preauth]
+Feb 08 11:53:28 web-02 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 17:16:17 web-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 21:01:49 web-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.117
+Feb 08 16:06:54 web-03 httpd[error]: mod_jk child workerEnv in error state 7
+Feb 08 13:06:25 web-03 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 05:41:36 gateway-01 sshd[1234]: Dec 10 07:02:47 LabSZ sshd[24203]: Connection closed by 212.47.254.145 [preauth]
+Feb 08 11:39:31 web-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.126
+Feb 08 11:27:17 db-02 sshd[1234]: Dec 10 07:13:43 LabSZ sshd[24227]: Failed password for root from 5.36.59.76 port 42393 ssh2
+Feb 08 08:26:28 firewall-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.100
+Feb 08 04:41:21 db-01 systemd: Jun 15 04:06:18 combo su(pam_unix)[21416]: session opened for user cyrus by (uid=0)
+Feb 08 15:18:02 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.228
+Feb 08 05:51:56 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 19:27:00 web-02 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23397]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 18:28:30 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 00:29:12 bastion-01 sshd[1234]: Dec 10 07:07:45 LabSZ sshd[24206]: Failed password for invalid user test9 from 52.80.34.196 port 36060 ssh2
+Feb 08 06:46:48 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 13:34:37 api-gateway httpd[notice]: jk2_init() Found child 6728 in scoreboard slot 6
+Feb 08 13:14:58 firewall-02 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 07:20:05 gateway-01 sshd[1234]: Dec 10 07:08:30 LabSZ sshd[24208]: Connection closed by 173.234.31.186 [preauth]
+Feb 08 07:01:06 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 16:02:35 ids-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 15:54:24 ids-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 01:32:01 db-02 sshd[1234]: Dec 10 07:13:56 LabSZ sshd[24227]: PAM service(sshd) ignoring max retries; 6 > 3
+Feb 08 02:26:41 web-02 httpd[notice]: jk2_init() Found child 6750 in scoreboard slot 7
+Feb 08 09:29:16 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 23:54:22 db-02 sshd[1234]: Dec 10 07:02:47 LabSZ sshd[24203]: Connection closed by 212.47.254.145 [preauth]
+Feb 08 10:40:29 web-LB waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.137
+Feb 08 21:34:17 web-LB waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.169
+Feb 08 11:05:09 ids-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 02:56:53 web-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23399]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 03:14:32 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.40
+Feb 08 15:57:33 web-01 sshd[1234]: Dec 10 07:11:44 LabSZ sshd[24224]: Failed password for invalid user chen from 202.100.179.208 port 32484 ssh2
+Feb 08 20:39:38 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 19:08:33 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.252
+Feb 08 15:10:34 db-01 systemd: warning: disk space low on /var/log
+Feb 08 05:46:14 db-02 sshd[1234]: Dec 10 07:13:56 LabSZ sshd[24227]: PAM service(sshd) ignoring max retries; 6 > 3
+Feb 08 18:37:43 web-01 sshd[1234]: Dec 10 07:27:58 LabSZ sshd[24239]: Failed password for root from 112.95.230.3 port 49188 ssh2
+Feb 08 07:45:17 web-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23394]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 09:46:58 web-01 sshd[1234]: Dec 10 07:08:28 LabSZ sshd[24208]: pam_unix(sshd:auth): check pass; user unknown
+Feb 08 20:59:17 web-01 sshd[1234]: Dec 10 07:07:45 LabSZ sshd[24206]: Failed password for invalid user test9 from 52.80.34.196 port 36060 ssh2
+Feb 08 23:46:08 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.2
+Feb 08 01:45:26 app-srv-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23394]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 14:05:12 ids-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 09:52:13 web-03 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 22:10:20 web-01 sshd[1234]: Dec 10 07:27:50 LabSZ sshd[24235]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=112.95.230.3 user=root
+Feb 08 05:22:34 firewall-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 02:58:00 web-03 httpd[notice]: jk2_init() Found child 6736 in scoreboard slot 10
+Feb 08 15:59:47 web-LB waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.83
+Feb 08 09:35:15 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.247
+Feb 08 11:53:04 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 06:35:48 bastion-01 sshd[1234]: Dec 10 07:08:28 LabSZ sshd[24208]: reverse mapping checking getaddrinfo for ns.marryaldkfaczcz.com [173.234.31.186] failed - POSSIBLE BREAK-IN ATTEMPT!
+Feb 08 22:39:32 web-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 18:49:31 gateway-01 sshd[1234]: Dec 10 07:13:43 LabSZ sshd[24227]: Failed password for root from 5.36.59.76 port 42393 ssh2
+Feb 08 14:58:30 firewall-02 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 13:36:51 web-02 httpd[notice]: jk2_init() Found child 6767 in scoreboard slot 7
+Feb 08 17:02:14 web-01 systemd: session opened for user root
+Feb 08 04:33:24 web-02 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 21:46:22 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 10:59:23 gateway-01 sshd[1234]: Dec 10 07:11:42 LabSZ sshd[24224]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=202.100.179.208 
+Feb 08 19:28:31 api-gateway httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 05:22:33 ids-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 19:30:18 firewall-02 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 00:15:48 web-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20882]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 07:09:57 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 22:54:49 web-03 httpd[notice]: jk2_init() Found child 6741 in scoreboard slot 9
+Feb 08 19:21:54 web-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23404]: check pass; user unknown
+Feb 08 23:28:12 firewall-02 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.195
+Feb 08 14:21:10 web-02 httpd[error]: mod_jk child workerEnv in error state 7
+Feb 08 06:44:21 web-01 sshd[1234]: Dec 10 07:07:38 LabSZ sshd[24206]: input_userauth_request: invalid user test9 [preauth]
+Feb 08 07:41:49 firewall-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.64
+Feb 08 22:48:28 web-01 httpd[notice]: jk2_init() Found child 6763 in scoreboard slot 10
+Feb 08 00:50:46 web-02 httpd[error]: jk2_init() Found child 6763 in scoreboard slot 10
+Feb 08 02:42:55 web-02 httpd[notice]: jk2_init() Found child 6744 in scoreboard slot 10
+Feb 08 02:26:19 web-LB waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.18
+Feb 08 19:10:00 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.33
+Feb 08 06:30:03 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 02:21:53 firewall-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 21:04:53 web-01 sshd[1234]: Dec 10 07:27:53 LabSZ sshd[24237]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=112.95.230.3 user=root
+Feb 08 21:25:23 db-02 sshd[1234]: Dec 10 07:08:28 LabSZ sshd[24208]: pam_unix(sshd:auth): check pass; user unknown
+Feb 08 23:12:22 web-02 httpd[notice]: mod_jk child workerEnv in error state 7
+Feb 08 04:01:02 web-01 sshd[1234]: Dec 10 07:27:52 LabSZ sshd[24235]: Failed password for root from 112.95.230.3 port 45378 ssh2
+Feb 08 09:36:45 app-srv-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23394]: check pass; user unknown
+Feb 08 05:35:07 web-03 httpd[notice]: mod_jk child workerEnv in error state 7
+Feb 08 20:24:25 web-LB waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 12:42:53 gateway-01 sshd[1234]: Dec 10 07:13:56 LabSZ sshd[24227]: PAM service(sshd) ignoring max retries; 6 > 3
+Feb 08 00:10:18 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 11:10:13 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.138
+Feb 08 23:18:54 waf-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.147
+Feb 08 05:23:26 app-srv-01 systemd: warning: disk space low on /var/log
+Feb 08 21:40:22 web-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.214
+Feb 08 05:05:21 web-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.134
+Feb 08 04:11:19 mail-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23399]: check pass; user unknown
+Feb 08 02:38:11 app-srv-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23395]: check pass; user unknown
+Feb 08 21:56:05 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.52
+Feb 08 08:35:25 web-02 httpd[error]: jk2_init() Found child 6728 in scoreboard slot 6
+Feb 08 03:42:30 ids-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 18:22:31 web-03 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 14:34:45 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 09:34:54 web-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.31
+Feb 08 02:53:06 db-01 systemd: Jun 15 04:06:18 combo su(pam_unix)[21416]: session opened for user cyrus by (uid=0)
+Feb 08 19:53:46 firewall-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.81
+Feb 08 20:40:54 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.140
+Feb 08 17:07:37 waf-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.3
+Feb 08 02:19:10 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 06:02:38 web-03 httpd[notice]: jk2_init() Found child 6763 in scoreboard slot 10
+Feb 08 06:45:11 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 12:46:48 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 12:15:24 web-01 sshd[1234]: Dec 10 07:11:42 LabSZ sshd[24224]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=202.100.179.208 
+Feb 08 06:08:32 web-LB waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.83
+Feb 08 01:15:00 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 14:27:18 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.134
+Feb 08 18:41:37 ids-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 22:00:30 web-02 httpd[error]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 12:55:25 firewall-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 08:35:29 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 12:01:44 ids-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.114
+Feb 08 22:18:16 web-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 22:40:00 web-01 httpd[notice]: jk2_init() Found child 6734 in scoreboard slot 9
+Feb 08 13:41:12 web-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.16
+Feb 08 17:54:06 web-03 httpd[notice]: jk2_init() Found child 6763 in scoreboard slot 10
+Feb 08 13:34:29 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 18:29:44 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 00:37:01 waf-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 00:35:36 ids-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 02:15:34 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.157
+Feb 08 16:17:13 web-02 systemd: session opened for user root
+Feb 08 04:20:24 firewall-02 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.237
+Feb 08 13:07:51 bastion-01 sshd[1234]: Dec 10 06:55:46 LabSZ sshd[24200]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=173.234.31.186 
+Feb 08 11:25:53 db-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20896]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 22:56:24 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.158
+Feb 08 12:43:36 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.227
+Feb 08 02:20:54 ids-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.72
+Feb 08 05:19:00 ids-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.197
+Feb 08 08:53:39 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.58
+Feb 08 05:43:09 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.181
+Feb 08 10:11:31 gateway-01 sshd[1234]: Dec 10 07:27:50 LabSZ sshd[24235]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=112.95.230.3 user=root
+Feb 08 03:55:21 web-01 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 02:05:15 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.100
+Feb 08 07:57:57 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.190
+Feb 08 03:00:35 db-01 systemd: Jun 15 04:12:43 combo su(pam_unix)[22644]: session closed for user news
+Feb 08 22:02:20 web-01 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 20:05:54 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 05:06:34 web-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.56
+Feb 08 14:07:03 web-01 sshd[1234]: Dec 10 07:27:50 LabSZ sshd[24235]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=112.95.230.3 user=root
+Feb 08 00:07:50 waf-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 12:06:15 ids-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 16:11:25 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 04:38:47 firewall-02 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.198
+Feb 08 17:47:15 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 21:24:21 firewall-02 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.19
+Feb 08 09:59:56 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.51
+Feb 08 20:56:15 web-02 httpd[notice]: jk2_init() Found child 6765 in scoreboard slot 8
+Feb 08 16:46:48 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 05:51:28 ids-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 05:19:24 db-02 sshd[1234]: Dec 10 06:55:46 LabSZ sshd[24200]: Invalid user webmaster from 173.234.31.186
+Feb 08 14:59:58 firewall-02 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.131
+Feb 08 02:05:37 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 01:19:08 firewall-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.33
+Feb 08 22:04:28 mail-01 systemd: session opened for user root
+Feb 08 20:20:02 ids-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.226
+Feb 08 09:13:09 ids-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.57
+Feb 08 10:31:13 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 04:21:19 web-02 httpd[notice]: jk2_init() Found child 6741 in scoreboard slot 9
+Feb 08 19:10:40 firewall-02 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.152
+Feb 08 23:27:57 gateway-01 sshd[1234]: Dec 10 07:11:42 LabSZ sshd[24224]: pam_unix(sshd:auth): check pass; user unknown
+Feb 08 17:04:12 ids-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 06:39:43 bastion-01 sshd[1234]: Dec 10 06:55:46 LabSZ sshd[24200]: pam_unix(sshd:auth): check pass; user unknown
+Feb 08 09:26:49 db-02 sshd[1234]: Dec 10 07:02:47 LabSZ sshd[24203]: Connection closed by 212.47.254.145 [preauth]
+Feb 08 15:24:18 web-01 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 11:27:49 web-02 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 00:04:42 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.191
+Feb 08 15:05:49 api-gateway httpd[notice]: jk2_init() Found child 6736 in scoreboard slot 10
+Feb 08 09:09:44 web-03 httpd[notice]: jk2_init() Found child 6725 in scoreboard slot 10
+Feb 08 05:02:02 web-01 httpd[error]: jk2_init() Found child 6740 in scoreboard slot 7
+Feb 08 15:48:38 web-01 systemd: Jun 15 04:06:18 combo su(pam_unix)[21416]: session opened for user cyrus by (uid=0)
+Feb 08 04:30:06 firewall-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.138
+Feb 08 01:23:10 web-01 httpd[error]: jk2_init() Found child 6745 in scoreboard slot 8
+Feb 08 09:59:27 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.103
+Feb 08 00:02:29 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 08:45:44 waf-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 11:47:38 firewall-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.125
+Feb 08 17:47:15 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.178
+Feb 08 13:42:50 firewall-02 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.39
+Feb 08 07:14:53 web-01 sshd[1234]: Dec 10 07:07:38 LabSZ sshd[24206]: input_userauth_request: invalid user test9 [preauth]
+Feb 08 18:06:08 api-gateway httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 15:44:34 web-02 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 22:17:32 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 19:58:58 bastion-01 sshd[1234]: Dec 10 07:02:47 LabSZ sshd[24203]: Connection closed by 212.47.254.145 [preauth]
+Feb 08 12:18:46 web-03 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 10:22:44 gateway-01 sshd[1234]: Dec 10 07:27:53 LabSZ sshd[24237]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=112.95.230.3 user=root
+Feb 08 16:51:07 firewall-02 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 20:06:32 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 02:09:12 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 08:22:56 api-gateway httpd[notice]: jk2_init() Found child 6756 in scoreboard slot 7
+Feb 08 14:53:11 bastion-01 sshd[1234]: Dec 10 06:55:46 LabSZ sshd[24200]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=173.234.31.186 
+Feb 08 03:57:05 ids-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 11:41:49 api-gateway httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 06:40:23 web-03 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 23:02:14 web-01 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 07:03:50 web-03 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 21:13:15 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 05:49:49 firewall-02 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 18:01:38 ids-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 02:05:48 firewall-02 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.35
+Feb 08 01:58:10 bastion-01 sshd[1234]: Dec 10 06:55:48 LabSZ sshd[24200]: Failed password for invalid user webmaster from 173.234.31.186 port 38926 ssh2
+Feb 08 13:16:33 api-gateway httpd[error]: jk2_init() Found child 6733 in scoreboard slot 7
+Feb 08 18:46:02 api-gateway httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 18:14:51 waf-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 07:01:25 firewall-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 17:45:01 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.242
+Feb 08 22:20:12 web-01 sshd[1234]: Dec 10 07:08:28 LabSZ sshd[24208]: pam_unix(sshd:auth): check pass; user unknown
+Feb 08 23:40:41 web-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.234
+Feb 08 15:05:24 mail-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20898]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 23:38:26 web-01 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 05:38:15 web-01 systemd: session opened for user root
+Feb 08 12:19:43 web-03 httpd[error]: mod_jk child workerEnv in error state 6
+Feb 08 00:41:55 waf-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 17:17:43 db-01 systemd: warning: disk space low on /var/log
+Feb 08 12:55:27 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 12:01:54 web-02 httpd[notice]: mod_jk child workerEnv in error state 7
+Feb 08 05:11:12 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.174
+Feb 08 12:38:02 web-03 httpd[notice]: jk2_init() Found child 6726 in scoreboard slot 8
+Feb 08 07:35:53 app-srv-01 systemd: session opened for user root
+Feb 08 00:42:00 web-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 22:44:05 firewall-02 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 16:04:53 web-01 sshd[1234]: Dec 10 07:27:55 LabSZ sshd[24239]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=112.95.230.3 user=root
+Feb 08 11:14:36 app-srv-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23403]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 14:13:09 api-gateway httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 22:03:34 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.128
+Feb 08 02:34:53 db-02 sshd[1234]: Dec 10 07:27:55 LabSZ sshd[24237]: Received disconnect from 112.95.230.3: 11: Bye Bye [preauth]
+Feb 08 07:14:42 web-01 sshd[1234]: Dec 10 06:55:48 LabSZ sshd[24200]: Failed password for invalid user webmaster from 173.234.31.186 port 38926 ssh2
+Feb 08 10:29:04 web-02 systemd: Jun 15 04:06:19 combo su(pam_unix)[21416]: session closed for user cyrus
+Feb 08 11:59:21 web-02 httpd[notice]: mod_jk child workerEnv in error state 7
+Feb 08 22:24:49 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 20:38:13 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.174
+Feb 08 19:58:31 firewall-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.109
+Feb 08 14:50:50 web-02 systemd: warning: disk space low on /var/log
+Feb 08 05:02:50 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 12:38:27 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 04:30:55 web-01 httpd[notice]: jk2_init() Found child 6755 in scoreboard slot 6
+Feb 08 09:25:03 firewall-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.31
+Feb 08 09:01:21 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.163
+Feb 08 13:56:46 web-LB waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 11:42:34 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.18
+Feb 08 00:47:58 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 11:08:34 web-01 httpd[error]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 03:23:50 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.225
+Feb 08 00:15:07 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.103
+Feb 08 10:07:50 web-02 httpd[error]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 05:29:01 gateway-01 sshd[1234]: Dec 10 07:07:45 LabSZ sshd[24206]: Failed password for invalid user test9 from 52.80.34.196 port 36060 ssh2
+Feb 08 07:09:32 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.205
+Feb 08 00:07:35 web-01 httpd[notice]: jk2_init() Found child 6734 in scoreboard slot 9
+Feb 08 18:22:35 web-01 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 23:03:55 api-gateway httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 11:33:49 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 20:40:10 ids-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.19
+Feb 08 22:35:45 firewall-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.121
+Feb 08 01:51:57 db-01 systemd: Jun 14 15:16:02 combo sshd(pam_unix)[19937]: check pass; user unknown
+Feb 08 18:33:10 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.144
+Feb 08 14:50:35 web-02 systemd: session opened for user root
+Feb 08 13:59:25 firewall-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.229
+Feb 08 11:18:43 db-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23403]: check pass; user unknown
+Feb 08 01:19:17 db-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20898]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 01:01:48 web-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.192
+Feb 08 22:54:21 ids-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 01:05:11 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 11:17:22 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.107
+Feb 08 15:00:23 firewall-02 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.221
+Feb 08 09:50:26 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 01:58:12 web-01 httpd[error]: jk2_init() Found child 6751 in scoreboard slot 9
+Feb 08 20:41:12 db-02 sshd[1234]: Dec 10 07:11:42 LabSZ sshd[24224]: pam_unix(sshd:auth): check pass; user unknown
+Feb 08 12:01:40 web-02 httpd[notice]: jk2_init() Found child 6750 in scoreboard slot 7
+Feb 08 15:40:51 ids-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.179
+Feb 08 21:28:26 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.76
+Feb 08 10:30:07 web-LB waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 13:37:45 web-02 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20882]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 11:17:33 firewall-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 09:11:47 web-03 httpd[error]: jk2_init() Found child 6748 in scoreboard slot 6
+Feb 08 06:33:31 web-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.148
+Feb 08 02:31:20 firewall-02 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.66
+Feb 08 21:11:01 firewall-02 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.236
+Feb 08 15:41:35 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 08:20:07 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 03:44:44 waf-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 09:24:05 api-gateway httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 08:23:31 web-01 sshd[1234]: Dec 10 07:07:38 LabSZ sshd[24206]: Invalid user test9 from 52.80.34.196
+Feb 08 05:47:19 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.178
+Feb 08 01:31:47 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 03:17:52 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 16:08:33 web-02 systemd: Jun 15 04:06:20 combo logrotate: ALERT exited abnormally with [1]
+Feb 08 05:29:45 gateway-01 sshd[1234]: Dec 10 07:13:56 LabSZ sshd[24227]: message repeated 5 times: [ Failed password for root from 5.36.59.76 port 42393 ssh2]
+Feb 08 01:56:47 app-srv-01 systemd: Jun 15 04:06:19 combo su(pam_unix)[21416]: session closed for user cyrus
+Feb 08 16:27:31 db-02 sshd[1234]: Dec 10 06:55:46 LabSZ sshd[24200]: input_userauth_request: invalid user webmaster [preauth]
+Feb 08 12:55:25 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.230
+Feb 08 15:31:47 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 10:04:56 app-srv-01 systemd: Jun 14 15:16:01 combo sshd(pam_unix)[19939]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 20:53:02 gateway-01 sshd[1234]: Dec 10 06:55:48 LabSZ sshd[24200]: Connection closed by 173.234.31.186 [preauth]
+Feb 08 00:01:52 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.88
+Feb 08 07:10:02 bastion-01 sshd[1234]: Dec 10 07:27:52 LabSZ sshd[24235]: Received disconnect from 112.95.230.3: 11: Bye Bye [preauth]
+Feb 08 08:55:33 firewall-02 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 20:40:56 web-03 httpd[error]: mod_jk child workerEnv in error state 6
+Feb 08 04:09:44 web-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 08:56:13 web-03 httpd[notice]: jk2_init() Found child 6755 in scoreboard slot 6
+Feb 08 12:47:35 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.180
+Feb 08 11:46:08 firewall-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 01:50:51 db-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23406]: check pass; user unknown
+Feb 08 08:10:02 app-srv-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23403]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 20:45:10 ids-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 00:04:04 firewall-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.83
+Feb 08 20:36:20 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 15:13:51 bastion-01 sshd[1234]: Dec 10 06:55:48 LabSZ sshd[24200]: Failed password for invalid user webmaster from 173.234.31.186 port 38926 ssh2
+Feb 08 03:01:34 web-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.72
+Feb 08 02:21:11 mail-01 systemd: session opened for user root
+Feb 08 18:33:51 ids-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 21:34:08 firewall-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 10:36:37 ids-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.112
+Feb 08 12:09:11 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.244
+Feb 08 14:27:01 ids-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.251
+Feb 08 01:57:46 web-LB waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.74
+Feb 08 10:31:25 web-01 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 10:15:55 firewall-02 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.101
+Feb 08 04:38:07 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.242
+Feb 08 22:17:34 firewall-02 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.222
+Feb 08 01:32:17 firewall-02 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.78
+Feb 08 16:19:39 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.132
+Feb 08 20:09:09 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 10:07:54 web-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.67
+Feb 08 05:27:14 web-01 sshd[1234]: Dec 10 07:08:28 LabSZ sshd[24208]: Invalid user webmaster from 173.234.31.186
+Feb 08 02:27:03 web-02 systemd: session opened for user root
+Feb 08 10:01:20 bastion-01 sshd[1234]: Dec 10 07:07:38 LabSZ sshd[24206]: Invalid user test9 from 52.80.34.196
+Feb 08 04:10:30 app-srv-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23406]: check pass; user unknown
+Feb 08 05:43:36 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.135
+Feb 08 13:45:02 gateway-01 sshd[1234]: Dec 10 07:13:56 LabSZ sshd[24227]: PAM 5 more authentication failures; logname= uid=0 euid=0 tty=ssh ruser= rhost=5.36.59.76.dynamic-dsl-ip.omantel.net.om user=root
+Feb 08 21:46:01 firewall-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.57
+Feb 08 17:43:23 web-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.92
+Feb 08 21:28:11 ids-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 17:03:56 web-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23399]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 08:02:56 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 05:06:58 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 16:32:30 web-03 httpd[notice]: jk2_init() Found child 6755 in scoreboard slot 6
+Feb 08 02:00:10 web-01 systemd: Jun 15 04:12:42 combo su(pam_unix)[22644]: session opened for user news by (uid=0)
+Feb 08 20:35:42 db-01 systemd: session opened for user root
+Feb 08 03:34:33 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 12:51:24 ids-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 02:23:44 web-02 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 19:31:25 mail-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20884]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 20:06:59 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.56
+Feb 08 18:26:41 web-03 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 12:53:19 web-02 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20883]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 01:26:22 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 19:45:44 api-gateway httpd[error]: jk2_init() Found child 6754 in scoreboard slot 8
+Feb 08 16:58:21 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 23:07:58 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 01:18:04 web-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.214
+Feb 08 12:42:00 gateway-01 sshd[1234]: Dec 10 07:27:50 LabSZ sshd[24235]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=112.95.230.3 user=root
+Feb 08 04:49:43 web-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 00:07:10 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 06:39:10 web-LB waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.40
+Feb 08 12:10:57 mail-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23395]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 21:34:22 db-01 systemd: warning: disk space low on /var/log
+Feb 08 15:23:22 web-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.157
+Feb 08 08:13:32 web-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 07:32:04 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 18:07:21 gateway-01 sshd[1234]: Dec 10 06:55:46 LabSZ sshd[24200]: reverse mapping checking getaddrinfo for ns.marryaldkfaczcz.com [173.234.31.186] failed - POSSIBLE BREAK-IN ATTEMPT!
+Feb 08 20:18:00 db-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23404]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 17:50:16 db-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23407]: check pass; user unknown
+Feb 08 05:48:24 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.249
+Feb 08 09:56:24 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 10:56:32 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 08:40:25 mail-01 systemd: session opened for user root
+Feb 08 14:49:41 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.27
+Feb 08 19:38:22 db-02 sshd[1234]: Dec 10 06:55:46 LabSZ sshd[24200]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=173.234.31.186 
+Feb 08 22:00:44 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 15:39:16 api-gateway httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 02:27:23 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 06:58:05 web-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.249
+Feb 08 04:44:32 gateway-01 sshd[1234]: Dec 10 07:11:42 LabSZ sshd[24224]: input_userauth_request: invalid user chen [preauth]
+Feb 08 19:52:53 firewall-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 06:00:12 firewall-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.123
+Feb 08 16:33:43 firewall-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.229
+Feb 08 17:09:44 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 23:50:03 db-02 sshd[1234]: Dec 10 07:27:53 LabSZ sshd[24237]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=112.95.230.3 user=root
+Feb 08 16:35:22 db-02 sshd[1234]: Dec 10 06:55:48 LabSZ sshd[24200]: Failed password for invalid user webmaster from 173.234.31.186 port 38926 ssh2
+Feb 08 21:50:21 gateway-01 sshd[1234]: Dec 10 06:55:46 LabSZ sshd[24200]: reverse mapping checking getaddrinfo for ns.marryaldkfaczcz.com [173.234.31.186] failed - POSSIBLE BREAK-IN ATTEMPT!
+Feb 08 09:11:45 web-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 07:35:22 web-02 httpd[notice]: jk2_init() Found child 6766 in scoreboard slot 6
+Feb 08 09:05:12 db-02 sshd[1234]: Dec 10 07:13:56 LabSZ sshd[24227]: PAM service(sshd) ignoring max retries; 6 > 3
+Feb 08 11:58:57 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.242
+Feb 08 17:01:42 web-02 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23404]: check pass; user unknown
+Feb 08 01:38:35 db-01 systemd: warning: disk space low on /var/log
+Feb 08 20:46:49 web-01 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 15:09:54 web-01 sshd[1234]: Dec 10 07:13:56 LabSZ sshd[24227]: PAM 5 more authentication failures; logname= uid=0 euid=0 tty=ssh ruser= rhost=5.36.59.76.dynamic-dsl-ip.omantel.net.om user=root
+Feb 08 04:37:56 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 18:15:57 app-srv-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20898]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 14:52:31 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.155
+Feb 08 13:33:37 firewall-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.72
+Feb 08 05:48:22 web-03 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 22:24:27 ids-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 16:17:07 waf-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.48
+Feb 08 16:50:47 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 05:10:41 firewall-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 09:23:34 web-01 sshd[1234]: Dec 10 07:11:42 LabSZ sshd[24224]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=202.100.179.208 
+Feb 08 13:10:09 web-02 httpd[notice]: jk2_init() Found child 6741 in scoreboard slot 9
+Feb 08 09:01:00 app-srv-01 systemd: session opened for user root
+Feb 08 09:56:52 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.80
+Feb 08 16:13:30 web-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 20:04:19 db-02 sshd[1234]: Dec 10 07:07:38 LabSZ sshd[24206]: input_userauth_request: invalid user test9 [preauth]
+Feb 08 18:29:42 bastion-01 sshd[1234]: Dec 10 06:55:46 LabSZ sshd[24200]: pam_unix(sshd:auth): check pass; user unknown
+Feb 08 07:16:24 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.47
+Feb 08 15:02:30 web-02 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 21:43:06 api-gateway httpd[notice]: jk2_init() Found child 6725 in scoreboard slot 10
+Feb 08 03:07:43 web-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 21:08:58 web-02 systemd: Jun 14 15:16:02 combo sshd(pam_unix)[19937]: check pass; user unknown
+Feb 08 20:41:57 ids-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 18:58:48 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.8
+Feb 08 15:03:48 web-LB waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 01:40:07 web-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 16:13:10 web-02 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 01:22:40 ids-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 13:35:55 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 00:55:22 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.145
+Feb 08 05:56:39 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 10:16:56 firewall-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.229
+Feb 08 07:45:36 gateway-01 sshd[1234]: Dec 10 07:07:38 LabSZ sshd[24206]: pam_unix(sshd:auth): check pass; user unknown
+Feb 08 00:42:37 ids-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 12:30:39 web-03 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 06:38:16 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.86
+Feb 08 20:34:36 web-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 13:23:46 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.85
+Feb 08 06:08:42 web-01 systemd: session opened for user root
+Feb 08 06:11:24 firewall-02 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 19:03:46 web-02 httpd[notice]: jk2_init() Found child 6734 in scoreboard slot 9
+Feb 08 16:18:32 web-01 sshd[1234]: Dec 10 07:27:55 LabSZ sshd[24237]: Failed password for root from 112.95.230.3 port 47068 ssh2
+Feb 08 14:27:41 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 02:21:45 web-01 httpd[error]: jk2_init() Found child 6766 in scoreboard slot 6
+Feb 08 12:12:43 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.62
+Feb 08 11:49:06 db-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23404]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 15:35:39 web-01 httpd[notice]: mod_jk child workerEnv in error state 7
+Feb 08 17:22:30 api-gateway httpd[notice]: jk2_init() Found child 6738 in scoreboard slot 6
+Feb 08 18:53:10 web-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 03:15:27 web-01 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 06:49:03 firewall-02 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 20:58:32 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 19:19:25 waf-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 08:28:44 waf-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.16
+Feb 08 17:35:19 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 10:20:59 web-01 systemd: Jun 15 12:13:19 combo sshd(pam_unix)[23414]: check pass; user unknown
+Feb 08 20:10:29 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 22:05:01 web-LB waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 16:23:19 web-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.230
+Feb 08 21:20:52 gateway-01 sshd[1234]: Dec 10 07:08:28 LabSZ sshd[24208]: input_userauth_request: invalid user webmaster [preauth]
+Feb 08 13:04:59 web-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 04:29:51 firewall-02 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 12:28:19 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.206
+Feb 08 10:13:26 web-03 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 17:15:43 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 20:34:36 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.182
+Feb 08 07:51:14 ids-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.77
+Feb 08 15:21:12 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 20:11:04 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.160
+Feb 08 11:58:41 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.71
+Feb 08 12:45:46 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 11:40:33 app-srv-01 systemd: Jun 14 15:16:01 combo sshd(pam_unix)[19939]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 20:41:19 web-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 08:48:08 web-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20897]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 08:02:07 app-srv-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20893]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 01:03:15 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 07:58:27 firewall-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.214
+Feb 08 19:16:44 gateway-01 sshd[1234]: Dec 10 07:13:56 LabSZ sshd[24227]: PAM 5 more authentication failures; logname= uid=0 euid=0 tty=ssh ruser= rhost=5.36.59.76.dynamic-dsl-ip.omantel.net.om user=root
+Feb 08 15:12:49 db-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23412]: check pass; user unknown
+Feb 08 10:56:04 web-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.92
+Feb 08 15:48:46 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.211
+Feb 08 16:31:20 web-01 sshd[1234]: Dec 10 07:11:44 LabSZ sshd[24224]: Received disconnect from 202.100.179.208: 11: Bye Bye [preauth]
+Feb 08 06:00:30 firewall-02 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 13:08:20 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 14:40:10 web-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.159
+Feb 08 18:56:53 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 20:22:25 mail-01 systemd: Jun 15 04:06:18 combo su(pam_unix)[21416]: session opened for user cyrus by (uid=0)
+Feb 08 17:09:14 app-srv-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20898]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 02:23:55 gateway-01 sshd[1234]: Dec 10 07:27:55 LabSZ sshd[24237]: Failed password for root from 112.95.230.3 port 47068 ssh2
+Feb 08 17:33:47 web-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.187
+Feb 08 16:03:25 api-gateway httpd[error]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 18:00:02 web-02 httpd[notice]: jk2_init() Found child 6752 in scoreboard slot 10
+Feb 08 08:10:26 web-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.134
+Feb 08 08:45:21 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 22:56:14 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.145
+Feb 08 16:07:53 web-01 sshd[1234]: Dec 10 07:11:42 LabSZ sshd[24224]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=202.100.179.208 
+Feb 08 13:50:29 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 01:25:28 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 08:36:48 web-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.192
+Feb 08 06:37:22 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.168
+Feb 08 08:45:16 web-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.88
+Feb 08 10:56:17 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.178
+Feb 08 15:41:04 web-LB waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 12:02:20 web-03 httpd[notice]: jk2_init() Found child 6766 in scoreboard slot 6
+Feb 08 09:03:34 bastion-01 sshd[1234]: Dec 10 07:11:42 LabSZ sshd[24224]: pam_unix(sshd:auth): check pass; user unknown
+Feb 08 14:25:25 waf-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 21:17:48 db-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20892]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 15:46:35 web-02 systemd: Jun 15 04:06:20 combo logrotate: ALERT exited abnormally with [1]
+Feb 08 04:36:35 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 16:22:56 web-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 03:01:05 ids-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 05:05:11 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.108
+Feb 08 12:32:37 ids-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 06:42:55 web-03 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 23:57:39 firewall-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 03:59:43 db-02 sshd[1234]: Dec 10 06:55:46 LabSZ sshd[24200]: input_userauth_request: invalid user webmaster [preauth]
+Feb 08 19:39:56 web-03 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 14:37:40 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 14:51:19 app-srv-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20885]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 16:47:35 web-LB waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.50
+Feb 08 08:03:21 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.108
+Feb 08 19:21:55 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.223
+Feb 08 12:35:07 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.111
+Feb 08 08:10:08 ids-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 13:44:42 web-03 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 17:57:31 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.100
+Feb 08 09:41:44 web-02 httpd[notice]: jk2_init() Found child 6737 in scoreboard slot 8
+Feb 08 21:46:23 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 15:08:45 firewall-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.107
+Feb 08 02:52:01 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 22:35:14 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 16:59:51 mail-01 systemd: warning: disk space low on /var/log
+Feb 08 08:30:56 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.250
+Feb 08 00:05:35 firewall-02 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.115
+Feb 08 03:29:14 web-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.106
+Feb 08 22:33:45 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 06:32:13 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 05:23:29 web-01 httpd[notice]: jk2_init() Found child 6725 in scoreboard slot 10
+Feb 08 22:42:04 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 16:58:44 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 17:48:25 web-01 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 03:29:43 web-02 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23394]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 00:39:50 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 04:31:49 firewall-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.6
+Feb 08 00:58:37 firewall-02 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.22
+Feb 08 16:20:43 app-srv-01 systemd: session opened for user root
+Feb 08 10:23:36 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 23:43:11 web-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.72
+Feb 08 22:06:08 app-srv-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23403]: check pass; user unknown
+Feb 08 05:44:14 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 19:03:59 api-gateway httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 13:49:44 ids-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 10:21:13 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 09:59:32 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 00:51:39 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 05:24:58 web-01 sshd[1234]: Dec 10 07:07:45 LabSZ sshd[24206]: Received disconnect from 52.80.34.196: 11: Bye Bye [preauth]
+Feb 08 00:31:36 db-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23399]: check pass; user unknown
+Feb 08 07:00:57 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 18:59:05 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.99
+Feb 08 03:59:08 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 16:24:06 firewall-02 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.238
+Feb 08 17:06:26 firewall-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.80
+Feb 08 10:59:37 gateway-01 sshd[1234]: Dec 10 07:07:38 LabSZ sshd[24206]: Invalid user test9 from 52.80.34.196
+Feb 08 06:20:42 bastion-01 sshd[1234]: Dec 10 07:08:30 LabSZ sshd[24208]: Failed password for invalid user webmaster from 173.234.31.186 port 39257 ssh2
+Feb 08 05:52:38 db-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23406]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 22:31:58 api-gateway httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 20:07:06 api-gateway httpd[notice]: jk2_init() Found child 6765 in scoreboard slot 8
+Feb 08 10:03:39 db-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23406]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 11:34:38 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 14:30:22 web-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.11
+Feb 08 16:17:49 web-01 sshd[1234]: Dec 10 07:11:44 LabSZ sshd[24224]: Received disconnect from 202.100.179.208: 11: Bye Bye [preauth]
+Feb 08 03:32:36 web-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.18
+Feb 08 23:08:27 web-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.46
+Feb 08 15:09:54 web-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.218
+Feb 08 11:00:12 web-LB waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.8
+Feb 08 11:14:25 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 02:15:52 app-srv-01 systemd: warning: disk space low on /var/log
+Feb 08 12:03:28 firewall-02 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.144
+Feb 08 11:24:17 waf-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.1
+Feb 08 00:13:22 app-srv-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23406]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 15:26:34 web-LB waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.215
+Feb 08 18:26:37 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 09:41:47 web-02 systemd: warning: disk space low on /var/log
+Feb 08 00:31:55 web-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 22:18:17 bastion-01 sshd[1234]: Dec 10 07:07:38 LabSZ sshd[24206]: pam_unix(sshd:auth): check pass; user unknown
+Feb 08 07:15:17 web-01 sshd[1234]: Dec 10 07:11:42 LabSZ sshd[24224]: input_userauth_request: invalid user chen [preauth]
+Feb 08 18:19:03 web-02 httpd[notice]: jk2_init() Found child 6752 in scoreboard slot 10
+Feb 08 11:38:28 firewall-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 19:08:07 firewall-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.91
+Feb 08 19:26:13 web-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.183
+Feb 08 09:02:05 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.16
+Feb 08 19:31:22 web-01 httpd[notice]: jk2_init() Found child 6756 in scoreboard slot 7
+Feb 08 06:08:48 firewall-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.203
+Feb 08 19:34:57 db-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23412]: check pass; user unknown
+Feb 08 19:26:52 waf-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.100
+Feb 08 12:29:38 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.165
+Feb 08 11:44:53 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 19:14:04 mail-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20885]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 01:55:46 firewall-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.84
+Feb 08 17:13:51 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.179
+Feb 08 17:58:02 web-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.94
+Feb 08 14:41:15 app-srv-01 systemd: session opened for user root
+Feb 08 02:00:26 ids-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 15:03:44 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 12:15:24 db-02 sshd[1234]: Dec 10 07:07:45 LabSZ sshd[24206]: Failed password for invalid user test9 from 52.80.34.196 port 36060 ssh2
+Feb 08 03:26:11 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.205
+Feb 08 13:55:33 web-01 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 10:22:58 api-gateway httpd[notice]: jk2_init() Found child 6765 in scoreboard slot 8
+Feb 08 01:18:16 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 18:57:57 web-01 sshd[1234]: Dec 10 06:55:48 LabSZ sshd[24200]: Connection closed by 173.234.31.186 [preauth]
+Feb 08 19:03:36 ids-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 17:00:55 api-gateway httpd[notice]: jk2_init() Found child 6736 in scoreboard slot 10
+Feb 08 15:32:07 web-01 httpd[error]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 18:18:47 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.13
+Feb 08 18:08:44 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 21:01:31 web-01 sshd[1234]: Dec 10 07:08:28 LabSZ sshd[24208]: reverse mapping checking getaddrinfo for ns.marryaldkfaczcz.com [173.234.31.186] failed - POSSIBLE BREAK-IN ATTEMPT!
+Feb 08 03:14:53 firewall-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.93
+Feb 08 07:02:43 bastion-01 sshd[1234]: Dec 10 06:55:46 LabSZ sshd[24200]: input_userauth_request: invalid user webmaster [preauth]
+Feb 08 19:20:09 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 12:42:54 firewall-02 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 09:52:52 gateway-01 sshd[1234]: Dec 10 07:13:56 LabSZ sshd[24227]: PAM 5 more authentication failures; logname= uid=0 euid=0 tty=ssh ruser= rhost=5.36.59.76.dynamic-dsl-ip.omantel.net.om user=root
+Feb 08 17:07:26 web-03 httpd[notice]: jk2_init() Found child 6750 in scoreboard slot 7
+Feb 08 08:54:36 ids-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 01:57:10 api-gateway httpd[error]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 14:58:50 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 05:08:19 web-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.170
+Feb 08 07:55:48 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.135
+Feb 08 04:07:12 app-srv-01 systemd: warning: disk space low on /var/log
+Feb 08 12:13:39 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 21:39:30 web-01 httpd[notice]: jk2_init() Found child 6767 in scoreboard slot 7
+Feb 08 18:22:22 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.194
+Feb 08 05:04:44 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 16:56:33 firewall-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.130
+Feb 08 04:48:54 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.247
+Feb 08 15:56:09 web-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 10:39:16 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 02:52:56 api-gateway httpd[error]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 09:57:04 web-01 sshd[1234]: Dec 10 07:08:28 LabSZ sshd[24208]: reverse mapping checking getaddrinfo for ns.marryaldkfaczcz.com [173.234.31.186] failed - POSSIBLE BREAK-IN ATTEMPT!
+Feb 08 01:09:32 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.131
+Feb 08 14:59:21 ids-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 23:22:34 firewall-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.96
+Feb 08 09:41:06 web-01 sshd[1234]: Dec 10 07:11:44 LabSZ sshd[24224]: Failed password for invalid user chen from 202.100.179.208 port 32484 ssh2
+Feb 08 04:06:49 firewall-02 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.224
+Feb 08 14:33:25 db-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23406]: check pass; user unknown
+Feb 08 22:34:14 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 16:40:21 web-03 httpd[notice]: jk2_init() Found child 6733 in scoreboard slot 7
+Feb 08 01:40:35 bastion-01 sshd[1234]: Dec 10 07:11:42 LabSZ sshd[24224]: input_userauth_request: invalid user chen [preauth]
+Feb 08 19:39:29 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.92
+Feb 08 20:15:19 web-01 httpd[notice]: mod_jk child workerEnv in error state 7
+Feb 08 05:28:15 web-01 systemd: Jun 15 04:12:42 combo su(pam_unix)[22644]: session opened for user news by (uid=0)
+Feb 08 02:32:54 firewall-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.232
+Feb 08 11:51:55 web-LB waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.82
+Feb 08 08:35:49 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 08:11:04 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 04:46:09 gateway-01 sshd[1234]: Dec 10 07:07:45 LabSZ sshd[24206]: Received disconnect from 52.80.34.196: 11: Bye Bye [preauth]
+Feb 08 06:35:15 web-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.42
+Feb 08 14:09:42 web-LB waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.253
+Feb 08 03:33:35 web-03 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 05:38:57 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.176
+Feb 08 20:13:29 firewall-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.66
+Feb 08 21:28:14 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.88
+Feb 08 10:14:14 firewall-02 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.152
+Feb 08 01:33:26 web-01 httpd[notice]: jk2_init() Found child 6750 in scoreboard slot 7
+Feb 08 22:16:47 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.127
+Feb 08 18:58:32 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 06:15:31 web-03 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 02:37:05 web-LB waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.116
+Feb 08 09:22:49 gateway-01 sshd[1234]: Dec 10 07:07:45 LabSZ sshd[24206]: Received disconnect from 52.80.34.196: 11: Bye Bye [preauth]
+Feb 08 23:14:32 gateway-01 sshd[1234]: Dec 10 07:13:56 LabSZ sshd[24227]: Disconnecting: Too many authentication failures for root [preauth]
+Feb 08 02:08:41 firewall-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 01:16:22 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 01:35:48 db-02 sshd[1234]: Dec 10 07:27:50 LabSZ sshd[24235]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=112.95.230.3 user=root
+Feb 08 13:17:32 waf-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.13
+Feb 08 23:31:13 app-srv-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23399]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 21:21:38 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 06:29:00 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 06:57:25 web-02 httpd[notice]: jk2_init() Found child 6740 in scoreboard slot 7
+Feb 08 17:29:07 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.21
+Feb 08 14:14:25 bastion-01 sshd[1234]: Dec 10 07:11:44 LabSZ sshd[24224]: Received disconnect from 202.100.179.208: 11: Bye Bye [preauth]
+Feb 08 19:15:15 db-02 sshd[1234]: Dec 10 07:07:38 LabSZ sshd[24206]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=ec2-52-80-34-196.cn-north-1.compute.amazonaws.com.cn 
+Feb 08 09:50:39 web-01 sshd[1234]: Dec 10 07:08:28 LabSZ sshd[24208]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=173.234.31.186 
+Feb 08 00:13:14 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.68
+Feb 08 14:40:07 web-02 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 10:01:26 web-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.122
+Feb 08 07:15:59 gateway-01 sshd[1234]: Dec 10 07:08:30 LabSZ sshd[24208]: Failed password for invalid user webmaster from 173.234.31.186 port 39257 ssh2
+Feb 08 14:54:15 web-01 sshd[1234]: Dec 10 06:55:46 LabSZ sshd[24200]: Invalid user webmaster from 173.234.31.186
+Feb 08 12:43:26 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 13:22:07 web-02 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 13:57:04 web-01 sshd[1234]: Dec 10 07:11:42 LabSZ sshd[24224]: Invalid user chen from 202.100.179.208
+Feb 08 04:47:24 firewall-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.19
+Feb 08 16:47:31 db-02 sshd[1234]: Dec 10 06:55:46 LabSZ sshd[24200]: input_userauth_request: invalid user webmaster [preauth]
+Feb 08 21:56:48 web-02 systemd: warning: disk space low on /var/log
+Feb 08 00:54:20 web-02 httpd[notice]: jk2_init() Found child 6756 in scoreboard slot 7
+Feb 08 09:04:01 ids-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 07:49:05 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.141
+Feb 08 11:05:02 mail-01 systemd: session opened for user root
+Feb 08 06:20:42 firewall-02 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.59
+Feb 08 09:40:48 web-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.150
+Feb 08 06:39:51 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 18:53:18 web-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.254
+Feb 08 13:14:08 db-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23406]: check pass; user unknown
+Feb 08 01:19:11 web-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 22:18:21 web-03 httpd[error]: mod_jk child workerEnv in error state 6
+Feb 08 09:43:08 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 13:18:56 firewall-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.177
+Feb 08 17:05:16 firewall-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.85
+Feb 08 02:14:49 api-gateway httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 00:20:07 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.62
+Feb 08 04:02:45 web-02 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23399]: check pass; user unknown
+Feb 08 08:37:45 web-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.139
+Feb 08 11:54:40 web-01 httpd[notice]: jk2_init() Found child 6725 in scoreboard slot 10
+Feb 08 06:33:55 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 07:45:15 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 12:49:42 api-gateway httpd[notice]: jk2_init() Found child 6741 in scoreboard slot 9
+Feb 08 19:31:33 ids-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 13:20:57 gateway-01 sshd[1234]: Dec 10 07:11:42 LabSZ sshd[24224]: input_userauth_request: invalid user chen [preauth]
+Feb 08 22:16:13 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 15:32:25 db-02 sshd[1234]: Dec 10 07:11:42 LabSZ sshd[24224]: Invalid user chen from 202.100.179.208
+Feb 08 00:32:28 web-03 httpd[notice]: jk2_init() Found child 6726 in scoreboard slot 8
+Feb 08 07:09:31 web-LB waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.239
+Feb 08 22:57:53 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 19:01:40 firewall-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 12:58:18 firewall-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.62
+Feb 08 17:26:00 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 06:33:53 web-02 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 23:54:00 bastion-01 sshd[1234]: Dec 10 07:02:47 LabSZ sshd[24203]: Connection closed by 212.47.254.145 [preauth]
+Feb 08 18:56:56 firewall-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 11:44:52 web-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.124
+Feb 08 20:06:09 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 14:15:22 web-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.99
+Feb 08 06:44:12 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 18:10:57 waf-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.66
+Feb 08 09:28:58 firewall-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.128
+Feb 08 00:09:44 ids-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.93
+Feb 08 20:38:09 web-01 sshd[1234]: Dec 10 07:27:55 LabSZ sshd[24239]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=112.95.230.3 user=root
+Feb 08 03:59:11 db-01 systemd: session opened for user root
+Feb 08 10:00:12 web-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23394]: check pass; user unknown
+Feb 08 10:19:52 web-01 sshd[1234]: Dec 10 07:11:42 LabSZ sshd[24224]: Invalid user chen from 202.100.179.208
+Feb 08 17:35:33 waf-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 09:07:05 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 09:04:52 web-01 sshd[1234]: Dec 10 07:08:28 LabSZ sshd[24208]: input_userauth_request: invalid user webmaster [preauth]
+Feb 08 04:04:11 api-gateway httpd[error]: jk2_init() Found child 6756 in scoreboard slot 7
+Feb 08 06:02:38 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.219
+Feb 08 14:11:54 web-03 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 22:17:03 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 15:09:21 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 06:47:29 waf-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 01:48:30 ids-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 21:32:20 web-02 httpd[notice]: jk2_init() Found child 6766 in scoreboard slot 6
+Feb 08 05:07:30 web-02 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20886]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 14:48:21 web-01 sshd[1234]: Dec 10 06:55:46 LabSZ sshd[24200]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=173.234.31.186 
+Feb 08 13:38:20 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 11:52:43 web-LB waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.240
+Feb 08 01:15:43 gateway-01 sshd[1234]: Dec 10 07:07:38 LabSZ sshd[24206]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=ec2-52-80-34-196.cn-north-1.compute.amazonaws.com.cn 
+Feb 08 00:27:38 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.223
+Feb 08 07:05:50 db-02 sshd[1234]: Dec 10 07:27:55 LabSZ sshd[24237]: Failed password for root from 112.95.230.3 port 47068 ssh2
+Feb 08 11:21:44 api-gateway httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 12:28:12 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.77
+Feb 08 01:42:17 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 01:23:34 web-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.205
+Feb 08 14:44:13 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 18:54:01 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 19:35:28 firewall-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 07:16:45 web-01 systemd: session opened for user root
+Feb 08 20:07:47 web-01 sshd[1234]: Dec 10 07:08:30 LabSZ sshd[24208]: Connection closed by 173.234.31.186 [preauth]
+Feb 08 23:53:19 web-01 sshd[1234]: Dec 10 07:27:55 LabSZ sshd[24237]: Failed password for root from 112.95.230.3 port 47068 ssh2
+Feb 08 08:04:07 bastion-01 sshd[1234]: Dec 10 07:11:44 LabSZ sshd[24224]: Received disconnect from 202.100.179.208: 11: Bye Bye [preauth]
+Feb 08 03:50:08 mail-01 systemd: session opened for user root
+Feb 08 20:43:17 web-01 httpd[error]: mod_jk child workerEnv in error state 7
+Feb 08 04:24:39 ids-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.126
+Feb 08 16:28:42 web-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23412]: check pass; user unknown
+Feb 08 15:42:01 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.84
+Feb 08 22:43:06 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.61
+Feb 08 08:17:21 web-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 00:42:05 app-srv-01 systemd: session opened for user root
+Feb 08 10:07:14 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.27
+Feb 08 05:37:23 web-02 httpd[notice]: mod_jk child workerEnv in error state 7
+Feb 08 08:23:28 web-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.165
+Feb 08 10:07:13 web-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.47
+Feb 08 21:19:43 web-02 httpd[error]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 19:09:47 firewall-02 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 06:25:03 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.222
+Feb 08 01:13:02 bastion-01 sshd[1234]: Dec 10 07:08:28 LabSZ sshd[24208]: pam_unix(sshd:auth): check pass; user unknown
+Feb 08 23:28:43 firewall-02 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 21:01:11 web-02 httpd[notice]: mod_jk child workerEnv in error state 7
+Feb 08 13:55:22 firewall-02 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.44
+Feb 08 05:17:50 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.219
+Feb 08 02:17:59 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 02:36:08 mail-01 systemd: warning: disk space low on /var/log
+Feb 08 06:37:11 ids-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 19:52:19 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 16:45:13 web-01 sshd[1234]: Dec 10 07:08:30 LabSZ sshd[24208]: Failed password for invalid user webmaster from 173.234.31.186 port 39257 ssh2
+Feb 08 23:29:48 web-02 httpd[notice]: jk2_init() Found child 6751 in scoreboard slot 9
+Feb 08 04:50:11 firewall-02 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.101
+Feb 08 18:58:27 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 14:51:54 bastion-01 sshd[1234]: Dec 10 07:13:56 LabSZ sshd[24227]: message repeated 5 times: [ Failed password for root from 5.36.59.76 port 42393 ssh2]
+Feb 08 18:56:41 web-02 httpd[error]: jk2_init() Found child 6740 in scoreboard slot 7
+Feb 08 04:06:09 ids-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 23:53:26 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.176
+Feb 08 15:27:54 web-02 httpd[error]: mod_jk child workerEnv in error state 6
+Feb 08 10:56:09 waf-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 03:36:18 waf-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 21:14:37 db-02 sshd[1234]: Dec 10 07:11:44 LabSZ sshd[24224]: Failed password for invalid user chen from 202.100.179.208 port 32484 ssh2
+Feb 08 04:55:29 mail-01 systemd: Jun 14 15:16:01 combo sshd(pam_unix)[19939]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 18:33:00 db-02 sshd[1234]: Dec 10 06:55:46 LabSZ sshd[24200]: pam_unix(sshd:auth): check pass; user unknown
+Feb 08 17:42:15 web-LB waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.185
+Feb 08 22:16:42 bastion-01 sshd[1234]: Dec 10 07:07:38 LabSZ sshd[24206]: pam_unix(sshd:auth): check pass; user unknown
+Feb 08 08:50:43 firewall-02 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 10:35:00 ids-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 07:34:54 web-LB waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.234
+Feb 08 13:26:52 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.198
+Feb 08 10:41:52 web-03 httpd[error]: jk2_init() Found child 6737 in scoreboard slot 8
+Feb 08 03:16:03 web-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 07:03:04 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 15:48:59 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 12:03:39 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.244
+Feb 08 23:23:26 web-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 16:49:14 web-01 sshd[1234]: Dec 10 06:55:46 LabSZ sshd[24200]: reverse mapping checking getaddrinfo for ns.marryaldkfaczcz.com [173.234.31.186] failed - POSSIBLE BREAK-IN ATTEMPT!
+Feb 08 07:28:14 gateway-01 sshd[1234]: Dec 10 07:13:56 LabSZ sshd[24227]: PAM 5 more authentication failures; logname= uid=0 euid=0 tty=ssh ruser= rhost=5.36.59.76.dynamic-dsl-ip.omantel.net.om user=root
+Feb 08 06:50:23 web-03 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 10:00:11 web-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 11:08:32 api-gateway httpd[notice]: jk2_init() Found child 6725 in scoreboard slot 10
+Feb 08 06:42:30 web-02 httpd[notice]: jk2_init() Found child 6750 in scoreboard slot 7
+Feb 08 04:00:07 web-02 httpd[notice]: jk2_init() Found child 6767 in scoreboard slot 7
+Feb 08 18:21:33 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.38
+Feb 08 00:00:59 api-gateway httpd[notice]: jk2_init() Found child 6748 in scoreboard slot 6
+Feb 08 05:14:22 web-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.3
+Feb 08 04:28:58 mail-01 systemd: warning: disk space low on /var/log
+Feb 08 19:42:29 gateway-01 sshd[1234]: Dec 10 07:27:58 LabSZ sshd[24239]: Failed password for root from 112.95.230.3 port 49188 ssh2
+Feb 08 02:08:47 ids-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 03:01:32 api-gateway httpd[notice]: jk2_init() Found child 6740 in scoreboard slot 7
+Feb 08 01:27:43 api-gateway httpd[notice]: jk2_init() Found child 6726 in scoreboard slot 8
+Feb 08 22:42:23 web-01 sshd[1234]: Dec 10 07:13:43 LabSZ sshd[24227]: Failed password for root from 5.36.59.76 port 42393 ssh2
+Feb 08 19:27:53 waf-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 16:11:49 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 13:13:37 web-02 systemd: Jun 14 15:16:02 combo sshd(pam_unix)[19937]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 00:29:50 db-01 systemd: Jun 14 15:16:02 combo sshd(pam_unix)[19937]: check pass; user unknown
+Feb 08 06:25:33 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.210
+Feb 08 22:42:45 firewall-02 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 18:37:45 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.47
+Feb 08 19:01:59 web-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.219
+Feb 08 21:07:42 web-02 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 06:52:21 api-gateway httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 11:27:16 web-01 sshd[1234]: Dec 10 07:11:42 LabSZ sshd[24224]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=202.100.179.208 
+Feb 08 16:49:57 db-02 sshd[1234]: Dec 10 07:11:44 LabSZ sshd[24224]: Received disconnect from 202.100.179.208: 11: Bye Bye [preauth]
+Feb 08 06:41:01 web-LB waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.180
+Feb 08 01:12:44 web-03 httpd[notice]: jk2_init() Found child 6744 in scoreboard slot 10
+Feb 08 21:39:58 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 18:20:59 web-02 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23412]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 09:50:44 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.163
+Feb 08 00:07:25 ids-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 02:13:50 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 04:42:20 web-03 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 07:37:41 firewall-02 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.4
+Feb 08 09:50:42 bastion-01 sshd[1234]: Dec 10 07:27:52 LabSZ sshd[24235]: Received disconnect from 112.95.230.3: 11: Bye Bye [preauth]
+Feb 08 15:47:41 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.62
+Feb 08 10:35:41 firewall-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.214
+Feb 08 03:57:00 app-srv-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20896]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 21:31:49 ids-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.93
+Feb 08 17:34:53 ids-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 14:01:34 bastion-01 sshd[1234]: Dec 10 07:07:38 LabSZ sshd[24206]: input_userauth_request: invalid user test9 [preauth]
+Feb 08 10:50:06 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.53
+Feb 08 07:54:18 mail-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23412]: check pass; user unknown
+Feb 08 03:48:07 web-LB waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.88
+Feb 08 05:42:46 web-02 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 00:26:02 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 20:49:02 firewall-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 11:54:16 firewall-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.195
+Feb 08 23:20:41 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 12:12:44 ids-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 17:07:52 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 05:50:32 web-01 sshd[1234]: Dec 10 07:07:38 LabSZ sshd[24206]: input_userauth_request: invalid user test9 [preauth]
+Feb 08 07:25:38 db-02 sshd[1234]: Dec 10 07:08:30 LabSZ sshd[24208]: Connection closed by 173.234.31.186 [preauth]
+Feb 08 01:55:18 db-02 sshd[1234]: Dec 10 06:55:46 LabSZ sshd[24200]: pam_unix(sshd:auth): check pass; user unknown
+Feb 08 05:00:26 mail-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23412]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 20:46:43 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 12:18:37 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 20:09:57 firewall-02 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 22:05:19 web-LB waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 14:46:03 web-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.86
+Feb 08 03:45:42 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.147
+Feb 08 16:17:02 web-01 sshd[1234]: Dec 10 07:27:52 LabSZ sshd[24235]: Failed password for root from 112.95.230.3 port 45378 ssh2
+Feb 08 22:52:29 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 18:37:23 web-03 httpd[notice]: mod_jk child workerEnv in error state 7
+Feb 08 21:45:42 mail-01 systemd: Jun 14 15:16:01 combo sshd(pam_unix)[19939]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 22:22:28 web-03 httpd[notice]: jk2_init() Found child 6755 in scoreboard slot 6
+Feb 08 00:45:29 bastion-01 sshd[1234]: Dec 10 07:27:55 LabSZ sshd[24237]: Received disconnect from 112.95.230.3: 11: Bye Bye [preauth]
+Feb 08 22:12:43 firewall-02 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 14:52:35 ids-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.84
+Feb 08 21:26:50 web-01 systemd: warning: disk space low on /var/log
+Feb 08 13:43:12 web-LB waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 03:27:24 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 21:01:04 web-01 sshd[1234]: Dec 10 07:27:58 LabSZ sshd[24239]: Failed password for root from 112.95.230.3 port 49188 ssh2
+Feb 08 21:43:33 web-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.155
+Feb 08 12:42:32 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 19:12:24 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.93
+Feb 08 07:12:24 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 07:37:37 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 10:46:27 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.45
+Feb 08 01:28:45 firewall-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.206
+Feb 08 15:43:37 web-02 httpd[notice]: mod_jk child workerEnv in error state 7
+Feb 08 08:06:17 web-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.235
+Feb 08 18:40:58 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.159
+Feb 08 03:05:29 firewall-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.224
+Feb 08 05:03:28 ids-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.251
+Feb 08 00:10:16 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 07:02:06 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.151
+Feb 08 10:18:04 mail-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23397]: check pass; user unknown
+Feb 08 15:54:35 db-01 systemd: Jun 15 12:13:19 combo sshd(pam_unix)[23414]: check pass; user unknown
+Feb 08 10:19:54 waf-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 00:09:58 ids-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 06:03:37 web-02 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20893]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 09:13:47 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 17:44:53 mail-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20883]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 15:27:49 web-02 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 07:23:02 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.233
+Feb 08 19:07:15 ids-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 03:00:01 web-LB waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.102
+Feb 08 08:35:36 web-03 httpd[notice]: mod_jk child workerEnv in error state 7
+Feb 08 06:16:11 api-gateway httpd[notice]: jk2_init() Found child 6752 in scoreboard slot 10
+Feb 08 00:11:11 db-02 sshd[1234]: Dec 10 07:27:58 LabSZ sshd[24239]: Failed password for root from 112.95.230.3 port 49188 ssh2
+Feb 08 00:36:03 web-01 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 01:07:40 mail-01 systemd: warning: disk space low on /var/log
+Feb 08 08:54:41 firewall-02 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.55
+Feb 08 16:10:14 web-03 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 16:44:49 firewall-02 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.176
+Feb 08 08:57:08 web-01 sshd[1234]: Dec 10 07:13:31 LabSZ sshd[24227]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=5.36.59.76.dynamic-dsl-ip.omantel.net.om user=root
+Feb 08 22:07:29 firewall-02 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 11:11:04 firewall-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.66
+Feb 08 08:27:23 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.172
+Feb 08 23:21:47 db-02 sshd[1234]: Dec 10 06:55:48 LabSZ sshd[24200]: Connection closed by 173.234.31.186 [preauth]
+Feb 08 09:06:50 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 14:52:25 web-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 08:36:14 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 22:30:37 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.183
+Feb 08 11:25:07 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.26
+Feb 08 16:27:14 gateway-01 sshd[1234]: Dec 10 07:27:52 LabSZ sshd[24235]: Failed password for root from 112.95.230.3 port 45378 ssh2
+Feb 08 13:43:22 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 04:25:58 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.58
+Feb 08 23:20:22 gateway-01 sshd[1234]: Dec 10 07:27:55 LabSZ sshd[24239]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=112.95.230.3 user=root
+Feb 08 17:58:45 gateway-01 sshd[1234]: Dec 10 07:27:52 LabSZ sshd[24235]: Failed password for root from 112.95.230.3 port 45378 ssh2
+Feb 08 02:04:54 waf-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.172
+Feb 08 05:54:03 firewall-02 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.121
+Feb 08 03:01:08 firewall-02 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.46
+Feb 08 15:04:28 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.112
+Feb 08 20:29:42 web-01 sshd[1234]: Dec 10 06:55:46 LabSZ sshd[24200]: reverse mapping checking getaddrinfo for ns.marryaldkfaczcz.com [173.234.31.186] failed - POSSIBLE BREAK-IN ATTEMPT!
+Feb 08 17:19:32 web-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.187
+Feb 08 08:49:24 web-01 httpd[notice]: mod_jk child workerEnv in error state 7
+Feb 08 11:51:47 firewall-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.229
+Feb 08 23:59:56 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 21:45:10 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.49
+Feb 08 22:25:14 web-LB waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.158
+Feb 08 19:39:37 web-03 httpd[notice]: jk2_init() Found child 6734 in scoreboard slot 9
+Feb 08 07:01:22 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 08:20:00 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.221
+Feb 08 14:36:13 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.160
+Feb 08 04:05:12 mail-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23407]: check pass; user unknown
+Feb 08 10:49:56 web-02 systemd: Jun 15 12:13:19 combo sshd(pam_unix)[23414]: check pass; user unknown
+Feb 08 17:58:28 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 21:09:54 api-gateway httpd[notice]: jk2_init() Found child 6744 in scoreboard slot 10
+Feb 08 16:13:42 web-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23397]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 13:51:25 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 07:33:35 web-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 17:36:40 web-LB waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.63
+Feb 08 13:38:39 db-02 sshd[1234]: Dec 10 07:11:44 LabSZ sshd[24224]: Failed password for invalid user chen from 202.100.179.208 port 32484 ssh2
+Feb 08 21:10:17 web-02 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23397]: check pass; user unknown
+Feb 08 21:41:55 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.174
+Feb 08 09:17:17 firewall-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.77
+Feb 08 12:24:22 web-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20893]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 03:25:49 web-LB waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 19:43:30 ids-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.32
+Feb 08 19:26:39 api-gateway httpd[notice]: jk2_init() Found child 6765 in scoreboard slot 8
+Feb 08 17:52:40 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.33
+Feb 08 03:06:12 db-02 sshd[1234]: Dec 10 07:27:58 LabSZ sshd[24239]: Failed password for root from 112.95.230.3 port 49188 ssh2
+Feb 08 10:22:35 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 08:13:50 web-02 httpd[notice]: jk2_init() Found child 6726 in scoreboard slot 8
+Feb 08 04:31:15 web-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20892]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 01:18:02 web-01 systemd: warning: disk space low on /var/log
+Feb 08 18:34:58 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.250
+Feb 08 16:06:28 web-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23399]: check pass; user unknown
+Feb 08 11:23:51 waf-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 09:46:35 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 20:05:01 web-01 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 03:18:09 db-02 sshd[1234]: Dec 10 07:13:56 LabSZ sshd[24227]: message repeated 5 times: [ Failed password for root from 5.36.59.76 port 42393 ssh2]
+Feb 08 20:13:17 firewall-02 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.223
+Feb 08 01:05:51 api-gateway httpd[error]: jk2_init() Found child 6754 in scoreboard slot 8
+Feb 08 10:18:06 web-02 httpd[error]: jk2_init() Found child 6745 in scoreboard slot 8
+Feb 08 14:05:48 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.77
+Feb 08 01:29:15 web-01 httpd[notice]: jk2_init() Found child 6728 in scoreboard slot 6
+Feb 08 19:51:36 web-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.9
+Feb 08 01:49:23 ids-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 01:50:47 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.111
+Feb 08 02:56:49 web-LB waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 17:27:18 firewall-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.59
+Feb 08 10:39:31 web-03 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 02:41:48 api-gateway httpd[error]: mod_jk child workerEnv in error state 6
+Feb 08 07:43:52 firewall-02 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 11:11:36 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.52
+Feb 08 17:48:44 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 22:22:53 mail-01 systemd: Jun 15 12:13:19 combo sshd(pam_unix)[23414]: check pass; user unknown
+Feb 08 11:57:20 db-02 sshd[1234]: Dec 10 07:08:28 LabSZ sshd[24208]: reverse mapping checking getaddrinfo for ns.marryaldkfaczcz.com [173.234.31.186] failed - POSSIBLE BREAK-IN ATTEMPT!
+Feb 08 21:06:55 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 11:18:49 firewall-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.142
+Feb 08 20:14:26 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 11:21:25 app-srv-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20882]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 21:43:40 firewall-02 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.224
+Feb 08 13:45:12 api-gateway httpd[notice]: jk2_init() Found child 6765 in scoreboard slot 8
+Feb 08 21:06:42 ids-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.44
+Feb 08 13:55:29 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 21:47:20 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.236
+Feb 08 22:08:59 mail-01 systemd: Jun 15 04:12:43 combo su(pam_unix)[22644]: session closed for user news
+Feb 08 23:28:25 web-LB waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.52
+Feb 08 09:51:17 web-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 00:29:14 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.195
+Feb 08 04:28:06 web-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.206
+Feb 08 11:31:26 web-01 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 16:00:31 web-LB waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.242
+Feb 08 06:42:51 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 18:29:07 ids-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 12:56:45 web-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23407]: check pass; user unknown
+Feb 08 10:04:49 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 03:06:31 web-02 httpd[error]: jk2_init() Found child 6740 in scoreboard slot 7
+Feb 08 00:16:14 db-02 sshd[1234]: Dec 10 07:13:56 LabSZ sshd[24227]: PAM service(sshd) ignoring max retries; 6 > 3
+Feb 08 03:08:14 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.180
+Feb 08 01:32:54 web-03 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 12:53:13 web-03 httpd[error]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 02:23:10 bastion-01 sshd[1234]: Dec 10 07:08:30 LabSZ sshd[24208]: Failed password for invalid user webmaster from 173.234.31.186 port 39257 ssh2
+Feb 08 11:11:22 web-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.243
+Feb 08 01:34:19 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 08:20:05 firewall-02 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 11:10:33 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 14:35:02 firewall-02 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.219
+Feb 08 17:49:52 web-03 httpd[notice]: jk2_init() Found child 6748 in scoreboard slot 6
+Feb 08 16:54:09 firewall-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 02:04:24 web-01 sshd[1234]: Dec 10 07:27:52 LabSZ sshd[24235]: Received disconnect from 112.95.230.3: 11: Bye Bye [preauth]
+Feb 08 05:46:45 firewall-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.77
+Feb 08 08:11:10 web-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.25
+Feb 08 00:22:15 web-LB waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 12:40:52 api-gateway httpd[notice]: jk2_init() Found child 6751 in scoreboard slot 9
+Feb 08 06:40:44 firewall-02 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 16:53:52 ids-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 21:26:04 web-01 systemd: session opened for user root
+Feb 08 04:25:29 web-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 23:00:13 bastion-01 sshd[1234]: Dec 10 07:27:53 LabSZ sshd[24237]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=112.95.230.3 user=root
+Feb 08 18:26:06 firewall-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.21
+Feb 08 05:01:13 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.60
+Feb 08 16:17:27 web-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23395]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 13:28:49 api-gateway httpd[notice]: jk2_init() Found child 6744 in scoreboard slot 10
+Feb 08 16:21:42 db-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23395]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 07:58:01 web-01 httpd[notice]: jk2_init() Found child 6733 in scoreboard slot 7
+Feb 08 04:13:12 web-01 httpd[notice]: jk2_init() Found child 6728 in scoreboard slot 6
+Feb 08 15:22:14 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 04:08:55 web-LB waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.114
+Feb 08 01:24:25 gateway-01 sshd[1234]: Dec 10 06:55:48 LabSZ sshd[24200]: Connection closed by 173.234.31.186 [preauth]
+Feb 08 12:52:41 mail-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23412]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 07:26:49 web-02 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23403]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 20:40:25 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.7
+Feb 08 22:58:19 firewall-02 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 21:39:59 web-LB waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.181
+Feb 08 12:52:19 web-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 22:59:06 firewall-02 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 13:11:24 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 00:25:37 web-01 sshd[1234]: Dec 10 07:08:30 LabSZ sshd[24208]: Connection closed by 173.234.31.186 [preauth]
+Feb 08 01:18:55 web-03 httpd[error]: mod_jk child workerEnv in error state 6
+Feb 08 22:36:31 db-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20886]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 03:15:59 firewall-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.145
+Feb 08 15:55:15 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 06:42:42 ids-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 17:37:58 firewall-02 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.245
+Feb 08 16:08:59 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 17:34:27 firewall-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.8
+Feb 08 13:13:42 web-LB waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.87
+Feb 08 18:56:55 firewall-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.15
+Feb 08 03:58:03 web-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.10
+Feb 08 01:53:30 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 00:27:45 web-LB waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.94
+Feb 08 07:03:15 bastion-01 sshd[1234]: Dec 10 07:27:53 LabSZ sshd[24237]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=112.95.230.3 user=root
+Feb 08 06:26:14 firewall-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.145
+Feb 08 03:05:39 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 14:58:06 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 20:51:26 web-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.33
+Feb 08 20:10:35 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.113
+Feb 08 09:58:20 web-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 13:38:52 ids-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.159
+Feb 08 06:33:09 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 00:44:49 web-LB waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 12:12:49 web-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.32
+Feb 08 21:31:44 web-LB waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.233
+Feb 08 03:03:43 web-01 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 22:38:09 web-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 10:46:20 web-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.36
+Feb 08 11:33:17 firewall-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 18:14:01 web-01 systemd: Jun 15 04:06:19 combo su(pam_unix)[21416]: session closed for user cyrus
+Feb 08 00:35:56 web-02 httpd[error]: jk2_init() Found child 6754 in scoreboard slot 8
+Feb 08 08:09:57 api-gateway httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 19:19:00 web-02 httpd[notice]: jk2_init() Found child 6767 in scoreboard slot 7
+Feb 08 00:56:15 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 12:09:35 ids-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 08:06:51 gateway-01 sshd[1234]: Dec 10 07:08:28 LabSZ sshd[24208]: Invalid user webmaster from 173.234.31.186
+Feb 08 20:12:26 web-01 sshd[1234]: Dec 10 06:55:46 LabSZ sshd[24200]: Invalid user webmaster from 173.234.31.186
+Feb 08 16:31:26 firewall-02 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.202
+Feb 08 13:35:13 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.113
+Feb 08 11:25:10 web-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.32
+Feb 08 20:22:41 firewall-02 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 05:31:23 web-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.194
+Feb 08 11:04:27 bastion-01 sshd[1234]: Dec 10 07:13:56 LabSZ sshd[24227]: Disconnecting: Too many authentication failures for root [preauth]
+Feb 08 23:06:01 web-LB waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.102
+Feb 08 23:32:26 web-01 sshd[1234]: Dec 10 06:55:48 LabSZ sshd[24200]: Connection closed by 173.234.31.186 [preauth]
+Feb 08 19:21:20 firewall-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.88
+Feb 08 18:16:34 web-01 systemd: Jun 14 15:16:02 combo sshd(pam_unix)[19937]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 05:35:29 web-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.209
+Feb 08 13:12:29 bastion-01 sshd[1234]: Dec 10 07:27:55 LabSZ sshd[24239]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=112.95.230.3 user=root
+Feb 08 13:37:17 web-02 httpd[error]: mod_jk child workerEnv in error state 7
+Feb 08 19:02:22 web-02 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23396]: check pass; user unknown
+Feb 08 11:48:47 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 19:05:32 mail-01 systemd: warning: disk space low on /var/log
+Feb 08 17:11:41 web-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.151
+Feb 08 06:17:37 web-LB waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.113
+Feb 08 10:47:17 mail-01 systemd: warning: disk space low on /var/log
+Feb 08 15:28:18 web-01 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 11:20:43 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.103
+Feb 08 13:45:33 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 17:16:03 api-gateway httpd[notice]: jk2_init() Found child 6736 in scoreboard slot 10
+Feb 08 06:34:27 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 18:20:50 gateway-01 sshd[1234]: Dec 10 07:13:56 LabSZ sshd[24227]: Disconnecting: Too many authentication failures for root [preauth]
+Feb 08 23:12:59 api-gateway httpd[notice]: jk2_init() Found child 6752 in scoreboard slot 10
+Feb 08 00:46:16 web-02 httpd[error]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 22:06:21 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 11:22:09 mail-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23397]: check pass; user unknown
+Feb 08 02:33:49 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 05:30:59 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.107
+Feb 08 18:54:48 bastion-01 sshd[1234]: Dec 10 07:08:28 LabSZ sshd[24208]: input_userauth_request: invalid user webmaster [preauth]
+Feb 08 20:06:03 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.48
+Feb 08 14:35:43 waf-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.241
+Feb 08 17:49:26 web-01 systemd: Jun 14 15:16:02 combo sshd(pam_unix)[19937]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 12:16:01 web-LB waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.1
+Feb 08 17:09:04 firewall-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.106
+Feb 08 21:12:41 web-02 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 06:58:09 web-03 httpd[notice]: mod_jk child workerEnv in error state 7
+Feb 08 14:44:27 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.54
+Feb 08 21:33:45 web-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 16:44:33 bastion-01 sshd[1234]: Dec 10 07:13:43 LabSZ sshd[24227]: Failed password for root from 5.36.59.76 port 42393 ssh2
+Feb 08 02:47:47 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 01:32:45 waf-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.181
+Feb 08 02:44:43 web-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 21:41:15 ids-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 15:25:11 web-02 httpd[notice]: mod_jk child workerEnv in error state 7
+Feb 08 00:24:47 web-LB waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 04:52:28 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 06:02:27 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.143
+Feb 08 14:59:45 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.24
+Feb 08 15:26:01 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.50
+Feb 08 19:14:00 web-02 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 11:36:21 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 12:24:18 app-srv-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23407]: check pass; user unknown
+Feb 08 00:21:45 web-01 httpd[notice]: jk2_init() Found child 6737 in scoreboard slot 8
+Feb 08 15:42:33 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 08:57:22 web-02 httpd[notice]: jk2_init() Found child 6728 in scoreboard slot 6
+Feb 08 23:22:22 web-03 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 09:25:46 bastion-01 sshd[1234]: Dec 10 06:55:46 LabSZ sshd[24200]: reverse mapping checking getaddrinfo for ns.marryaldkfaczcz.com [173.234.31.186] failed - POSSIBLE BREAK-IN ATTEMPT!
+Feb 08 06:56:47 web-02 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 02:25:14 firewall-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.141
+Feb 08 13:19:31 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.196
+Feb 08 05:14:15 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 01:32:46 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 03:23:04 web-LB waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 06:05:21 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 01:20:10 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.173
+Feb 08 13:12:06 web-02 httpd[notice]: mod_jk child workerEnv in error state 7
+Feb 08 05:40:59 mail-01 systemd: Jun 14 15:16:01 combo sshd(pam_unix)[19939]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 08:39:15 web-LB waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.180
+Feb 08 17:09:48 web-03 httpd[error]: jk2_init() Found child 6763 in scoreboard slot 10
+Feb 08 20:50:25 mail-01 systemd: Jun 15 04:12:42 combo su(pam_unix)[22644]: session opened for user news by (uid=0)
+Feb 08 13:51:22 web-LB waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 15:59:51 firewall-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 15:09:46 ids-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.85
+Feb 08 19:52:10 web-03 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 00:59:26 ids-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 09:01:29 waf-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.40
+Feb 08 11:47:47 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 00:18:20 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.65
+Feb 08 00:26:49 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 04:42:27 db-01 systemd: warning: disk space low on /var/log
+Feb 08 18:58:31 api-gateway httpd[error]: mod_jk child workerEnv in error state 7
+Feb 08 15:11:52 bastion-01 sshd[1234]: Dec 10 07:08:28 LabSZ sshd[24208]: input_userauth_request: invalid user webmaster [preauth]
+Feb 08 07:37:19 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 08:58:09 web-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 07:35:26 web-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20886]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 19:14:04 web-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.183
+Feb 08 15:29:41 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.116
+Feb 08 01:50:47 web-02 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20882]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 22:26:49 web-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.238
+Feb 08 20:44:25 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.248
+Feb 08 17:18:53 web-03 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 10:44:40 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 03:49:21 web-01 sshd[1234]: Dec 10 07:07:38 LabSZ sshd[24206]: Invalid user test9 from 52.80.34.196
+Feb 08 04:09:30 web-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.177
+Feb 08 22:12:40 web-LB waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 20:13:59 firewall-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.147
+Feb 08 07:42:07 bastion-01 sshd[1234]: Dec 10 07:13:31 LabSZ sshd[24227]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=5.36.59.76.dynamic-dsl-ip.omantel.net.om user=root
+Feb 08 23:51:10 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 02:54:43 ids-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.28
+Feb 08 09:00:44 app-srv-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20897]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 20:40:17 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 13:06:01 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.169
+Feb 08 07:54:44 db-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20892]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 08:55:39 api-gateway httpd[error]: mod_jk child workerEnv in error state 7
+Feb 08 15:42:57 web-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 17:25:28 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.181
+Feb 08 10:12:47 db-01 systemd: warning: disk space low on /var/log
+Feb 08 09:12:46 db-01 systemd: session opened for user root
+Feb 08 16:50:29 web-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.184
+Feb 08 05:37:19 web-01 systemd: session opened for user root
+Feb 08 00:54:50 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 06:32:14 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 07:02:45 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.37
+Feb 08 06:15:14 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 09:29:35 ids-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 13:42:32 web-LB waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.249
+Feb 08 13:29:48 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 09:26:10 web-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.52
+Feb 08 17:26:55 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.93
+Feb 08 07:36:39 firewall-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.140
+Feb 08 18:55:46 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 09:31:58 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 13:08:23 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 04:39:31 web-LB waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.173
+Feb 08 22:20:59 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.67
+Feb 08 22:02:27 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 19:33:43 web-LB waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.113
+Feb 08 08:36:14 api-gateway httpd[notice]: mod_jk child workerEnv in error state 7
+Feb 08 17:20:39 web-01 sshd[1234]: Dec 10 07:07:38 LabSZ sshd[24206]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=ec2-52-80-34-196.cn-north-1.compute.amazonaws.com.cn 
+Feb 08 08:22:04 ids-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 20:42:47 app-srv-01 systemd: warning: disk space low on /var/log
+Feb 08 05:57:02 ids-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 21:59:21 ids-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 09:04:31 ids-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 10:02:10 web-02 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 20:02:02 web-LB waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.139
+Feb 08 06:44:33 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.7
+Feb 08 21:53:43 waf-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.113
+Feb 08 16:41:00 firewall-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.88
+Feb 08 06:10:06 web-01 sshd[1234]: Dec 10 07:13:56 LabSZ sshd[24227]: Disconnecting: Too many authentication failures for root [preauth]
+Feb 08 02:21:30 firewall-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.203
+Feb 08 06:41:02 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 16:33:59 web-03 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 11:02:30 waf-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.108
+Feb 08 09:30:23 firewall-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.241
+Feb 08 16:28:34 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.244
+Feb 08 12:54:16 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.92
+Feb 08 20:39:10 db-02 sshd[1234]: Dec 10 07:13:31 LabSZ sshd[24227]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=5.36.59.76.dynamic-dsl-ip.omantel.net.om user=root
+Feb 08 21:32:32 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.247
+Feb 08 18:22:11 web-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 03:11:33 web-01 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 16:20:14 waf-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 21:24:28 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 03:31:01 db-01 systemd: session opened for user root
+Feb 08 08:35:12 firewall-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.58
+Feb 08 07:10:13 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 17:42:21 firewall-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.216
+Feb 08 08:14:53 web-LB waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 06:51:55 app-srv-01 systemd: Jun 15 04:12:43 combo su(pam_unix)[22644]: session closed for user news
+Feb 08 21:32:35 waf-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.233
+Feb 08 23:47:46 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 12:24:20 firewall-02 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.69
+Feb 08 14:09:21 web-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 16:59:30 web-01 sshd[1234]: Dec 10 06:55:46 LabSZ sshd[24200]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=173.234.31.186 
+Feb 08 21:34:43 web-03 httpd[notice]: jk2_init() Found child 6748 in scoreboard slot 6
+Feb 08 03:04:57 web-LB waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.216
+Feb 08 09:10:53 firewall-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.176
+Feb 08 00:07:26 web-03 httpd[notice]: jk2_init() Found child 6726 in scoreboard slot 8
+Feb 08 23:40:43 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 14:16:26 web-03 httpd[notice]: jk2_init() Found child 6745 in scoreboard slot 8
+Feb 08 02:46:21 mail-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20885]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 12:07:24 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.157
+Feb 08 18:49:46 firewall-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.237
+Feb 08 04:55:07 db-02 sshd[1234]: Dec 10 07:08:30 LabSZ sshd[24208]: Connection closed by 173.234.31.186 [preauth]
+Feb 08 11:16:54 firewall-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 08:25:36 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.72
+Feb 08 11:04:59 web-03 httpd[notice]: jk2_init() Found child 6744 in scoreboard slot 10
+Feb 08 15:46:33 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 23:34:36 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 00:03:23 web-02 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 10:02:55 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.147
+Feb 08 20:15:14 db-02 sshd[1234]: Dec 10 07:08:30 LabSZ sshd[24208]: Failed password for invalid user webmaster from 173.234.31.186 port 39257 ssh2
+Feb 08 11:46:46 ids-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 11:30:17 web-LB waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.115
+Feb 08 22:25:24 web-01 sshd[1234]: Dec 10 07:08:28 LabSZ sshd[24208]: pam_unix(sshd:auth): check pass; user unknown
+Feb 08 10:47:27 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.188
+Feb 08 18:08:35 web-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.229
+Feb 08 20:01:10 firewall-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 13:55:01 app-srv-01 systemd: session opened for user root
+Feb 08 03:47:34 bastion-01 sshd[1234]: Dec 10 07:08:28 LabSZ sshd[24208]: reverse mapping checking getaddrinfo for ns.marryaldkfaczcz.com [173.234.31.186] failed - POSSIBLE BREAK-IN ATTEMPT!
+Feb 08 04:58:56 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.12
+Feb 08 22:26:17 waf-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 14:31:57 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 17:28:04 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.50
+Feb 08 12:21:31 db-01 systemd: session opened for user root
+Feb 08 20:18:38 app-srv-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20897]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 21:02:31 web-01 sshd[1234]: Dec 10 06:55:48 LabSZ sshd[24200]: Failed password for invalid user webmaster from 173.234.31.186 port 38926 ssh2
+Feb 08 00:30:53 api-gateway httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 08:37:38 ids-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 11:37:23 web-02 systemd: session opened for user root
+Feb 08 01:54:59 web-03 httpd[notice]: jk2_init() Found child 6755 in scoreboard slot 6
+Feb 08 21:39:03 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 21:38:28 ids-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 07:01:15 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.11
+Feb 08 17:09:16 ids-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 12:22:06 web-03 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 01:31:55 firewall-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 10:24:29 web-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.253
+Feb 08 03:33:43 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.246
+Feb 08 04:19:47 web-01 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 16:12:41 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 10:07:13 firewall-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.91
+Feb 08 05:33:04 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.142
+Feb 08 04:46:33 firewall-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.124
+Feb 08 06:23:48 web-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 09:16:08 web-02 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23394]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 05:56:21 firewall-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 21:11:45 web-01 systemd: session opened for user root
+Feb 08 12:10:15 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 18:48:47 api-gateway httpd[notice]: jk2_init() Found child 6752 in scoreboard slot 10
+Feb 08 20:01:28 api-gateway httpd[error]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 08:32:44 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 04:15:03 bastion-01 sshd[1234]: Dec 10 07:27:52 LabSZ sshd[24235]: Received disconnect from 112.95.230.3: 11: Bye Bye [preauth]
+Feb 08 10:37:06 mail-01 systemd: warning: disk space low on /var/log
+Feb 08 09:07:54 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.132
+Feb 08 06:50:39 firewall-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.73
+Feb 08 17:18:58 web-01 httpd[notice]: jk2_init() Found child 6738 in scoreboard slot 6
+Feb 08 20:22:14 ids-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 09:19:35 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 18:25:36 web-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.100
+Feb 08 23:11:40 web-LB waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 01:12:01 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 05:49:17 firewall-02 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.206
+Feb 08 13:50:16 web-03 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 00:31:56 web-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 00:08:03 firewall-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.142
+Feb 08 11:53:51 firewall-02 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.106
+Feb 08 05:45:42 ids-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 17:09:40 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 16:22:04 web-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.245
+Feb 08 02:49:47 firewall-02 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 09:15:58 ids-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 06:57:51 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.219
+Feb 08 09:31:14 waf-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 05:49:08 ids-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 14:36:17 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.107
+Feb 08 20:10:05 app-srv-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20884]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 02:44:01 waf-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.16
+Feb 08 03:00:38 web-03 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 01:49:49 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.87
+Feb 08 15:58:12 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 07:27:38 ids-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 11:54:04 api-gateway httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 10:41:48 db-01 systemd: session opened for user root
+Feb 08 16:37:31 web-01 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 05:55:41 web-02 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23407]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 14:28:34 web-02 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 23:31:44 db-02 sshd[1234]: Dec 10 07:13:56 LabSZ sshd[24227]: message repeated 5 times: [ Failed password for root from 5.36.59.76 port 42393 ssh2]
+Feb 08 01:44:02 web-LB waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.207
+Feb 08 13:07:16 firewall-02 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 03:15:45 ids-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 20:05:48 firewall-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 19:12:22 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.89
+Feb 08 16:05:56 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 05:29:44 ids-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 07:14:38 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 03:32:46 web-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23404]: check pass; user unknown
+Feb 08 22:56:46 web-01 sshd[1234]: Dec 10 07:08:28 LabSZ sshd[24208]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=173.234.31.186 
+Feb 08 04:54:22 web-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.60
+Feb 08 21:55:06 api-gateway httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 13:40:05 db-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23396]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 01:04:03 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.104
+Feb 08 19:29:13 web-01 httpd[error]: jk2_init() Found child 6756 in scoreboard slot 7
+Feb 08 03:00:11 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.151
+Feb 08 14:39:08 web-01 sshd[1234]: Dec 10 07:08:28 LabSZ sshd[24208]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=173.234.31.186 
+Feb 08 06:18:13 bastion-01 sshd[1234]: Dec 10 06:55:46 LabSZ sshd[24200]: input_userauth_request: invalid user webmaster [preauth]
+Feb 08 13:02:05 web-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.231
+Feb 08 11:27:21 web-02 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23396]: check pass; user unknown
+Feb 08 23:33:38 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.26
+Feb 08 01:57:13 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.26
+Feb 08 19:13:00 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.32
+Feb 08 02:51:31 web-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23394]: check pass; user unknown
+Feb 08 14:32:11 web-LB waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.45
+Feb 08 05:01:59 web-01 sshd[1234]: Dec 10 07:07:38 LabSZ sshd[24206]: pam_unix(sshd:auth): check pass; user unknown
+Feb 08 06:21:52 web-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 23:27:44 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 19:26:50 web-02 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20897]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 00:18:56 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.220
+Feb 08 18:55:45 web-LB waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.210
+Feb 08 13:22:02 db-02 sshd[1234]: Dec 10 07:08:28 LabSZ sshd[24208]: Invalid user webmaster from 173.234.31.186
+Feb 08 16:25:55 web-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 23:51:05 web-LB waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.65
+Feb 08 21:48:21 web-01 sshd[1234]: Dec 10 07:27:55 LabSZ sshd[24237]: Received disconnect from 112.95.230.3: 11: Bye Bye [preauth]
+Feb 08 07:14:28 mail-01 systemd: warning: disk space low on /var/log
+Feb 08 04:42:12 web-LB waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.224
+Feb 08 13:23:17 waf-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.236
+Feb 08 04:57:32 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.115
+Feb 08 05:43:36 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 02:54:48 web-LB waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.159
+Feb 08 19:01:51 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 19:58:04 bastion-01 sshd[1234]: Dec 10 07:11:42 LabSZ sshd[24224]: pam_unix(sshd:auth): check pass; user unknown
+Feb 08 18:45:29 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.36
+Feb 08 07:49:28 firewall-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.243
+Feb 08 20:39:50 db-02 sshd[1234]: Dec 10 07:11:42 LabSZ sshd[24224]: Invalid user chen from 202.100.179.208
+Feb 08 20:32:13 waf-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 21:22:33 web-01 sshd[1234]: Dec 10 07:27:55 LabSZ sshd[24239]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=112.95.230.3 user=root
+Feb 08 04:01:47 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 07:36:50 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 18:23:01 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 13:51:38 api-gateway httpd[notice]: jk2_init() Found child 6736 in scoreboard slot 10
+Feb 08 16:50:13 web-02 httpd[notice]: mod_jk child workerEnv in error state 7
+Feb 08 04:54:55 db-02 sshd[1234]: Dec 10 06:55:46 LabSZ sshd[24200]: Invalid user webmaster from 173.234.31.186
+Feb 08 06:35:44 web-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20892]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 23:50:00 db-02 sshd[1234]: Dec 10 07:07:38 LabSZ sshd[24206]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=ec2-52-80-34-196.cn-north-1.compute.amazonaws.com.cn 
+Feb 08 13:11:43 firewall-02 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 11:44:35 web-LB waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 15:56:26 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 02:10:42 ids-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 20:30:26 web-01 sshd[1234]: Dec 10 07:11:42 LabSZ sshd[24224]: Invalid user chen from 202.100.179.208
+Feb 08 05:24:54 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 12:04:43 web-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 23:24:36 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.45
+Feb 08 18:16:27 web-01 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 04:52:26 web-02 httpd[error]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 12:59:47 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 01:30:21 firewall-02 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 06:33:13 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 01:12:23 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.96
+Feb 08 22:20:25 firewall-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 18:31:53 web-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 13:18:36 web-03 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 13:32:51 ids-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 06:42:22 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.141
+Feb 08 22:28:16 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 07:48:43 ids-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.50
+Feb 08 17:13:16 web-01 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 13:32:55 ids-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.106
+Feb 08 06:02:17 firewall-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 19:13:03 web-01 sshd[1234]: Dec 10 07:08:28 LabSZ sshd[24208]: Invalid user webmaster from 173.234.31.186
+Feb 08 22:32:08 ids-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 09:53:16 gateway-01 sshd[1234]: Dec 10 07:08:28 LabSZ sshd[24208]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=173.234.31.186 
+Feb 08 01:06:12 web-02 httpd[error]: jk2_init() Found child 6745 in scoreboard slot 8
+Feb 08 20:33:15 web-03 httpd[notice]: jk2_init() Found child 6733 in scoreboard slot 7
+Feb 08 17:36:42 web-02 systemd: Jun 15 04:06:18 combo su(pam_unix)[21416]: session opened for user cyrus by (uid=0)
+Feb 08 20:59:29 ids-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.72
+Feb 08 00:40:06 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 18:58:54 waf-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 10:46:51 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.87
+Feb 08 22:52:26 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 03:50:32 firewall-02 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 08:45:28 firewall-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.162
+Feb 08 17:38:45 api-gateway httpd[notice]: jk2_init() Found child 6767 in scoreboard slot 7
+Feb 08 16:24:20 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 05:43:46 firewall-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.86
+Feb 08 19:00:06 web-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 11:19:59 mail-01 systemd: session opened for user root
+Feb 08 11:43:22 bastion-01 sshd[1234]: Dec 10 07:08:28 LabSZ sshd[24208]: input_userauth_request: invalid user webmaster [preauth]
+Feb 08 02:33:12 web-03 httpd[error]: jk2_init() Found child 6738 in scoreboard slot 6
+Feb 08 10:20:26 api-gateway httpd[notice]: jk2_init() Found child 6754 in scoreboard slot 8
+Feb 08 10:00:45 app-srv-01 systemd: session opened for user root
+Feb 08 06:00:51 web-02 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 07:43:41 web-02 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 18:22:02 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 18:15:11 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.96
+Feb 08 10:39:10 mail-01 systemd: Jun 15 04:06:19 combo su(pam_unix)[21416]: session closed for user cyrus
+Feb 08 05:07:35 api-gateway httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 05:53:09 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.192
+Feb 08 07:07:40 web-03 httpd[error]: jk2_init() Found child 6745 in scoreboard slot 8
+Feb 08 16:55:26 db-01 systemd: Jun 15 04:12:42 combo su(pam_unix)[22644]: session opened for user news by (uid=0)
+Feb 08 17:57:33 web-03 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 17:45:55 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 09:33:31 ids-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 21:42:12 ids-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 11:03:54 db-01 systemd: session opened for user root
+Feb 08 13:28:59 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 14:54:31 bastion-01 sshd[1234]: Dec 10 07:13:31 LabSZ sshd[24227]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=5.36.59.76.dynamic-dsl-ip.omantel.net.om user=root
+Feb 08 23:22:16 web-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.185
+Feb 08 15:42:52 firewall-02 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 09:48:20 web-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.26
+Feb 08 08:37:33 firewall-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 11:31:46 web-LB waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.157
+Feb 08 12:52:38 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 07:06:29 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 03:14:12 api-gateway httpd[error]: mod_jk child workerEnv in error state 7
+Feb 08 05:56:38 waf-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.35
+Feb 08 18:28:29 firewall-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.155
+Feb 08 21:47:06 ids-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.1
+Feb 08 14:08:02 mail-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23407]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 14:13:34 web-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 20:15:34 waf-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.225
+Feb 08 08:27:37 waf-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 15:02:42 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.194
+Feb 08 23:31:17 web-02 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20883]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 18:02:19 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 01:12:05 waf-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 07:14:41 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 12:58:46 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.112
+Feb 08 16:21:52 ids-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 16:48:35 web-LB waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 17:43:37 web-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 19:43:55 app-srv-01 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23395]: check pass; user unknown
+Feb 08 10:23:57 ids-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 23:30:06 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 14:06:36 web-LB waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.197
+Feb 08 07:33:23 db-02 sshd[1234]: Dec 10 07:07:45 LabSZ sshd[24206]: Failed password for invalid user test9 from 52.80.34.196 port 36060 ssh2
+Feb 08 02:15:31 ids-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 17:17:46 api-gateway httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 04:00:24 web-02 systemd: Jun 15 12:12:34 combo sshd(pam_unix)[23394]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 
+Feb 08 12:17:56 web-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.36
+Feb 08 12:00:39 web-01 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 08:31:30 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.249
+Feb 08 04:29:41 db-02 sshd[1234]: Dec 10 07:13:56 LabSZ sshd[24227]: Disconnecting: Too many authentication failures for root [preauth]
+Feb 08 00:43:58 waf-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 17:13:30 web-02 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 21:44:25 db-01 systemd: warning: disk space low on /var/log
+Feb 08 11:43:51 web-01 httpd[notice]: jk2_init() Found child 6741 in scoreboard slot 9
+Feb 08 10:32:35 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.180
+Feb 08 09:40:17 web-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 12:48:16 firewall-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.207
+Feb 08 13:31:27 waf-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.17
+Feb 08 14:58:16 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.122
+Feb 08 15:22:01 firewall-02 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.24
+Feb 08 18:05:15 web-LB waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 23:38:18 web-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.47
+Feb 08 15:00:36 waf-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.14
+Feb 08 11:11:29 firewall-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.229
+Feb 08 11:45:23 web-LB waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.7
+Feb 08 23:59:55 bastion-01 sshd[1234]: Dec 10 07:13:31 LabSZ sshd[24227]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=5.36.59.76.dynamic-dsl-ip.omantel.net.om user=root
+Feb 08 15:51:10 web-03 httpd[error]: mod_jk child workerEnv in error state 6
+Feb 08 07:35:32 web-03 httpd[notice]: jk2_init() Found child 6754 in scoreboard slot 8
+Feb 08 00:45:18 ids-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 05:57:18 mail-01 systemd: Jun 14 15:16:02 combo sshd(pam_unix)[19937]: check pass; user unknown
+Feb 08 19:52:22 mail-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20885]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 06:41:10 api-gateway httpd[notice]: jk2_init() Found child 6737 in scoreboard slot 8
+Feb 08 05:02:49 ids-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 05:50:51 web-01 httpd[notice]: jk2_init() Found child 6738 in scoreboard slot 6
+Feb 08 19:00:57 firewall-02 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.56
+Feb 08 00:23:13 web-02 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 16:40:15 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 09:59:15 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.109
+Feb 08 05:51:32 firewall-02 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.7
+Feb 08 19:04:25 web-02 httpd[notice]: jk2_init() Found child 6751 in scoreboard slot 9
+Feb 08 17:29:38 firewall-02 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.137
+Feb 08 06:26:24 app-srv-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20884]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 12:23:36 waf-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.228
+Feb 08 16:23:33 web-02 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 23:35:12 firewall-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.186
+Feb 08 08:53:30 waf-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.175
+Feb 08 17:37:46 ids-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 13:01:48 web-02 httpd[notice]: jk2_init() Found child 6737 in scoreboard slot 8
+Feb 08 07:40:25 web-LB waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.203
+Feb 08 05:13:12 web-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.129
+Feb 08 04:11:48 firewall-02 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 20:19:55 firewall-02 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 12:13:37 firewall-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.55
+Feb 08 01:00:37 mail-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20882]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 10:37:23 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 17:15:25 api-gateway httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 04:23:24 ids-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 21:48:03 web-02 httpd[notice]: mod_jk child workerEnv in error state 6
+Feb 08 15:23:36 bastion-01 sshd[1234]: Dec 10 06:55:46 LabSZ sshd[24200]: Invalid user webmaster from 173.234.31.186
+Feb 08 13:31:39 web-01 httpd[notice]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 18:55:43 web-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 05:46:32 ids-01 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.101
+Feb 08 08:18:10 web-01 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 07:38:55 ids-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.119
+Feb 08 05:52:36 bastion-01 sshd[1234]: Dec 10 07:07:38 LabSZ sshd[24206]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=ec2-52-80-34-196.cn-north-1.compute.amazonaws.com.cn 
+Feb 08 09:08:39 api-gateway httpd[notice]: mod_jk child workerEnv in error state 7
+Feb 08 20:28:45 waf-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 13:58:47 web-01 httpd[error]: workerEnv.init() ok /etc/httpd/conf/workers2.properties
+Feb 08 05:07:30 db-02 sshd[1234]: Dec 10 07:08:28 LabSZ sshd[24208]: Invalid user webmaster from 173.234.31.186
+Feb 08 09:36:46 web-01 waf: ALERT XSS Payload detected: <script>alert(1)</script> in POST body from 192.0.2.109
+Feb 08 17:57:47 web-02 httpd[notice]: jk2_init() Found child 6733 in scoreboard slot 7
+Feb 08 03:06:45 db-02 sshd[1234]: Dec 10 07:27:52 LabSZ sshd[24235]: Received disconnect from 112.95.230.3: 11: Bye Bye [preauth]
+Feb 08 16:38:21 web-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 15:46:38 mail-01 systemd: session opened for user root
+Feb 08 07:10:48 web-02 httpd[notice]: jk2_init() Found child 6766 in scoreboard slot 6
+Feb 08 21:54:59 waf-01 waf: ALERT SSTI Attempt: {{7*7}} payload found in template parameter
+Feb 08 16:05:46 db-02 sshd[1234]: Dec 10 07:27:55 LabSZ sshd[24237]: Failed password for root from 112.95.230.3 port 47068 ssh2
+Feb 08 23:54:39 web-01 sshd[1234]: Dec 10 07:07:45 LabSZ sshd[24206]: Received disconnect from 52.80.34.196: 11: Bye Bye [preauth]
+Feb 08 23:24:42 firewall-02 waf: ALERT SQL Injection attempt: UNION SELECT * FROM users from 198.51.100.42
+Feb 08 19:26:27 gateway-01 sshd[1234]: Dec 10 07:27:55 LabSZ sshd[24237]: Received disconnect from 112.95.230.3: 11: Bye Bye [preauth]
+Feb 08 11:41:36 app-srv-01 systemd: Jun 15 02:04:59 combo sshd(pam_unix)[20896]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=220-135-151-1.hinet-ip.hinet.net user=root
+Feb 08 17:50:06 app-srv-01 systemd: Jun 15 04:06:19 combo su(pam_unix)[21416]: session closed for user cyrus
+Feb 08 05:54:24 api-gateway httpd[notice]: jk2_init() Found child 6748 in scoreboard slot 6
+Feb 08 09:06:45 gateway-01 sshd[1234]: Dec 10 06:55:46 LabSZ sshd[24200]: pam_unix(sshd:auth): check pass; user unknown
+Feb 08 04:43:27 firewall-01 waf: ALERT LFI Detected: GET /vulnerable.php?page=../../../../etc/passwd
+Feb 08 23:13:47 firewall-02 waf: ALERT RCE Attempt: uname -a executed by www-data
+Feb 08 11:37:54 ids-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.54
+Feb 08 10:46:23 web-02 systemd: session opened for user root
+Feb 08 12:54:52 firewall-01 waf: ALERT CMD injection detected: cmd.exe /c dir in GET request from 203.0.113.191

@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_USER=redteam_user
+      - DB_PASS=root
+      - DB_NAME=cybertech_db
+    networks:
+      - ctf-net
+    volumes:
+      - ./:/var/www/html
+
+  db:
+    image: mariadb:10.5
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=cybertech_db
+      - MYSQL_USER=redteam_user
+      - MYSQL_PASSWORD=root
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - ctf-net
+
+networks:
+  ctf-net:
+
+volumes:
+  db_data:
