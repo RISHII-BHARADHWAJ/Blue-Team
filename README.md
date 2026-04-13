@@ -1,4 +1,4 @@
-# CyberTech ThreatPulse - Blue Team Dashboard
+#ThreatPulse - Blue Team Dashboard
 
 This is a live, forensic-ready security operations center (SOC) dashboard designed for Blue Team training, threat intelligence ingestion, and log analysis.
 
