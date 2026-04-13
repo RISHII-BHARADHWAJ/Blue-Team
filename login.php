@@ -2,16 +2,11 @@
 include 'includes/config.php';
 
 // Rate limit login endpoint (5 requests per 5 minutes = 300s)
-RateLimiter::check('login', 5, 300);
+RateLimiter::check('login', 50, 300);
 
 if (isset($_SESSION['user_id'])) {
-    if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-        header('Location: admin.php');
-        exit();
-    } else {
-        header('Location: dashboard.php');
-        exit();
-    }
+    header('Location: dashboard.php');
+    exit();
 }
 
 $error = (isset($_GET['error']) && $_GET['error'] == 'hijack') ? "Session Hijack Attempt Detected. You have been logged out." : "";
@@ -55,11 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 if (function_exists('logSecurityAudit')) logSecurityAudit($username, 'login', 'login.php', 'success', 'User authenticated');
 
-                if ($user['role'] === 'admin') {
-                    header('Location: admin.php');
-                } else {
-                    header('Location: dashboard.php');
-                }
+                header('Location: dashboard.php');
                 exit();
             } else {
                 // Failure

@@ -80,7 +80,7 @@ CREATE TABLE shop_items (
 
 -- Argon2 hashed users
 INSERT INTO users (username, password, email, role, credits) VALUES 
-('admin', '$argon2id$v=19$m=65536,t=4,p=1$bExtYlg0bmNHODdjUDhxVw$HvwszdZWsU6RKKSzjgy4ulJln6CetqRKHow7lwgdd4E', 'admin@cybertech.com', 'admin', 1000),
+('admin', '$argon2id$v=19$m=65536,t=4,p=1$WnFVSGJ3cHBaR3Y1SklWVA$87SCF3lxJcQwBW5w/j3tgggu4E9p8Ai+42bJXdWegGQ', 'admin@cybertech.com', 'admin', 1000),
 ('analyst', '$argon2id$v=19$m=65536,t=4,p=1$UWNmZmFFYzFsckpWU3NKbQ$Tz59ZHHOe+bzpT+HeUINIgMwTae+dHMHsIqIAhrjLBQ', 'analyst@cybertech.com', 'analyst', 500);
 
 -- Messages
