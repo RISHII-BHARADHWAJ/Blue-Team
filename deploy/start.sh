@@ -3,8 +3,13 @@ set -e
 
 echo "[*] ThreatPulse — Initializing deployment..."
 
-# ── MySQL Setup ──────────────────────────────────
-echo "[*] Starting MariaDB..."
+# ── Ensure MySQL system directories exist with correct permissions ──
+echo "[*] Ensuring MySQL system directories exist..."
+mkdir -p /var/run/mysqld
+mkdir -p /var/lib/mysql
+chown -R mysql:mysql /var/run/mysqld
+chown -R mysql:mysql /var/lib/mysql
+chmod 777 /var/run/mysqld
 
 # Initialize MySQL data directory if empty
 if [ ! -d "/var/lib/mysql/mysql" ]; then
@@ -12,8 +17,9 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
     mysql_install_db --user=mysql --datadir=/var/lib/mysql > /dev/null 2>&1
 fi
 
-# Start MySQL normally (NOT with --skip-grant-tables)
-mysqld_safe &
+# Start MySQL normally
+echo "[*] Starting MariaDB..."
+mysqld_safe --user=mysql &
 
 # Wait for MySQL to become available
 echo "[*] Waiting for MySQL to start..."
