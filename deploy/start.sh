@@ -12,9 +12,8 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
     mysql_install_db --user=mysql --datadir=/var/lib/mysql > /dev/null 2>&1
 fi
 
-# Start MySQL in background
-mysqld_safe --skip-grant-tables &
-MYSQL_PID=$!
+# Start MySQL normally (NOT with --skip-grant-tables)
+mysqld_safe &
 
 # Wait for MySQL to become available
 echo "[*] Waiting for MySQL to start..."
@@ -23,27 +22,28 @@ for i in $(seq 1 30); do
         echo "[+] MySQL is ready."
         break
     fi
+    if [ $i -eq 30 ]; then
+        echo "[-] MySQL failed to start within 30 seconds"
+        exit 1
+    fi
     sleep 1
 done
 
-# Setup database and user
+# Setup database and user (root has no password after mysql_install_db)
 echo "[*] Configuring database..."
-mysql -u root <<EOF
--- Create database
-CREATE DATABASE IF NOT EXISTS ${DB_NAME:-cybertech_db};
 
--- Create user and grant privileges
-CREATE USER IF NOT EXISTS '${DB_USER:-redteam_user}'@'localhost' IDENTIFIED BY '${DB_PASS:-root}';
-GRANT ALL PRIVILEGES ON ${DB_NAME:-cybertech_db}.* TO '${DB_USER:-redteam_user}'@'localhost';
-FLUSH PRIVILEGES;
+# Create database
+mysql -u root -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME:-cybertech_db};"
 
--- Switch to the database
-USE ${DB_NAME:-cybertech_db};
+# Create user — use GRANT which works on all MariaDB versions
+mysql -u root -e "GRANT ALL PRIVILEGES ON ${DB_NAME:-cybertech_db}.* TO '${DB_USER:-redteam_user}'@'localhost' IDENTIFIED BY '${DB_PASS:-root}';"
+mysql -u root -e "FLUSH PRIVILEGES;"
 
--- Create tables (IF NOT EXISTS to be idempotent)
-$(cat /var/www/html/database.sql)
+# Import base schema
+mysql -u root ${DB_NAME:-cybertech_db} < /var/www/html/database.sql 2>/dev/null || echo "[*] Base schema already exists or partially imported."
 
--- Create the logs table (required by dashboard)
+# Create additional tables required by the dashboard
+mysql -u root ${DB_NAME:-cybertech_db} <<'TABLESQL'
 CREATE TABLE IF NOT EXISTS logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     source_ip VARCHAR(45),
@@ -57,7 +57,6 @@ CREATE TABLE IF NOT EXISTS logs (
     INDEX idx_category (category)
 );
 
--- Create the ip_geo table (required by dashboard map)
 CREATE TABLE IF NOT EXISTS ip_geo (
     ip VARCHAR(45) PRIMARY KEY,
     country_code VARCHAR(5),
@@ -67,31 +66,18 @@ CREATE TABLE IF NOT EXISTS ip_geo (
     longitude DECIMAL(10,6),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-EOF
+TABLESQL
 
 echo "[+] Database configured successfully."
-
-# Stop the skip-grant-tables instance and restart properly
-mysqladmin shutdown 2>/dev/null || true
-sleep 2
-
-# Start MySQL properly (with authentication)
-mysqld_safe &
-sleep 3
-
-# Wait for MySQL to become available again
-for i in $(seq 1 15); do
-    if mysqladmin ping --silent 2>/dev/null; then
-        echo "[+] MySQL restarted with authentication."
-        break
-    fi
-    sleep 1
-done
 
 # ── Initial Data Fetch ───────────────────────────
 echo "[*] Running initial threat intelligence fetch..."
 cd /var/www/html
-php api_fetch.php 2>/dev/null || echo "[-] Initial fetch had issues (non-fatal)"
+php api_fetch.php 2>/dev/null &
+FETCH_PID=$!
+
+# Don't wait for fetch to finish — let it run in background
+echo "[*] Threat fetch running in background (PID: $FETCH_PID)"
 
 # ── Cron Setup ───────────────────────────────────
 echo "[*] Starting cron daemon..."
@@ -101,5 +87,5 @@ cron
 echo "[+] Starting Apache on port ${PORT:-10000}..."
 echo "[+] ThreatPulse SOC Dashboard is LIVE!"
 
-# Start Apache in foreground
+# Start Apache in foreground (keeps container alive)
 exec apache2-foreground
