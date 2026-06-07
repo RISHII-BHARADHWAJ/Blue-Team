@@ -1,7 +1,7 @@
 <?php
 // Session Hardening
 ini_set('session.cookie_lifetime', 0);
-ini_set('session.cookie_secure', 0); // Disable ONLY IF env doesn't support HTTPS (e.g., local Docker HTTP)
+ini_set('session.cookie_secure', isset($_SERVER['HTTPS']) || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ? 1 : 0);
 ini_set('session.cookie_httponly', 1);
 ini_set('session.cookie_samesite', 'Strict');
 ini_set('session.use_strict_mode', 1);
@@ -12,10 +12,10 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-$db_host = getenv('DB_HOST') ? getenv('DB_HOST') : "localhost";
-$db_user = "redteam_user";
-$db_pass = "root";
-$db_name = "cybertech_db";
+$db_host = getenv('DB_HOST') ?: 'localhost';
+$db_user = getenv('DB_USER') ?: 'redteam_user';
+$db_pass = getenv('DB_PASS') ?: 'root';
+$db_name = getenv('DB_NAME') ?: 'cybertech_db';
 
 // PDO Migration
 try {

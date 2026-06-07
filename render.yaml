@@ -1,0 +1,22 @@
+# render.yaml — Infrastructure-as-Code for Render deployment
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: threatpulse-soc
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: DB_HOST
+        value: localhost
+      - key: DB_USER
+        value: redteam_user
+      - key: DB_PASS
+        generateValue: true
+      - key: DB_NAME
+        value: cybertech_db
+      - key: PORT
+        value: "10000"
+    healthCheckPath: /login.php
+    autoDeploy: true

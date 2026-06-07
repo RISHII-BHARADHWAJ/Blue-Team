@@ -1,10 +1,14 @@
 <?php
 $db_host = getenv('DB_HOST') ?: 'localhost';
+$db_user = getenv('DB_USER') ?: 'redteam_user';
+$db_pass = getenv('DB_PASS') ?: 'root';
+$db_name = getenv('DB_NAME') ?: 'cybertech_db';
+
 try {
     $pdo = new PDO(
-        "mysql:host={$db_host};dbname=cybertech_db;charset=utf8mb4",
-        'redteam_user',
-        'root',
+        "mysql:host={$db_host};dbname={$db_name};charset=utf8mb4",
+        $db_user,
+        $db_pass,
         [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,

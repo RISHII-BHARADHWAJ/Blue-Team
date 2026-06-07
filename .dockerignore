@@ -1,0 +1,9 @@
+.git
+.gitignore
+README.md
+docker-compose.yml
+*.log
+temp_*.log
+fulllogs.log
+.env
+deploy/README.md

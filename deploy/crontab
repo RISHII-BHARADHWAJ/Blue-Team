@@ -1,0 +1,2 @@
+*/5 * * * * www-data cd /var/www/html && php feodo_realtime.php >> /var/log/feodo_realtime.log 2>&1
+*/30 * * * * www-data cd /var/www/html && php api_fetch.php >> /var/log/threat_fetch.log 2>&1

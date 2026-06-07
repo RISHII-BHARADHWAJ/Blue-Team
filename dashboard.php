@@ -34,8 +34,11 @@ $f_sort = $_SESSION['f_sort'] ?? 'time_desc';
 $f_cat  = $_SESSION['f_cat']  ?? '';
 $f_ip   = $_SESSION['f_ip']   ?? '';
 
-$db_host = getenv('DB_HOST') ? getenv('DB_HOST') : "localhost";
-$pdo = new PDO("mysql:host=$db_host;dbname=cybertech_db;charset=utf8mb4", 'redteam_user', 'root', [
+$db_host = getenv('DB_HOST') ?: 'localhost';
+$db_user = getenv('DB_USER') ?: 'redteam_user';
+$db_pass = getenv('DB_PASS') ?: 'root';
+$db_name = getenv('DB_NAME') ?: 'cybertech_db';
+$pdo = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8mb4", $db_user, $db_pass, [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     PDO::ATTR_EMULATE_PREPARES   => false,
