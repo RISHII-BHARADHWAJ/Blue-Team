@@ -1,5 +1,7 @@
 # ThreatPulse - Blue Team Dashboard
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/RISHII-BHARADHWAJ/Blue-Team)
+
 This is a live, forensic-ready security operations center (SOC) dashboard designed for Blue Team training, threat intelligence ingestion, and log analysis.
 
 ## Features
