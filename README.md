@@ -21,6 +21,8 @@ This is a live, forensic-ready security operations center (SOC) dashboard design
    *(Note: prefix with `sudo` if your user is not in the docker group).*
 3. Open your browser and navigate to: `http://localhost:8080/`
 
+   **Database initialization:** On a fresh Docker Compose database volume, the startup scripts create the base schema, SIEM tables, and SOAR migrations 001–006 in order. Existing database volumes are **not** automatically migrated by MariaDB's initialization hook. Back up an existing database and apply migrations through a reviewed upgrade procedure; do not delete the volume to force initialization.
+
 ## 🛠 Manual Setup (XAMPP / Apache / Nginx)
 
 1. Copy all project files to your web root folder (e.g., `/var/www/html/` or `htdocs`).
