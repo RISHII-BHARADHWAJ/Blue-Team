@@ -21,6 +21,7 @@ header_remove('X-Powered-By');
 
 require_once __DIR__ . '/../../includes/db.php';
 require_once __DIR__ . '/../../includes/soar/SoarAuth.php';
+require_once __DIR__ . '/../../includes/soar/SoarCsrf.php';
 require_once __DIR__ . '/../../includes/soar/IncidentManager.php';
 
 $auth = SoarAuth::getContext($pdo);
@@ -69,6 +70,7 @@ if ($method === 'GET') {
 // POST: Incident State Mutations (Status Transition, Assignment, Alert Link)
 // -----------------------------------------------------------------------------
 if ($method === 'POST') {
+    SoarCsrf::enforce($auth);
     $rawInput = file_get_contents('php://input');
     $body = json_decode($rawInput, true) ?: $_POST;
 
