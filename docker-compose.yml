@@ -4,9 +4,10 @@ services:
   web:
     build: .
     ports:
-      - "8080:80"
+      - "8080:10000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       - DB_HOST=db
       - DB_USER=redteam_user
@@ -26,7 +27,20 @@ services:
       - MYSQL_PASSWORD=root
     volumes:
       - db_data:/var/lib/mysql
-      - ./database.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./database.sql:/docker-entrypoint-initdb.d/00_base.sql:ro
+      - ./database/bootstrap/01_siem_tables.sql:/docker-entrypoint-initdb.d/01_siem_tables.sql:ro
+      - ./database/migrations/001_create_soar_schema.sql:/docker-entrypoint-initdb.d/02_soar_schema.sql:ro
+      - ./database/migrations/002_create_risk_assessments.sql:/docker-entrypoint-initdb.d/03_risk_assessments.sql:ro
+      - ./database/migrations/003_playbook_approval_integrity.sql:/docker-entrypoint-initdb.d/04_approval_integrity.sql:ro
+      - ./database/migrations/004_playbook_execution_cursor.sql:/docker-entrypoint-initdb.d/05_execution_cursor.sql:ro
+      - ./database/migrations/005_notifications.sql:/docker-entrypoint-initdb.d/06_notifications.sql:ro
+      - ./database/migrations/006_phase7_control_plane.sql:/docker-entrypoint-initdb.d/07_control_plane.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 20s
     networks:
       - ctf-net
 
