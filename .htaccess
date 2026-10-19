@@ -1,0 +1,14 @@
+# Protect internal source, migrations and raw telemetry when Apache serves the repository root.
+# Requires AllowOverride FileInfo Options AuthConfig (Dockerfile enables AllowOverride All).
+Options -Indexes
+
+<FilesMatch "\.(?:log|sql|sh|env|bak|old|ini|conf)$">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "^(?:Dockerfile|docker-compose\.yml|render\.yaml|README\.md|\.dockerignore)$">
+    Require all denied
+</FilesMatch>
+
+RewriteEngine On
+RewriteRule ^(?:includes|database|deploy|docs|tests)(?:/|$) - [F,L,NC]
