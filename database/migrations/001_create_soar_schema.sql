@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS incident_alerts (
     correlation_rule VARCHAR(100) NULL,
     added_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT uq_incident_alerts (incident_id, log_id),
+    CONSTRAINT uq_incident_alerts UNIQUE (incident_id, log_id),
     CONSTRAINT fk_incident_alerts_incident FOREIGN KEY (incident_id) REFERENCES incidents(id) ON DELETE CASCADE,
     CONSTRAINT fk_incident_alerts_log FOREIGN KEY (log_id) REFERENCES logs(id) ON DELETE CASCADE,
 
