@@ -52,6 +52,8 @@ jobs:
               exit 1
             fi
           done
+      - name: Verify SOAR CSRF guard behavior
+        run: docker compose exec -T web sh tests/check_soar_csrf.sh
       - name: Show container logs on failure
         if: failure()
         run: docker compose logs --no-color --tail=200

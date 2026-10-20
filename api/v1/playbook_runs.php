@@ -14,6 +14,7 @@ header_remove('X-Powered-By');
 
 require_once __DIR__ . '/../../includes/db.php';
 require_once __DIR__ . '/../../includes/soar/SoarAuth.php';
+require_once __DIR__ . '/../../includes/soar/SoarCsrf.php';
 require_once __DIR__ . '/../../includes/soar/playbooks/PlaybookEngine.php';
 
 $auth = SoarAuth::getContext($pdo);
@@ -29,6 +30,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['success' => false, 'error' => 'method_not_allowed']);
     exit;
 }
+
+SoarCsrf::enforce($auth);
 
 // Tier 1 can only do DRY_RUN
 $body       = json_decode(file_get_contents('php://input'), true) ?: $_POST;

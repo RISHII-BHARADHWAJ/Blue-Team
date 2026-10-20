@@ -12,6 +12,7 @@ header_remove('X-Powered-By');
 
 require_once __DIR__ . '/../../includes/db.php';
 require_once __DIR__ . '/../../includes/soar/SoarAuth.php';
+require_once __DIR__ . '/../../includes/soar/SoarCsrf.php';
 require_once __DIR__ . '/../../includes/soar/playbooks/PlaybookRepository.php';
 require_once __DIR__ . '/../../includes/soar/playbooks/PlaybookValidator.php';
 
@@ -34,6 +35,7 @@ if ($method === 'GET') {
 }
 
 if ($method === 'POST') {
+    SoarCsrf::enforce($auth);
     // Only ADMIN tier may create or modify playbook definitions.
     // 'manage_playbooks' maps to [ADMIN] in SoarAuth::hasPermission().
     if (!SoarAuth::hasPermission($auth['tier'], 'manage_playbooks')) {

@@ -21,6 +21,7 @@ header_remove('X-Powered-By');
 
 require_once __DIR__ . '/../../includes/db.php';
 require_once __DIR__ . '/../../includes/soar/SoarAuth.php';
+require_once __DIR__ . '/../../includes/soar/SoarCsrf.php';
 require_once __DIR__ . '/../../includes/soar/IncidentManager.php';
 
 // 1. Authenticate Request
@@ -84,6 +85,7 @@ if ($method === 'GET') {
 // POST: Manually Escalate Alert or Create Incident
 // -----------------------------------------------------------------------------
 if ($method === 'POST') {
+    SoarCsrf::enforce($auth);
     if (!SoarAuth::hasPermission($auth['tier'], 'create_incidents')) {
         http_response_code(403);
         echo json_encode(['success' => false, 'error' => 'forbidden', 'message' => 'Tier 1 analysts cannot create incidents. Requires Tier 2 or higher.'], JSON_UNESCAPED_SLASHES);

@@ -27,6 +27,7 @@ header_remove('X-Powered-By');
 
 require_once __DIR__ . '/../../includes/db.php';
 require_once __DIR__ . '/../../includes/soar/SoarAuth.php';
+require_once __DIR__ . '/../../includes/soar/SoarCsrf.php';
 require_once __DIR__ . '/../../includes/soar/IncidentIocService.php';
 
 $auth = SoarAuth::getContext($pdo);
@@ -42,6 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['success' => false, 'error' => 'method_not_allowed'], JSON_UNESCAPED_SLASHES);
     exit;
 }
+
+SoarCsrf::enforce($auth);
 
 if (!SoarAuth::hasPermission($auth['tier'], 'create_incidents')) {
     http_response_code(403);
