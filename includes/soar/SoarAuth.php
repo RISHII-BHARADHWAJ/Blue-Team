@@ -108,7 +108,7 @@ class SoarAuth {
      * Resolve the current actor and tier from the active session or API token context.
      * 
      * @param ?PDO $pdo Database connection
-     * @return array ['actor' => string, 'user_id' => ?int, 'tier' => string, 'role' => string]
+     * @return array ['actor' => string, 'user_id' => ?int, 'tier' => string, 'role' => string, 'auth_method' => string]
      */
     public static function getContext(?PDO $pdo = null): array {
         if (session_status() === PHP_SESSION_NONE) {
@@ -125,6 +125,7 @@ class SoarAuth {
 
             return [
                 'actor'   => $username,
+                'auth_method' => 'session',
                 'user_id' => $userId,
                 'tier'    => $tier,
                 'role'    => $role
@@ -143,6 +144,7 @@ class SoarAuth {
                 hash_equals(hash('sha256', $configuredKey), hash('sha256', $matches[1]))) {
                 return [
                     'actor'   => 'api_automation',
+                    'auth_method' => 'bearer',
                     'user_id' => null,
                     'tier'    => self::TIER_2, // API sensors have Tier 2 ingestion/correlation rights
                     'role'    => 'analyst'
@@ -153,6 +155,7 @@ class SoarAuth {
         // Default Unauthenticated
         return [
             'actor'   => 'anonymous',
+            'auth_method' => 'anonymous',
             'user_id' => null,
             'tier'    => self::TIER_1,
             'role'    => 'guest'
