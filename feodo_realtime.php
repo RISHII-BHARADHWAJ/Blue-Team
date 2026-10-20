@@ -1,203 +1,105 @@
 <?php
-// feodo_realtime.php
-// Fetches ONLY Feodo Tracker — runs every 5 minutes
-// Designed to be lightweight and fast
+/**
+ * Feodo Tracker ingestion: external intelligence inventory, not SIEM detections.
+ * This script is intentionally CLI-only and never writes imported IPs to logs.
+ */
+declare(strict_types=1);
 
-$db_host = getenv('DB_HOST') ?: 'localhost';
-$db_user = getenv('DB_USER') ?: 'redteam_user';
-$db_pass = getenv('DB_PASS') ?: 'root';
-$db_name = getenv('DB_NAME') ?: 'cybertech_db';
-$pdo = new PDO(
-    "mysql:host={$db_host};dbname={$db_name};charset=utf8mb4",
-    $db_user, $db_pass,
-    [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_EMULATE_PREPARES   => false,
-    ]
-);
-
-// Lock file — prevent overlapping runs
-$lock = '/tmp/feodo_realtime.lock';
-if (file_exists($lock) 
-    && (time() - filemtime($lock)) < 240) {
-    exit('[Feodo] Already running, skipping.' . PHP_EOL);
+if (PHP_SAPI !== 'cli') {
+    http_response_code(405);
+    header('Allow: POST');
+    exit('CLI ingestion only.');
 }
-file_put_contents($lock, getmypid());
-register_shutdown_function(fn() => @unlink($lock));
 
-$start = microtime(true);
+require_once __DIR__ . '/includes/db.php';
 
-// Detect actual column names
-$cols    = $pdo->query("DESCRIBE logs")->fetchAll();
-$colNames = array_column($cols, 'Field');
-$ipCol   = in_array('source_ip', $colNames) ? 'source_ip' : 'ip';
-$sevCol  = in_array('severity',  $colNames) ? 'severity'  : null;
-$catCol  = in_array('category',  $colNames) ? 'category'  : null;
-$msgCol  = in_array('message',   $colNames) ? 'message'   : 'details';
-$tsCol   = in_array('timestamp', $colNames) ? 'timestamp' : 'created_at';
+$lock = '/tmp/feodo_realtime.lock';
+if (is_file($lock) && time() - (int)filemtime($lock) < 240) {
+    echo "[Feodo] Another fetch is in progress.\n";
+    exit(0);
+}
+file_put_contents($lock, (string)getmypid());
+register_shutdown_function(static function () use ($lock): void { @unlink($lock); });
 
-// Fetch from Feodo Tracker
-$json = @file_get_contents(
-    'https://feodotracker.abuse.ch/downloads/ipblocklist.json',
-    false,
-    stream_context_create(['http' => [
-        'timeout'    => 10,
-        'user_agent' => 'ThreatPulse-SIEM/1.0',
-    ]])
-);
-
+$started = microtime(true);
+$timestamp = gmdate('Y-m-d H:i:s');
+$status = 'error';
 $inserted = 0;
+$processed = 0;
+$message = '';
 
-if ($json) {
-    $data = json_decode($json, true);
-    $list = $data['blocklist'] 
-         ?? $data['data'] 
-         ?? (is_array($data) ? $data : []);
-    
-    $colList = [$ipCol];
-    $phList  = ['?'];
-    if ($sevCol) { $colList[] = $sevCol; $phList[] = '?'; }
-    if ($catCol) { $colList[] = $catCol; $phList[] = '?'; }
-    $colList[] = $msgCol; $phList[] = '?';
-    $colList[] = $tsCol;  $phList[] = '?';
-    
-    $stmt = $pdo->prepare(
-        "INSERT IGNORE INTO logs 
-         (" . implode(',', $colList) . ")
-         VALUES (" . implode(',', $phList) . ")"
-    );
-    
-    foreach (array_slice($list, 0, 300) as $entry) {
-        $ip = $entry['ip_address'] 
-           ?? $entry['ip'] ?? '';
-        if (!filter_var($ip, FILTER_VALIDATE_IP,
-            FILTER_FLAG_NO_PRIV_RANGE)) continue;
-        
-        $malware = $entry['malware'] 
-                ?? $entry['malware_family'] 
-                ?? 'Botnet C2';
-        $port    = $entry['port']       ?? '';
-        $country = $entry['country']    ?? '';
-        $seen    = $entry['last_online'] 
-                ?? $entry['last_seen']  
-                ?? date('Y-m-d H:i:s');
-        
-        $ts  = date('Y-m-d H:i:s', 
-               strtotime($seen) ?: time());
-        $ctry = $country ? " [{$country}]" : '';
-        $portStr = $port ? " port {$port}" : '';
-        $msg  = "ALERT Botnet C2{$ctry}: {$malware}"
-              . " C2 server detected on{$portStr}";
-        
-        $vals = [$ip];
-        if ($sevCol) $vals[] = 'CRITICAL';
-        if ($catCol) $vals[] = 'RCE';
-        $vals[] = $msg;
-        $vals[] = $ts;
-        
-        try {
-            $stmt->execute($vals);
-            $inserted += $stmt->rowCount();
-        } catch (PDOException $e) {
-            if ($e->getCode() !== '23000') continue;
-        }
+try {
+    $exists = $pdo->query("SELECT COUNT(*) FROM information_schema.tables
+        WHERE table_schema = DATABASE() AND table_name = 'threat_feed_indicators'")->fetchColumn();
+    if ((int)$exists !== 1) {
+        throw new RuntimeException('Missing threat_feed_indicators table. Apply migration 007 first.');
+    }
+
+    $ctx = stream_context_create(['http' => [
+        'timeout' => 20,
+        'user_agent' => 'ThreatPulse-BlueTeam/1.0',
+        'ignore_errors' => false,
+    ]]);
+    $raw = @file_get_contents('https://feodotracker.abuse.ch/downloads/ipblocklist.json', false, $ctx);
+    if ($raw === false) {
+        throw new RuntimeException('Feodo Tracker feed unavailable.');
+    }
+    $data = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
+    $entries = $data['blocklist'] ?? $data['data'] ?? $data;
+    if (!is_array($entries) || !array_is_list($entries)) {
+        throw new RuntimeException('Unexpected Feodo JSON structure.');
+    }
+
+    $stmt = $pdo->prepare("INSERT INTO threat_feed_indicators
+        (provider, indicator_type, indicator_value, threat_type, malware_family,
+         port, source_first_seen, source_last_seen, fetched_at)
+        VALUES ('feodo_tracker', ?, ?, 'botnet_c2', ?, ?, ?, ?, UTC_TIMESTAMP())
+        ON DUPLICATE KEY UPDATE
+            threat_type = VALUES(threat_type),
+            malware_family = VALUES(malware_family),
+            port = VALUES(port),
+            source_first_seen = COALESCE(VALUES(source_first_seen), source_first_seen),
+            source_last_seen = COALESCE(VALUES(source_last_seen), source_last_seen),
+            fetched_at = UTC_TIMESTAMP()");
+
+    foreach (array_slice($entries, 0, 300) as $entry) {
+        if (!is_array($entry)) continue;
+        $ip = (string)($entry['ip_address'] ?? $entry['ip'] ?? '');
+        if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) continue;
+        $type = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) ? 'IPV4' : 'IPV6';
+        $malware = substr((string)($entry['malware'] ?? $entry['malware_family'] ?? 'Unknown'), 0, 150);
+        $port = filter_var($entry['port'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 65535]]);
+        $first = $entry['first_seen'] ?? null;
+        $last = $entry['last_online'] ?? $entry['last_seen'] ?? null;
+        $firstTs = is_string($first) && strtotime($first) !== false ? gmdate('Y-m-d H:i:s', strtotime($first)) : null;
+        $lastTs = is_string($last) && strtotime($last) !== false ? gmdate('Y-m-d H:i:s', strtotime($last)) : null;
+
+        $stmt->execute([$type, $ip, $malware, $port === false ? null : $port, $firstTs, $lastTs]);
+        $inserted += $stmt->rowCount() === 1 ? 1 : 0;
+        $processed++;
+    }
+    $status = 'ok';
+    $message = "Processed {$processed} Feodo indicators; {$inserted} newly inventoried.";
+} catch (Throwable $e) {
+    $message = $e->getMessage();
+    error_log('[Feodo] ' . $message);
+}
+
+$result = [
+    'timestamp' => $timestamp,
+    'status' => $status,
+    'processed' => $processed,
+    'inserted' => $inserted,
+    'elapsed' => round(microtime(true) - $started, 2),
+];
+$statusDir = '/run/threatpulse';
+if (is_dir($statusDir) && is_writable($statusDir)) {
+    $tmp = tempnam($statusDir, '.feodo-');
+    if ($tmp !== false) {
+        file_put_contents($tmp, json_encode($result, JSON_UNESCAPED_SLASHES));
+        chmod($tmp, 0640);
+        rename($tmp, $statusDir . '/feodo_last_run.json');
     }
 }
-
-// Also geolocate any new IPs (max 10 per run)
-$newIPs = $pdo->query("
-    SELECT DISTINCT l.{$ipCol} as ip
-    FROM logs l
-    LEFT JOIN ip_geo g ON l.{$ipCol} = g.ip
-    WHERE g.ip IS NULL
-      AND l.{$ipCol} IS NOT NULL
-      AND l.{$ipCol} != ''
-    ORDER BY l.{$tsCol} DESC
-    LIMIT 25
-")->fetchAll(PDO::FETCH_COLUMN);
-
-$geoStmt = $pdo->prepare("
-    INSERT IGNORE INTO ip_geo
-        (ip, country_code, country_name, 
-         city, latitude, longitude)
-    VALUES (?, ?, ?, ?, ?, ?)
-");
-
-$geoCount = 0;
-foreach ($newIPs as $ip) {
-    $geo = @json_decode(file_get_contents(
-        "http://ip-api.com/json/{$ip}"
-        . "?fields=status,country,countryCode,city,lat,lon"
-    ), true);
-    
-    if (($geo['status'] ?? '') !== 'success') continue;
-    
-    $geoStmt->execute([
-        $ip,
-        $geo['countryCode'] ?? '',
-        $geo['country']     ?? '',
-        $geo['city']        ?? '',
-        $geo['lat']         ?? 0,
-        $geo['lon']         ?? 0,
-    ]);
-    $geoCount++;
-    usleep(300000); // 300ms — stay under rate limit
-}
-
-$elapsed = round(microtime(true) - $start, 2);
-$ts      = date('Y-m-d H:i:s');
-
-echo "[{$ts}] Feodo: +{$inserted} new entries, "
-   . "+{$geoCount} geolocated ({$elapsed}s)" 
-   . PHP_EOL;
-
-// Write status to a file dashboard can read
-file_put_contents('/tmp/feodo_last_run.json', json_encode([
-    'timestamp'  => $ts,
-    'inserted'   => $inserted,
-    'geolocated' => $geoCount,
-    'elapsed'    => $elapsed,
-    'status'     => 'ok',
-]));
-
-// Backfill ungeolocated IPs (run once, then remove)
-$ungeo = $pdo->query("
-    SELECT DISTINCT l.{$ipCol} as ip
-    FROM logs l
-    LEFT JOIN ip_geo g ON l.{$ipCol} = g.ip
-    WHERE g.ip IS NULL
-      AND l.{$ipCol} IS NOT NULL
-      AND l.{$ipCol} != ''
-      AND l.{$ipCol} != 'Unknown'
-      AND l.{$ipCol} REGEXP 
-          '^[0-9]{1,3}\.[0-9]{1,3}\.'
-    LIMIT 100
-")->fetchAll(PDO::FETCH_COLUMN);
-
-$geoStmt = $pdo->prepare("
-    INSERT IGNORE INTO ip_geo
-        (ip, country_code, country_name,
-         city, latitude, longitude)
-    VALUES (?, ?, ?, ?, ?, ?)
-");
-
-foreach ($ungeo as $ip) {
-    $geo = @json_decode(file_get_contents(
-        "http://ip-api.com/json/{$ip}"
-        . "?fields=status,country,countryCode,city,lat,lon"
-    ), true);
-    if (($geo['status'] ?? '') !== 'success') continue;
-    $geoStmt->execute([
-        $ip,
-        $geo['countryCode'] ?? '',
-        $geo['country']     ?? '',
-        $geo['city']        ?? '',
-        $geo['lat']         ?? 0,
-        $geo['lon']         ?? 0,
-    ]);
-    usleep(250000); // 250ms rate limit
-}
-echo "[+] Backfilled " . count($ungeo) 
-   . " IPs for geolocation" . PHP_EOL;
-?>
+echo "[{$timestamp}] Feodo: {$message}\n";
+exit($status === 'ok' ? 0 : 1);
