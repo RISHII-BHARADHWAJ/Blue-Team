@@ -16,6 +16,7 @@ if (PHP_SAPI !== 'cli' || getenv('SOAR_INTEGRATION_TEST') !== '1' || getenv('DB_
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/soar/AlertIngestionService.php';
 require_once __DIR__ . '/../includes/soar/IncidentManager.php';
+require_once __DIR__ . '/../includes/soar/SiemSoarAlertPipeline.php';
 require_once __DIR__ . '/../includes/soar/playbooks/PlaybookEngine.php';
 require_once __DIR__ . '/../includes/soar/playbooks/PlaybookRepository.php';
 
@@ -90,6 +91,47 @@ try {
     checkIntegration(
         count($results) === 1 && $results[0]['status'] === 'SUCCESS' && (int) $results[0]['is_dry_run'] === 1,
         'step result persisted and explicitly marked dry-run'
+    );
+
+    // Exercise the exact service used by HTTP sensors: durable event -> correlation.
+    $pipeline = new SiemSoarAlertPipeline($pdo);
+    $sensorEvent = [
+        'source' => 'ci_sensor',
+        'source_type' => 'log',
+        'source_event_id' => bin2hex(random_bytes(8)),
+        'source_ip' => '203.0.113.55',
+        'severity' => 'HIGH',
+        'category' => 'SSH',
+        'message' => 'Sensor event ' . bin2hex(random_bytes(8)),
+        'event_timestamp' => date('Y-m-d H:i:s'),
+    ];
+    $sensorResult = $pipeline->ingest($sensorEvent, 'ci-sensor');
+    checkIntegration(
+        ($sensorResult['status'] ?? '') === 'accepted' && (int)($sensorResult['log_id'] ?? 0) > 0,
+        'sensor event durably assigned a SIEM log ID'
+    );
+    checkIntegration(
+        ($sensorResult['correlation']['decision'] ?? '') === 'CREATE'
+            && (int)($sensorResult['correlation']['incident_id'] ?? 0) > 0,
+        'accepted HTTP sensor event reaches incident correlation'
+    );
+    $sensorDuplicate = $pipeline->ingest($sensorEvent, 'ci-sensor');
+    checkIntegration(
+        ($sensorDuplicate['duplicate'] ?? false) === true
+            && !isset($sensorDuplicate['log_id']),
+        'duplicate sensor event does not create a second SIEM log'
+    );
+
+    $mediumEvent = $sensorEvent;
+    $mediumEvent['source_ip'] = '203.0.113.56';
+    $mediumEvent['severity'] = 'MEDIUM';
+    $mediumEvent['message'] = 'Medium severity event ' . bin2hex(random_bytes(8));
+    $mediumResult = $pipeline->ingest($mediumEvent, 'ci-sensor');
+    $severityStmt = $pdo->prepare('SELECT severity FROM logs WHERE id = ?');
+    $severityStmt->execute([(int)$mediumResult['log_id']]);
+    checkIntegration(
+        $severityStmt->fetchColumn() === 'WARNING',
+        'canonical MEDIUM severity maps to legacy SIEM WARNING without rejection'
     );
 
     echo "Integration smoke checks passed. Rolling back test data.\n";

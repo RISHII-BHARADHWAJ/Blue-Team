@@ -68,7 +68,8 @@ if ($rawBody === false || strlen($rawBody) > 65536) {
 
 // 4. Initialize Database & Session
 require_once __DIR__ . '/../../includes/db.php';
-require_once __DIR__ . '/../../includes/soar/AlertIngestionService.php';
+require_once __DIR__ . '/../../includes/soar/SiemSoarAlertPipeline.php';
+require_once __DIR__ . '/../../includes/soar/SoarCsrf.php';
 
 session_name('CYBERTECH_SECURE_SESSION');
 if (session_status() === PHP_SESSION_NONE) {
@@ -78,11 +79,13 @@ if (session_status() === PHP_SESSION_NONE) {
 // 5. Authentication Verification
 $actor = null;
 $isAuthenticated = false;
+$authenticationMethod = null;
 
 // Check A: Session Authentication
 if (!empty($_SESSION['analyst']) || !empty($_SESSION['user_id'])) {
     $actor = $_SESSION['analyst'] ?? ('user_' . $_SESSION['user_id']);
     $isAuthenticated = true;
+    $authenticationMethod = 'session';
 }
 
 // Check B: Authorization Bearer Token
@@ -137,6 +140,7 @@ if (!$isAuthenticated) {
         if (hash_equals(hash('sha256', $configuredKey), hash('sha256', $providedToken))) {
             $actor = 'api_sensor_' . substr(hash('sha256', $providedToken), 0, 8);
             $isAuthenticated = true;
+            $authenticationMethod = 'bearer';
         }
     }
 }
@@ -168,6 +172,9 @@ if (!$isAuthenticated) {
     ], JSON_UNESCAPED_SLASHES);
     exit;
 }
+
+// Browser sessions require a CSRF token; verified bearer sensors do not.
+SoarCsrf::enforce(['auth_method' => $authenticationMethod]);
 
 // 6. Rate Limiting (120 requests per 60 seconds per IP/Actor)
 $clientIp = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
@@ -213,9 +220,9 @@ if (json_last_error() !== JSON_ERROR_NONE || !is_array($data)) {
     exit;
 }
 
-// 8. Ingest and Normalize via AlertIngestionService
+// 8. Ingest, persist legacy SIEM record, and correlate to a SOAR incident
 try {
-    $service = new AlertIngestionService($pdo);
+    $service = new SiemSoarAlertPipeline($pdo);
     $result = $service->ingest($data, $actor);
 
     if (!$result['success']) {
@@ -230,12 +237,13 @@ try {
         exit;
     }
 
-    // 202 Accepted for newly ingested & normalized alert
+    // 202 Accepted only after the SIEM event and correlation are committed
     http_response_code(202);
     echo json_encode($result, JSON_UNESCAPED_SLASHES);
     exit;
 
-} catch (Exception $e) {
+} catch (Throwable $e) {
+    error_log('SOAR alert pipeline failed: ' . $e->getMessage());
     http_response_code(500);
     echo json_encode([
         'success' => false,
