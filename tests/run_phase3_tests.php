@@ -31,6 +31,7 @@ function reportResult(int $number, string $name, bool $passed, string $detail = 
 }
 
 // Include SOAR Modules
+require_once __DIR__ . '/legacy_db_fixture.php';
 require_once __DIR__ . '/../includes/soar/AlertSchema.php';
 require_once __DIR__ . '/../includes/soar/AlertNormalizer.php';
 require_once __DIR__ . '/../includes/soar/AlertValidator.php';
@@ -68,7 +69,7 @@ function runTest(int $num, string $name, callable $fn): void {
 // Test 1: Create Incident
 // -----------------------------------------------------------------------------
 runTest(1, "Create incident with title, description, and status NEW", function() {
-    $manager = new IncidentManager(null);
+    $manager = new IncidentManager($GLOBALS['pdo']);
     $inc = $manager->createIncident([
         'title'           => 'Test SSH Attack Investigation',
         'description'     => 'Initial SSH brute force detection',
@@ -99,21 +100,23 @@ runTest(3, "Sequential incident numbers are unique and monotonic", function() {
 // Test 4: Attach Alert to Incident
 // -----------------------------------------------------------------------------
 runTest(4, "Attach SIEM log alert to incident via junction", function() {
-    $manager = new IncidentManager(null);
+    $manager = new IncidentManager($GLOBALS['pdo']);
     $inc = $manager->createIncident(['title' => 'Test Case', 'severity' => 'MEDIUM']);
-    $attached = $manager->attachAlert(100, 42, 'RULE_TEST_LINK');
-    return !empty($attached);
+    $logId = createFixtureLog();
+    $attached = $manager->attachAlert((int)$inc['id'], $logId, 'RULE_TEST_LINK');
+    return count($attached['alerts'] ?? []) === 1 && (int)$attached['alerts'][0]['log_id'] === $logId;
 });
 
 // -----------------------------------------------------------------------------
 // Test 5: Duplicate Alert Association Handled Idempotently
 // -----------------------------------------------------------------------------
 runTest(5, "Attaching same log_id repeatedly is handled idempotently without error", function() {
-    $manager = new IncidentManager(null);
+    $manager = new IncidentManager($GLOBALS['pdo']);
     $inc = $manager->createIncident(['title' => 'Test Case', 'severity' => 'MEDIUM']);
-    $res1 = $manager->attachAlert(100, 42, 'RULE_TEST');
-    $res2 = $manager->attachAlert(100, 42, 'RULE_TEST');
-    return !empty($res1) && !empty($res2);
+    $logId = createFixtureLog();
+    $res1 = $manager->attachAlert((int)$inc['id'], $logId, 'RULE_TEST');
+    $res2 = $manager->attachAlert((int)$inc['id'], $logId, 'RULE_TEST');
+    return count($res1['alerts'] ?? []) === 1 && count($res2['alerts'] ?? []) === 1;
 });
 
 // -----------------------------------------------------------------------------
@@ -364,7 +367,7 @@ runTest(16, "Closed and Resolved incidents are inactive and reject new alert att
 // Test 17: Severity Escalation Upon Attaching Higher-Severity Alert
 // -----------------------------------------------------------------------------
 runTest(17, "Attaching CRITICAL alert to MEDIUM incident escalates incident severity to CRITICAL", function() {
-    $manager = new IncidentManager(null);
+    $manager = new IncidentManager($GLOBALS['pdo']);
     $inc = $manager->createIncident(['title' => 'Initial Medium Incident', 'severity' => 'MEDIUM']);
     
     $criticalAlert = new AlertSchema(
@@ -374,15 +377,15 @@ runTest(17, "Attaching CRITICAL alert to MEDIUM incident escalates incident seve
         source_ip: '198.51.100.1'
     );
     
-    $updated = $manager->attachAlert(100, 999, 'CORRELATION_ESCALATION', 'system', $criticalAlert);
-    return !empty($updated);
+    $updated = $manager->attachAlert((int)$inc['id'], createFixtureLog(), 'CORRELATION_ESCALATION', 'system', $criticalAlert);
+    return ($updated['severity'] ?? '') === 'CRITICAL' && ($updated['priority'] ?? '') === 'P1';
 });
 
 // -----------------------------------------------------------------------------
 // Test 18: Deterministic Priority Mapping
 // -----------------------------------------------------------------------------
 runTest(18, "Deterministic priority mapping: CRITICAL->P1, HIGH->P2, MEDIUM->P3, LOW->P4", function() {
-    $manager = new IncidentManager(null);
+    $manager = new IncidentManager($GLOBALS['pdo']);
     $incCrit = $manager->createIncident(['title' => 'Crit', 'severity' => 'CRITICAL']);
     $incHigh = $manager->createIncident(['title' => 'High', 'severity' => 'HIGH']);
     $incMed  = $manager->createIncident(['title' => 'Med',  'severity' => 'MEDIUM']);
@@ -466,7 +469,7 @@ runTest(25, "Tier 1 analyst cannot close incidents (requires LEAD or ADMIN)", fu
 // Test 26: IDOR Protection on State Mutation
 // -----------------------------------------------------------------------------
 runTest(26, "Target incident existence and ownership verified to prevent IDOR", function() {
-    $manager = new IncidentManager(null);
+    $manager = new IncidentManager($GLOBALS['pdo']);
     try {
         $manager->changeStatus(999999, 'OPEN', 'analyst_bob'); // Non-existent incident
         return false;
@@ -480,9 +483,9 @@ runTest(26, "Target incident existence and ownership verified to prevent IDOR", 
 // -----------------------------------------------------------------------------
 runTest(27, "SQL injection string payload in title is stored inertly via prepared statements", function() {
     $sqliTitle = "'; DROP TABLE incidents; -- ";
-    $manager = new IncidentManager(null);
+    $manager = new IncidentManager($GLOBALS['pdo']);
     $inc = $manager->createIncident(['title' => $sqliTitle, 'severity' => 'HIGH']);
-    return !empty($inc['incident_number']);
+    return ($inc['title'] ?? null) === trim($sqliTitle) && !empty($inc['incident_number']);
 });
 
 // -----------------------------------------------------------------------------
@@ -498,9 +501,11 @@ runTest(28, "Correlation repository applies row-locking (FOR UPDATE) queries for
 // Test 29: Manual Escalation Creates Incident
 // -----------------------------------------------------------------------------
 runTest(29, "Manual escalation service converts unassociated SIEM log into new incident", function() {
-    $manager = new IncidentManager(null);
-    $res = $manager->escalateAlertToIncident(1234, 'analyst_lead', 'Manual Escalate Title', 'Manual Desc');
-    return $res['success'] && $res['action'] === 'new_incident_created';
+    $manager = new IncidentManager($GLOBALS['pdo']);
+    $logId = createFixtureLog();
+    $res = $manager->escalateAlertToIncident($logId, 'analyst_lead', 'Manual Escalate Title', 'Manual Desc');
+    return $res['success'] && $res['action'] === 'new_incident_created'
+        && count($res['incident']['alerts'] ?? []) === 1;
 });
 
 // -----------------------------------------------------------------------------

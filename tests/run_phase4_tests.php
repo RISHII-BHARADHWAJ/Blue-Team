@@ -33,6 +33,7 @@ function reportResult(int $number, string $name, bool $passed, string $detail = 
 }
 
 // Load Modules
+require_once __DIR__ . '/legacy_db_fixture.php';
 require_once __DIR__ . '/../includes/soar/IocNormalizer.php';
 require_once __DIR__ . '/../includes/soar/IocValidator.php';
 require_once __DIR__ . '/../includes/soar/IocExtractor.php';
@@ -481,7 +482,7 @@ runTest(37, "Phase 2 Canonical AlertSchema can be ingested and IOCs extracted", 
 // -----------------------------------------------------------------------------
 runTest(38, "Phase 3 IncidentManager and CorrelationEngine continue operating seamlessly", function() {
     require_once __DIR__ . '/../includes/soar/IncidentManager.php';
-    $incManager = new IncidentManager(null);
+    $incManager = new IncidentManager($GLOBALS['pdo']);
     $inc = $incManager->createIncident(['title' => 'Phase 4 Compatibility Check', 'severity' => 'HIGH']);
     return !empty($inc['incident_number']) && $inc['priority'] === 'P2';
 });
