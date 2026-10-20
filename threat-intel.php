@@ -28,6 +28,7 @@ $offset = ($page - 1) * $limit;
 $total = 0;
 $rows = [];
 $lastFetched = null;
+$providerCounts = [];
 $error = null;
 $available = false;
 try {
@@ -36,6 +37,7 @@ try {
     if ($available) {
         $total = (int)$pdo->query('SELECT COUNT(*) FROM threat_feed_indicators')->fetchColumn();
         $lastFetched = $pdo->query('SELECT MAX(fetched_at) FROM threat_feed_indicators')->fetchColumn();
+        $providerCounts = $pdo->query('SELECT provider, COUNT(*) AS total FROM threat_feed_indicators GROUP BY provider ORDER BY total DESC')->fetchAll(PDO::FETCH_ASSOC);
         $stmt = $pdo->prepare("SELECT provider, indicator_type, indicator_value, threat_type,
             malware_family, port, source_last_seen, fetched_at
             FROM threat_feed_indicators ORDER BY fetched_at DESC, id DESC LIMIT ? OFFSET ?");
@@ -111,8 +113,13 @@ code{color:#b6d8e8;font-size:12px}
     <div class="card"><div class="label">Last stored refresh (UTC)</div><div class="value" style="font-size:23px"><?= intelEscape($lastFetched ?: 'No imports yet') ?></div></div>
   </div>
   <div class="notice">Source: external feed listings. Do not interpret these IPs as attackers observed by a local SIEM sensor. Refresh time reflects stored data, not guaranteed feed availability.</div>
+  <section class="panel" style="margin-top:19px" aria-labelledby="providers-title"><h2 id="providers-title">Connected intelligence sources</h2>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:14px">
+    <?php foreach ($providerCounts as $source): ?><span class="badge"><?= intelEscape(str_replace('_', ' ', $source['provider'])) ?> · <?= intelEscape(number_format((int)$source['total'])) ?></span><?php endforeach; ?>
+    <?php if (!$providerCounts): ?><span style="color:var(--muted)">No feeds imported yet.</span><?php endif; ?>
+  </div></section>
   <section class="panel" style="margin-top:19px" aria-labelledby="indicator-title">
-    <div class="panel-header"><h2 id="indicator-title">Indicator inventory</h2><span class="badge">Feodo Tracker integration</span></div>
+    <div class="panel-header"><h2 id="indicator-title">Indicator inventory</h2><span class="badge">Multi-source inventory</span></div>
     <div class="table-wrap"><table>
       <thead><tr><th>Indicator</th><th>Source</th><th>Classification</th><th>Malware</th><th>Port</th><th>Source last seen</th></tr></thead>
       <tbody>
