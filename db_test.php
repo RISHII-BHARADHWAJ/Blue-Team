@@ -1,4 +1,11 @@
 <?php
+// Never disclose database connection details or errors over HTTP.
+if (PHP_SAPI !== 'cli') {
+    http_response_code(404);
+    header('Content-Type: text/plain; charset=UTF-8');
+    exit('Not Found');
+}
+
 header('Content-Type: text/plain');
 
 $db_host = getenv('DB_HOST') ?: 'localhost';
