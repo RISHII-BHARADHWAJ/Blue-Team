@@ -40,6 +40,13 @@ jobs:
           docker compose exec -T -e SOAR_LEGACY_DB_TEST=1 web php tests/run_phase4_tests.php
       - name: Check HTTP login route
         run: curl --fail --show-error --silent http://localhost:8080/login.php --output /dev/null
+      - name: Require login for analyst incident queue
+        run: |
+          status=$(curl --silent --output /dev/null --write-out '%{http_code}' http://localhost:8080/incidents.php)
+          if [ "$status" != "302" ]; then
+            echo "Expected incident queue to redirect unauthenticated visitors (302); got $status" >&2
+            exit 1
+          fi
       - name: Reject HTTP database reset and diagnostic endpoints
         run: |
           for path in /reset_db.php /db_test.php; do
