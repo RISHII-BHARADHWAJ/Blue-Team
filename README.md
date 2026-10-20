@@ -5,7 +5,7 @@
 This is a live, forensic-ready security operations center (SOC) dashboard designed for Blue Team training, threat intelligence ingestion, and log analysis.
 
 ## Features
-- **SOC Incident Queue (`incidents.php`)**: Authenticated incident list with status/severity filters, linked SIEM alerts, an investigation timeline, and permission-controlled status progression (Tier 2+). Containment actions are intentionally not available from this page. Open from the dashboard's **INCIDENT QUEUE** link.
+- **SOC Incident Queue (`incidents.php`)**: Authenticated incident list with status/severity filters, linked SIEM alerts, an investigation timeline, and permission-controlled status progression and analyst case assignment (Tier 2+). Containment actions are intentionally not available from this page. Open from the dashboard's **INCIDENT QUEUE** link.
 - **SOAR Approval Control Plane (`control_plane/index.php`)**: Analyst approval and response workflow interface.
 - **ThreatPulse SIEM Dashboard (`dashboard.php`)**: An interactive, dynamic UI visualizing attacks via an integrated global geographic SVG map spanning top attackers and categories.
 - **Real-Time Threat Intelligence API Integrations**: Streams active botnet C2s and live compromised IPs from Feodo Tracker, Emerging Threats, CINS Army, BlocklistDE, and ThreatFox (`api_fetch.php`, `feodo_realtime.php`).

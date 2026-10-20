@@ -60,7 +60,7 @@ ui_url="http://localhost:8080/incidents.php?id=$fixture_id"
 set_session "user"
 tier1_page=$(curl --fail --silent --show-error --cookie "CYBERTECH_SECURE_SESSION=$session_id" "$ui_url")
 echo "$tier1_page" | grep -q 'Read-only access: Tier 2 or higher'
-if echo "$tier1_page" | grep -q 'id="triage-form"'; then
+if echo "$tier1_page" | grep -q 'id="triage-form"\|id="assignment-form"'; then
   echo "Tier 1 incident UI exposed mutation controls" >&2
   exit 1
 fi
@@ -81,6 +81,7 @@ set_session "analyst"
 tier2_page=$(curl --fail --silent --show-error --cookie "CYBERTECH_SECURE_SESSION=$session_id" "$ui_url")
 echo "$tier2_page" | grep -q 'id="triage-form"'
 echo "$tier2_page" | grep -q 'value="OPEN"'
+echo "$tier2_page" | grep -q 'id="assignment-form"'
 echo "PASS: Tier 2 incident UI exposes valid NEW to OPEN transition"
 for action in change_status assign attach_alert; do
   status=$(request_status "$action")
