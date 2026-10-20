@@ -63,6 +63,29 @@ try {
     );
     checkIntegration(count($incident['timeline'] ?? []) >= 2, 'incident timeline persisted');
 
+    // Test assignment authorization against real accounts, still inside the
+    // rollback-only disposable CI transaction.
+    $ordinaryStmt = $pdo->prepare(
+        "INSERT INTO users (username, password, role) VALUES (?, 'disabled-no-login', 'user')"
+    );
+    $ordinaryStmt->execute(['ci_unprivileged_' . bin2hex(random_bytes(6))]);
+    $ordinaryId = (int)$pdo->lastInsertId();
+    $rejectedOrdinary = false;
+    try {
+        $manager->assignIncident($incidentId, $ordinaryId, 'ci-integration');
+    } catch (InvalidArgumentException $e) {
+        $rejectedOrdinary = true;
+    }
+    checkIntegration($rejectedOrdinary, 'incident cannot be assigned to a regular user account');
+
+    $analystId = (int)$pdo->query("SELECT id FROM users WHERE role = 'analyst' LIMIT 1")->fetchColumn();
+    checkIntegration($analystId > 0, 'seeded analyst account available for assignment');
+    $assignedIncident = $manager->assignIncident($incidentId, $analystId, 'ci-integration');
+    checkIntegration(
+        (int)($assignedIncident['assigned_to'] ?? 0) === $analystId,
+        'authorized analyst assignment persisted with incident'
+    );
+
     // Only a benign context-collection step is defined. DRY_RUN prevents handler side effects.
     $playbookName = 'ci-smoke-' . bin2hex(random_bytes(8));
     $pbStmt = $pdo->prepare(
