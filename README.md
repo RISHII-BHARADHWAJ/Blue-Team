@@ -97,7 +97,7 @@ These schedules are examples, not a requirement for exploring the built-in SOAR 
 
 ## Threat intelligence inventory
 
-After migration `007`, Feodo Tracker indicators are stored in `threat_feed_indicators` and displayed at `/threat-intel.php`. These are externally reported indicators, **not** confirmed attacks against your environment. The legacy bulk importer still handles other external feeds in the old `logs` pipeline; separating those is ongoing work.
+After migration `007`, Feodo Tracker indicators are stored in `threat_feed_indicators` and displayed at `/threat-intel.php`. These are externally reported indicators, **not** confirmed attacks against your environment. The bulk collector now imports Emerging Threats, CINS Army and Blocklist.de IP reputation lists into the same inventory without fabricating incident events. ThreatFox requires a separate API authentication key and is not automatically queried without one. Historical rows in `logs` are preserved; they are not automatically reclassified.
 
 For an existing local database volume, back up the database first, then apply `database/migrations/007_threat_feed_indicators.sql` using your normal MariaDB migration workflow. Compose only auto-initializes **new** volumes. Do not delete an existing volume to force this migration.
 
