@@ -124,6 +124,22 @@ foreach ($expectedSoarTables as $table => $columns) {
     }
 }
 
+// Dedicated external threat-intelligence inventory (migration 007).
+$feedCols = ['id', 'provider', 'indicator_type', 'indicator_value', 'threat_type',
+    'malware_family', 'port', 'source_first_seen', 'source_last_seen', 'fetched_at'];
+$stmt = $pdo->prepare("SELECT column_name FROM information_schema.columns
+    WHERE table_schema = ? AND table_name = 'threat_feed_indicators'");
+$stmt->execute([$db_name]);
+$foundFeedCols = $stmt->fetchAll(PDO::FETCH_COLUMN);
+$missingFeedCols = array_diff($feedCols, $foundFeedCols);
+if (empty($foundFeedCols) || !empty($missingFeedCols)) {
+    logMessage("Threat intelligence inventory missing or incomplete (migration 007).", 'FAIL');
+    $failed++;
+} else {
+    logMessage("Threat intelligence indicator inventory verified.", 'SUCCESS');
+    $passed++;
+}
+
 // 4. Verify Unique Constraints
 $expectedUniqueConstraints = [
     'incidents'        => ['incident_number'],
