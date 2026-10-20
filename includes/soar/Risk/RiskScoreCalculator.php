@@ -71,10 +71,13 @@ class RiskScoreCalculator {
         // ---------------------------------------------------------------------
         // 3. Attack-Chain Progression Factor (Max 20)
         // ---------------------------------------------------------------------
-        $categories = array_filter(array_unique(array_merge(
+        // Unknown categories are not observed attack-chain stages.
+        // In particular, a default incident category of OTHER must not turn
+        // two concrete alert categories into a spurious three-stage chain.
+        $categories = array_values(array_filter(array_unique(array_merge(
             [!empty($incident['attack_category']) ? strtoupper(trim($incident['attack_category'])) : 'OTHER'],
             array_map(fn($a) => strtoupper(trim($a['category'] ?? 'OTHER')), $alerts)
-        )));
+        )), fn($category) => $category !== '' && $category !== 'OTHER'));
 
         $chainType = 'SINGLE_STAGE';
         if (in_array('SSH', $categories, true) && in_array('RCE', $categories, true)) {
