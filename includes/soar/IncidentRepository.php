@@ -331,6 +331,11 @@ class IncidentRepository {
             $params[] = $filters['priority'];
         }
 
+        if (!empty($filters['assigned_to'])) {
+            $where[] = 'assigned_to = ?';
+            $params[] = (int)$filters['assigned_to'];
+        }
+
         $whereSql = implode(' AND ', $where);
         $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM incidents WHERE $whereSql");
         $stmt->execute($params);
