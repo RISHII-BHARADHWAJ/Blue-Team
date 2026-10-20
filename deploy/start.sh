@@ -93,6 +93,25 @@ FETCH_PID=$!
 echo "[*] Threat fetch running in background (PID: $FETCH_PID)"
 
 # ── Cron Setup ───────────────────────────────────
+# Cron does not inherit Docker's runtime DB_* environment. Write a private,
+# Bash-escaped copy outside the web root so scheduled fetchers use the same
+# database as the web application. The directory and file are www-data-only.
+install -d -m 0700 -o www-data -g www-data /run/threatpulse
+(
+    umask 077
+    {
+        printf 'export DB_HOST=%q\n' "${DB_HOST:-localhost}"
+        printf 'export DB_USER=%q\n' "${DB_USER:-redteam_user}"
+        printf 'export DB_PASS=%q\n' "${DB_PASS:-root}"
+        printf 'export DB_NAME=%q\n' "${DB_NAME:-cybertech_db}"
+    } > /run/threatpulse/ingestion.env
+)
+chown www-data:www-data /run/threatpulse/ingestion.env
+chmod 0600 /run/threatpulse/ingestion.env
+# Cron redirects as www-data, so prepare private writable log files.
+touch /var/log/feodo_realtime.log /var/log/threat_fetch.log
+chown www-data:www-data /var/log/feodo_realtime.log /var/log/threat_fetch.log
+chmod 0640 /var/log/feodo_realtime.log /var/log/threat_fetch.log
 echo "[*] Starting cron daemon..."
 cron
 
