@@ -3,6 +3,10 @@ set -e
 
 echo "[*] ThreatPulse — Initializing deployment..."
 
+# Compose uses an external MariaDB service. Only start embedded MariaDB when
+# the application is configured for a local database (e.g. single-container Render).
+if [ "${DB_HOST:-localhost}" = "localhost" ] || [ "${DB_HOST:-localhost}" = "127.0.0.1" ]; then
+
 # ── Ensure MySQL system directories exist with correct permissions ──
 echo "[*] Ensuring MySQL system directories exist..."
 mkdir -p /var/run/mysqld
@@ -75,6 +79,9 @@ CREATE TABLE IF NOT EXISTS ip_geo (
 TABLESQL
 
 echo "[+] Database configured successfully."
+else
+    echo "[*] Using external MariaDB at ${DB_HOST}; skipping embedded database setup."
+fi
 
 # ── Initial Data Fetch ───────────────────────────
 echo "[*] Running initial threat intelligence fetch..."
