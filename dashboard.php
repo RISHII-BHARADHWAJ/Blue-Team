@@ -367,6 +367,8 @@ body::before {
     <div style="display:flex; align-items:center;">
         <span style="color:#7BA3CC; font-size:0.85rem; margin-right:20px; font-family:'Share Tech Mono',monospace;">Last updated: <span id="statusTime" style="color:#00B4D8;"></span></span>
         <span style="color:#E0EEFF; font-size:0.85rem; margin-right:20px; font-family:'IBM Plex Sans',sans-serif;">Welcome, <?= htmlspecialchars($_SESSION['analyst']) ?></span>
+        <a href="incidents.php" style="color:#17D4BE; text-decoration:none; font-size:0.8rem; font-weight:700; border:1px solid rgba(23,212,190,0.4); padding:6px 14px; border-radius:4px;">INCIDENT QUEUE</a>
+        <a href="control_plane/index.php" style="color:#00B4D8; text-decoration:none; font-size:0.8rem; font-weight:700; border:1px solid rgba(0,180,216,0.4); padding:6px 14px; border-radius:4px;">SOAR</a>
         <a href="logout.php" style="color:#FF3B3B; text-decoration:none; font-size:0.8rem; font-weight:700; border:1px solid rgba(255,59,59,0.3); padding:6px 14px; border-radius:4px; transition:all 0.2s;">SIGN OUT</a>
     </div>
 </header>
