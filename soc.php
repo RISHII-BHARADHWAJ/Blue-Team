@@ -55,7 +55,7 @@ try {
 }
 
 $feodo = null;
-$feodoFile = '/tmp/feodo_last_run.json';
+$feodoFile = '/run/threatpulse/feodo_last_run.json';
 if (is_readable($feodoFile)) {
     $decoded = json_decode((string)file_get_contents($feodoFile), true);
     if (is_array($decoded) && isset($decoded['timestamp'])) $feodo = $decoded;
@@ -137,6 +137,7 @@ code{font-size:12px;color:#abd2e1}
     <nav class="nav" aria-label="Main navigation">
       <a href="soc.php" aria-current="page">Overview</a>
       <a href="dashboard.php">SIEM events</a>
+      <a href="threat-intel.php">Threat intelligence</a>
       <a href="incidents.php">Incidents</a>
       <a href="control_plane/index.php">SOAR approvals</a>
     </nav>
@@ -184,9 +185,10 @@ code{font-size:12px;color:#abd2e1}
         <div class="panel-head"><h2 id="feed-title">Feodo feed</h2><span class="pill">Last local run</span></div>
         <?php if ($feodo): ?>
           <div class="fact"><b>Last attempted</b><span><?= socEscape($feodo['timestamp']) ?> (server time)</span></div>
-          <div class="fact"><b>Imported in run</b><span><?= socEscape((int)($feodo['inserted'] ?? 0)) ?></span></div>
-          <div class="fact"><b>Geolocated</b><span><?= socEscape((int)($feodo['geolocated'] ?? 0)) ?></span></div>
-          <p>Run completed locally; scheduled refresh health is not yet verified.</p>
+          <div class="fact"><b>New indicators</b><span><?= socEscape((int)($feodo['inserted'] ?? 0)) ?></span></div>
+          <div class="fact"><b>Indicators processed</b><span><?= socEscape((int)($feodo['processed'] ?? 0)) ?></span></div>
+          <p><?= ($feodo['status'] ?? '') === 'ok' ? 'Collector completed; scheduled refresh still needs monitoring.' : 'Last collector attempt failed; check the ingestion log.' ?></p>
+          <p><a href="threat-intel.php">Explore external indicators →</a></p>
         <?php else: ?>
           <p>No local run status available. Start a manual Feodo fetch or investigate scheduled ingestion.</p>
         <?php endif; ?>

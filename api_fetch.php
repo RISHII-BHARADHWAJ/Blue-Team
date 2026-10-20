@@ -490,9 +490,9 @@ function fetchBlocklistDE($pdo, $ipCol, $sevCol,
 }
 
 $total = 0;
-$total += fetchFeodo($pdo, $ipCol, $sevCol, 
-                     $catCol, $msgCol, $tsCol);
-out("[+] Feodo: robust fetch completed\n");
+// Feodo is ingested by feodo_realtime.php into the dedicated
+// threat_feed_indicators table. A public blocklist is not a local attack log.
+out("[*] Feodo: managed by dedicated threat intelligence collector\n");
 
 $et = fetchEmergingThreats($pdo, $ipCol, $sevCol,
                             $catCol, $msgCol, $tsCol);
