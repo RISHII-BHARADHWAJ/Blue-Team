@@ -125,7 +125,7 @@ class PlaybookRepository {
         $stmt = $this->pdo->prepare("
             INSERT INTO playbook_runs
                 (run_uuid, playbook_id, playbook_version, incident_id, triggered_by, analyst_id, status, execution_context)
-            VALUES (?,?,?,?,?,?,?,'PENDING',?)
+            VALUES (?,?,?,?,?,?,'PENDING',?)
         ");
         $stmt->execute([
             $uuid, $playbookId, $playbookVersion, $incidentId,
