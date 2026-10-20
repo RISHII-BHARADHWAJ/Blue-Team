@@ -70,6 +70,7 @@ jobs:
       - name: Run isolated Phase 2–7 PHP tests
         run: |
           docker run --rm -v "$PWD:/src:ro" -w /src php:8.2-cli sh -ec '
+            failed=0
             for suite in \
               tests/run_phase2_tests.php \
               tests/run_phase3_tests.php \
@@ -79,6 +80,13 @@ jobs:
               tests/run_phase6_hardening_tests.php \
               tests/run_phase7_tests.php; do
               echo "Running $suite"
-              php "$suite"
+              if php "$suite"; then
+                echo "PASS: $suite"
+              else
+                echo "FAIL: $suite" >&2
+                failed=$((failed + 1))
+              fi
             done
+            echo "$failed SOAR suite(s) failed"
+            [ "$failed" -eq 0 ]
           '
