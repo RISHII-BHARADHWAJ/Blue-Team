@@ -8,7 +8,6 @@ declare(strict_types=1);
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/soar/SoarAuth.php';
 require_once __DIR__ . '/includes/soar/IncidentManager.php';
-require_once __DIR__ . '/includes/security.php';
 
 $auth = SoarAuth::getContext($pdo);
 if ($auth['actor'] === 'anonymous') {
@@ -20,6 +19,7 @@ if (!SoarAuth::hasPermission($auth['tier'], 'view_incidents')) {
     exit('Not authorized to view incidents.');
 }
 
+require_once __DIR__ . '/includes/security.php';
 $canTriage = SoarAuth::hasPermission($auth['tier'], 'change_status_normal');
 $canClose = SoarAuth::hasPermission($auth['tier'], 'close_incidents');
 $csrfToken = $canTriage ? generateCSRFToken() : '';
