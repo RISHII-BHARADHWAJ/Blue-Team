@@ -1,45 +1,114 @@
-# ThreatPulse - Blue Team Dashboard
+# ThreatPulse — Blue Team SIEM + SOAR
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/RISHII-BHARADHWAJ/Blue-Team)
+> **Status: active development / security lab project.** ThreatPulse combines **Security Information and Event Management (SIEM)** with **Security Orchestration, Automation and Response (SOAR)**. The investigation, correlation and approval workflows are being built incrementally; this is **not a production-ready SOC or automated containment platform**.
 
-This is a live, forensic-ready security operations center (SOC) dashboard designed for Blue Team training, threat intelligence ingestion, and log analysis.
+ThreatPulse is a PHP and MariaDB-based Blue Team project for collecting and visualizing security events, turning suspicious activity into incidents, enriching evidence, and guiding analysts through auditable response workflows.
 
-## Features
-- **SOC Incident Queue (`incidents.php`)**: Authenticated incident list with status/severity filters, linked SIEM alerts, an investigation timeline, and permission-controlled status progression and analyst case assignment (Tier 2+). Containment actions are intentionally not available from this page. Open from the dashboard's **INCIDENT QUEUE** link.
-- **SOAR Approval Control Plane (`control_plane/index.php`)**: Analyst approval and response workflow interface.
-- **ThreatPulse SIEM Dashboard (`dashboard.php`)**: An interactive, dynamic UI visualizing attacks via an integrated global geographic SVG map spanning top attackers and categories.
-- **Real-Time Threat Intelligence API Integrations**: Streams active botnet C2s and live compromised IPs from Feodo Tracker, Emerging Threats, CINS Army, BlocklistDE, and ThreatFox (`api_fetch.php`, `feodo_realtime.php`).
-- **Geolocation Integration**: Connects dynamically to IP-API to plot and rank attacks by country and coordinate in real-time.
-- **Automated Ingestion**: Built-in PHP cron services and background fetchers mimicking a real enterprise SIEM data pipeline.
-- **Investigative Terminal (`terminal.php`)**: A web-based simulated terminal for incident response actions.
+## What it does
 
-## 🚀 Quick Start (Docker - Recommended)
+| SIEM: detect and investigate | SOAR: organize and respond |
+| --- | --- |
+| Ingest and store event/log data | Validate, normalize and deduplicate alerts |
+| Visualize attack trends and source geography | Correlate alerts into incidents |
+| Fetch external threat-intelligence feeds | Extract/enrich indicators of compromise (IOCs) |
+| Explore logs in the SOC dashboard | Score and prioritize incidents |
+| Investigate suspected attacks | Triage, assign analysts, and track case timelines |
+| | Run allowlisted investigation playbooks and approval workflows |
 
-1. Clone the repository and navigate to the project directory.
-2. Build and start the services using Docker Compose:
+**End-to-end flow:** telemetry / threat feeds → SIEM logs and dashboard → normalized alerts → incident correlation → IOC enrichment and risk assessment → analyst triage → approval-gated SOAR playbooks and audit trail.
+
+### SIEM capabilities
+
+- **SOC dashboard:** `dashboard.php` visualizes attack activity, categories, source locations and trends.
+- **Threat-intelligence ingestion:** `api_fetch.php` and `feodo_realtime.php` collect data from configured external feeds.
+- **Geographic context:** geolocation-backed views help analysts explore source IPs.
+- **Investigative terminal:** `terminal.php` provides a **simulated** investigative interface; it is not a privileged shell on managed endpoints.
+
+### SOAR capabilities
+
+- **Alert ingestion:** `POST /api/v1/alerts.php` validates and normalizes telemetry, applies deduplication, and connects accepted alerts with stored SIEM logs and incident correlation. An accepted alert does **not** automatically initiate containment.
+- **Incident management:** `incidents.php` displays a searchable incident queue, linked SIEM events, and investigation timelines. Authorized analysts can progress eligible case statuses and assign cases to eligible analysts.
+- **IOC enrichment and risk scoring:** dedicated services and REST endpoints support indicator context and incident prioritization.
+- **Playbook engine:** deterministic, allowlisted investigation steps support `DRY_RUN`, execution records, evidence/notes, and approval gates. It does **not** implement live firewall blocking, endpoint isolation, or account disabling.
+- **Approval control plane:** `control_plane/index.php` presents review and response workflow details with authorization checks and auditability.
+- **Role-aware operations:** server-side permissions distinguish read-only users, analysts, leads, and administrators; privileged incident changes and approvals are restricted.
+
+See the [SOAR documentation](docs/soar/database.md) for database design and the detailed guides below.
+
+## Architecture
+
+| Layer | Main components |
+| --- | --- |
+| Web interface | PHP pages including `dashboard.php`, `incidents.php`, and `control_plane/index.php` |
+| API | `api/v1/` endpoints for alerts, incidents, IOCs, risk, playbooks, approvals and notifications |
+| Backend | PHP services under `includes/soar/`, plus existing SIEM ingestion scripts |
+| Data | MariaDB: legacy SIEM tables, incident/correlation records, playbook runs, approvals and audit history |
+| Local environment | Docker Compose with Apache/PHP and MariaDB |
+
+## Run locally with Docker
+
+Requirements: Docker Engine/Desktop with the Compose plugin.
+
+1. Clone the project:
+
+   ```bash
+   git clone https://github.com/RISHII-BHARADHWAJ/Blue-Team.git
+   cd Blue-Team
+   ```
+
+2. Start the local development stack:
+
    ```bash
    docker compose up -d --build
    ```
-   *(Note: prefix with `sudo` if your user is not in the docker group).*
-3. Open your browser and navigate to: `http://localhost:8080/`
 
-   **Database initialization:** On a fresh Docker Compose database volume, the startup scripts create the base schema, SIEM tables, and SOAR migrations 001–006 in order. Existing database volumes are **not** automatically migrated by MariaDB's initialization hook. Back up an existing database and apply migrations through a reviewed upgrade procedure; do not delete the volume to force initialization.
+3. Open **http://localhost:8080/** and sign in using your configured local development account. Useful pages:
 
-## 🛠 Manual Setup (XAMPP / Apache / Nginx)
+   - SIEM dashboard: `/dashboard.php`
+   - Incident queue: `/incidents.php`
+   - SOAR control plane: `/control_plane/index.php`
 
-1. Copy all project files to your web root folder (e.g., `/var/www/html/` or `htdocs`).
-2. Start **Apache** and **MySQL/MariaDB**.
-3. Create a database named `cybertech_db`.
-4. Import `database.sql` into the database.
-5. In `includes/db.php` and script files, verify the local `$db_host` parses correctly to `localhost` or `127.0.0.1` depending on your environment.
-6. Setup your local cronjobs for live ingestion:
+4. Stop the stack without deleting the database:
+
    ```bash
+   docker compose down
+   ```
+
+**Database initialization:** For a **new** MariaDB volume, Compose loads `database.sql`, `database/bootstrap/01_siem_tables.sql`, and SOAR migrations `001` through `006` in order. MariaDB initialization scripts **do not run again** for an existing volume. Back up existing data and use a reviewed migration process when upgrading. **Do not delete an existing volume to force migrations.**
+
+**Credentials:** The repository contains development-oriented database and seeded-account settings. Treat them as unsafe defaults: replace passwords/secrets and secure or disable seeded demo accounts before connecting this project to a real network. Do not expose this local stack directly to the internet.
+
+## Manual setup (Apache / XAMPP / MariaDB)
+
+For local development without Compose:
+
+1. Set up PHP, Apache and MySQL/MariaDB, then copy the project into your web root.
+2. Create a database named `cybertech_db`.
+3. Import `database.sql`, then `database/bootstrap/01_siem_tables.sql`, followed by `database/migrations/001_create_soar_schema.sql` through `006_phase7_control_plane.sql` **in numeric order** for a new database.
+4. Configure the application's database connection (`includes/db.php` and environment/configuration used by the scripts) for your local database. Use non-demo credentials.
+5. Open the application through your local web server. Configure scheduled ingestion only after checking feed/network requirements and logging:
+
+   ```cron
    */5 * * * * php /path/to/project/feodo_realtime.php >> /var/log/feodo_realtime.log 2>&1
    */30 * * * * php /path/to/project/api_fetch.php >> /var/log/threat_fetch.log 2>&1
    ```
-7. Access via your local web browser.
 
-## 🛡️ Admin Access
-- **Main Portal**: `/dashboard.php`
-- **Username**: `admin`
-- **Password**: `admin123` *(Seeded in the database)*
+These schedules are examples, not a requirement for exploring the built-in SOAR workflows.
+
+## Testing and development
+
+The GitHub Actions CI workflow covers PHP syntax checks and database-backed SIEM/SOAR regression tests, including incident workflows and HTTP authorization scenarios. Review the [Actions tab](https://github.com/RISHII-BHARADHWAJ/Blue-Team/actions) for the latest results.
+
+The project is still being developed. Before any deployment beyond a controlled local lab, it needs further work on production secrets and account provisioning, deployment configuration, secure upgrade/migration operations, end-to-end browser coverage, operational monitoring, and isolated, authorized response integrations. **A passing CI run is not a production security certification.**
+
+## Documentation
+
+- [Database architecture and migrations](docs/soar/database.md)
+- [Alert ingestion and normalization](docs/soar/alert-ingestion.md)
+- [Incident management and correlation](docs/soar/incident-management.md)
+- [IOC enrichment](docs/soar/ioc-enrichment.md)
+- [Risk scoring](docs/soar/risk-scoring.md)
+- [Playbook engine and dry-run behavior](docs/soar/playbook-engine.md)
+- [Approval control plane](docs/soar/approval-control-plane.md)
+
+Some phase-specific design documents describe their original implementation phase; check the code and current tests for subsequent integrations and hardening.
