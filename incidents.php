@@ -21,6 +21,7 @@ if (!SoarAuth::hasPermission($auth['tier'], 'view_incidents')) {
 
 require_once __DIR__ . '/includes/security.php';
 $canTriage = SoarAuth::hasPermission($auth['tier'], 'change_status_normal');
+$canAssign = SoarAuth::hasPermission($auth['tier'], 'assign_incidents');
 $canClose = SoarAuth::hasPermission($auth['tier'], 'close_incidents');
 $csrfToken = $canTriage ? generateCSRFToken() : '';
 
@@ -51,11 +52,20 @@ $error = null;
 $rows = [];
 $total = 0;
 $detail = null;
+$assignableUsers = [];
 try {
     $total = $repository->countIncidents($filters);
     $rows = $manager->listIncidents($filters, 25, ($page - 1) * 25);
     if ($selectedId !== false) {
         $detail = $manager->getIncident((int)$selectedId);
+        if ($detail !== null && $canAssign) {
+            $accounts = $pdo->query('SELECT id, username, role FROM users ORDER BY username LIMIT 500')->fetchAll();
+            foreach ($accounts as $account) {
+                if (SoarAuth::hasPermission(SoarAuth::resolveTier($account['role']), 'change_status_normal')) {
+                    $assignableUsers[] = $account;
+                }
+            }
+        }
     }
 } catch (Throwable $e) {
     error_log('Incident queue failed: ' . $e->getMessage());
@@ -170,6 +180,22 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;margin:6px 0}.error
 <?php elseif (!$canTriage): ?>
 <p class="muted">Read-only access: Tier 2 or higher is required to progress an incident.</p>
 <?php endif; ?>
+<?php if ($canAssign && $assignableUsers): ?>
+<div class="triage">
+<h2>Case assignment</h2>
+<p>Assign responsibility to an analyst or administrator with incident-triage privileges.</p>
+<form id="assignment-form" data-incident-id="<?= incidentEscape($detail['id']) ?>">
+<input type="hidden" name="csrf_token" value="<?= incidentEscape($csrfToken) ?>">
+<div class="field"><label for="assigned-analyst">Assign to</label><select id="assigned-analyst" name="analyst_id" required>
+<?php foreach ($assignableUsers as $account): ?>
+<option value="<?= incidentEscape($account['id']) ?>" <?= (int)($detail['assigned_to'] ?? 0) === (int)$account['id'] ? 'selected' : '' ?>><?= incidentEscape($account['username']) ?> (<?= incidentEscape($account['role']) ?>)</option>
+<?php endforeach; ?>
+</select></div>
+<button type="submit">Assign case</button>
+</form>
+<div id="assignment-feedback" class="triage-feedback" role="status" aria-live="polite"></div>
+</div>
+<?php endif; ?>
 <h2>Description</h2><pre><?= incidentEscape($detail['description']) ?></pre>
 <h2>Linked SIEM alerts (<?= count($detail['alerts']) ?>)</h2>
 <?php foreach ($detail['alerts'] as $alert): ?><div class="event"><strong><?= incidentEscape($alert['category']) ?> · <?= incidentEscape($alert['severity']) ?></strong><small><?= incidentEscape($alert['event_timestamp']) ?> · Source <?= incidentEscape($alert['source_ip']) ?> · Log #<?= incidentEscape($alert['log_id']) ?></small><pre><?= incidentEscape($alert['message']) ?></pre></div><?php endforeach; ?>
@@ -184,7 +210,7 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;margin:6px 0}.error
 <script>
 (function () {
     const form = document.getElementById('triage-form');
-    if (!form) return;
+    if (form) {
     const feedback = document.getElementById('triage-feedback');
     form.addEventListener('submit', async function (event) {
         event.preventDefault();
@@ -223,6 +249,49 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;margin:6px 0}.error
             button.disabled = false;
         }
     });
+    }
+
+    const assignment = document.getElementById('assignment-form');
+    if (assignment) {
+        const assignmentFeedback = document.getElementById('assignment-feedback');
+        assignment.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const data = new FormData(assignment);
+            const analystId = Number(data.get('analyst_id'));
+            if (!Number.isSafeInteger(analystId) || analystId <= 0) {
+                assignmentFeedback.textContent = 'Choose a valid analyst.';
+                return;
+            }
+            const button = assignment.querySelector('button[type="submit"]');
+            button.disabled = true;
+            assignmentFeedback.textContent = 'Assigning case...';
+            try {
+                const response = await fetch('api/v1/incidents_detail.php', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': String(data.get('csrf_token') || '')
+                    },
+                    body: JSON.stringify({
+                        id: Number(assignment.dataset.incidentId),
+                        action: 'assign',
+                        analyst_id: analystId
+                    })
+                });
+                const result = await response.json();
+                if (!response.ok || result.success !== true) {
+                    assignmentFeedback.textContent = result.message || 'Case assignment failed.';
+                    return;
+                }
+                window.location.reload();
+            } catch (_) {
+                assignmentFeedback.textContent = 'Could not contact the incident API. Please retry.';
+            } finally {
+                button.disabled = false;
+            }
+        });
+    }
 })();
 </script>
 </body>
