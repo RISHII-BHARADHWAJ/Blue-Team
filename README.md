@@ -74,7 +74,7 @@ Requirements: Docker Engine/Desktop with the Compose plugin.
    docker compose down
    ```
 
-**Database initialization:** For a **new** MariaDB volume, Compose loads `database.sql`, `database/bootstrap/01_siem_tables.sql`, and SOAR migrations `001` through `006` in order. MariaDB initialization scripts **do not run again** for an existing volume. Back up existing data and use a reviewed migration process when upgrading. **Do not delete an existing volume to force migrations.**
+**Database initialization:** For a **new** MariaDB volume, Compose loads `database.sql`, `database/bootstrap/01_siem_tables.sql`, and SOAR migrations `001` through `006`, then threat-intelligence migration `007`, in order. MariaDB initialization scripts **do not run again** for an existing volume. Back up existing data and use a reviewed migration process when upgrading. **Do not delete an existing volume to force migrations.**
 
 **Credentials:** The repository contains development-oriented database and seeded-account settings. Treat them as unsafe defaults: replace passwords/secrets and secure or disable seeded demo accounts before connecting this project to a real network. Do not expose this local stack directly to the internet.
 
@@ -84,7 +84,7 @@ For local development without Compose:
 
 1. Set up PHP, Apache and MySQL/MariaDB, then copy the project into your web root.
 2. Create a database named `cybertech_db`.
-3. Import `database.sql`, then `database/bootstrap/01_siem_tables.sql`, followed by `database/migrations/001_create_soar_schema.sql` through `006_phase7_control_plane.sql` **in numeric order** for a new database.
+3. Import `database.sql`, then `database/bootstrap/01_siem_tables.sql`, followed by `database/migrations/001_create_soar_schema.sql` through `007_threat_feed_indicators.sql` **in numeric order** for a new database.
 4. Configure the application's database connection (`includes/db.php` and environment/configuration used by the scripts) for your local database. Use non-demo credentials.
 5. Open the application through your local web server. Configure scheduled ingestion only after checking feed/network requirements and logging:
 
@@ -94,6 +94,12 @@ For local development without Compose:
    ```
 
 These schedules are examples, not a requirement for exploring the built-in SOAR workflows.
+
+## Threat intelligence inventory
+
+After migration `007`, Feodo Tracker indicators are stored in `threat_feed_indicators` and displayed at `/threat-intel.php`. These are externally reported indicators, **not** confirmed attacks against your environment. The legacy bulk importer still handles other external feeds in the old `logs` pipeline; separating those is ongoing work.
+
+For an existing local database volume, back up the database first, then apply `database/migrations/007_threat_feed_indicators.sql` using your normal MariaDB migration workflow. Compose only auto-initializes **new** volumes. Do not delete an existing volume to force this migration.
 
 ## Testing and development
 
