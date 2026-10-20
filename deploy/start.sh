@@ -108,6 +108,10 @@ install -d -m 0700 -o www-data -g www-data /run/threatpulse
 )
 chown www-data:www-data /run/threatpulse/ingestion.env
 chmod 0600 /run/threatpulse/ingestion.env
+# Cron redirects as www-data, so prepare private writable log files.
+touch /var/log/feodo_realtime.log /var/log/threat_fetch.log
+chown www-data:www-data /var/log/feodo_realtime.log /var/log/threat_fetch.log
+chmod 0640 /var/log/feodo_realtime.log /var/log/threat_fetch.log
 echo "[*] Starting cron daemon..."
 cron
 
