@@ -42,7 +42,30 @@ cleanup() {
 }
 trap cleanup EXIT
 
+# Seed one ordinary incident in the disposable CI database for UI authorization.
+fixture_id=$(docker compose exec -T web php -r '
+  require "includes/db.php";
+  require "includes/soar/IncidentManager.php";
+  $created = (new IncidentManager($pdo))->createIncident([
+      "title" => "CI analyst triage UI fixture",
+      "severity" => "MEDIUM",
+  ]);
+  echo (int)$created["id"];
+')
+case "$fixture_id" in
+  ''|*[!0-9]*) echo "Failed to create disposable incident UI fixture" >&2; exit 1 ;;
+esac
+ui_url="http://localhost:8080/incidents.php?id=$fixture_id"
+
 set_session "user"
+tier1_page=$(curl --fail --silent --show-error --cookie "CYBERTECH_SECURE_SESSION=$session_id" "$ui_url")
+echo "$tier1_page" | grep -q 'Read-only access: Tier 2 or higher'
+if echo "$tier1_page" | grep -q 'id="triage-form"'; then
+  echo "Tier 1 incident UI exposed mutation controls" >&2
+  exit 1
+fi
+echo "PASS: Tier 1 incident detail is read-only"
+
 for action in change_status assign attach_alert; do
   status=$(request_status "$action")
   if [ "$status" != "403" ]; then
@@ -55,6 +78,10 @@ done
 # Tier 2 is allowed through the capability gate. The deliberately nonexistent
 # incident then returns 404 without creating or changing any actual record.
 set_session "analyst"
+tier2_page=$(curl --fail --silent --show-error --cookie "CYBERTECH_SECURE_SESSION=$session_id" "$ui_url")
+echo "$tier2_page" | grep -q 'id="triage-form"'
+echo "$tier2_page" | grep -q 'value="OPEN"'
+echo "PASS: Tier 2 incident UI exposes valid NEW to OPEN transition"
 for action in change_status assign attach_alert; do
   status=$(request_status "$action")
   if [ "$status" != "404" ]; then

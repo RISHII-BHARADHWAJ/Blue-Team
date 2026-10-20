@@ -1,7 +1,7 @@
 <?php
 /**
- * ThreatPulse SOC incident queue. Read-only analyst investigation surface.
- * State changes and containment remain behind the existing authorized SOAR APIs.
+ * ThreatPulse SOC incident queue and controlled analyst triage surface.
+ * Changes are submitted only through the authorized incident API.
  */
 declare(strict_types=1);
 
@@ -18,6 +18,11 @@ if (!SoarAuth::hasPermission($auth['tier'], 'view_incidents')) {
     http_response_code(403);
     exit('Not authorized to view incidents.');
 }
+
+require_once __DIR__ . '/includes/security.php';
+$canTriage = SoarAuth::hasPermission($auth['tier'], 'change_status_normal');
+$canClose = SoarAuth::hasPermission($auth['tier'], 'close_incidents');
+$csrfToken = $canTriage ? generateCSRFToken() : '';
 
 header('X-Frame-Options: DENY');
 header('X-Content-Type-Options: nosniff');
@@ -57,6 +62,19 @@ try {
     $error = 'Incident records are temporarily unavailable.';
 }
 
+$triageTransitions = [];
+if ($detail !== null && $canTriage) {
+    // Never imply host containment from a manual status update.
+    // Containment requires a separate validated response workflow.
+    $triageTransitions = match ($detail['status']) {
+        'NEW' => ['OPEN'],
+        'OPEN' => ['INVESTIGATING'],
+        'INVESTIGATING', 'CONTAINED' => ['RESOLVED'],
+        'RESOLVED' => $canClose ? ['CLOSED'] : [],
+        default => [],
+    };
+}
+
 function incidentUrl(array $params): string {
     return 'incidents.php?' . http_build_query(array_filter($params, static fn($v) => $v !== '' && $v !== null));
 }
@@ -84,7 +102,7 @@ th,td{padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:top}t
 .pager{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-top:18px}.pager a{border:1px solid var(--line);padding:7px 13px;border-radius:5px;text-decoration:none}
 .info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px;margin-bottom:20px}.info-grid div{background:#0b223c;border-radius:8px;padding:12px;overflow-wrap:anywhere}.info-grid strong{display:block;font-size:12px;color:var(--muted)}
 .event{padding:12px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}.event strong{color:#84deeb}.event small{color:var(--muted);display:block}
-pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;margin:6px 0}.error{border-color:#ba3f4b;color:#ff9d9d}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;margin:6px 0}.error{border-color:#ba3f4b;color:#ff9d9d}.triage{background:#09243b;border:1px solid #265b76;border-radius:9px;padding:15px;margin:20px 0}.triage p{margin:0 0 12px;color:var(--muted)}.triage input{border:1px solid #376285;color:var(--text);background:#0d2541;padding:9px 12px;border-radius:6px;min-width:250px;flex:1;font:inherit}.triage button:disabled{opacity:.6;cursor:wait}.triage-feedback{margin-top:10px;color:#ffb8b8}
 @media(max-width:700px){th,td{padding:8px 5px;font-size:12px}main{padding:20px 12px}.panel{padding:13px}}
 </style>
 </head>
@@ -92,7 +110,7 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;margin:6px 0}.error
 <header><a class="brand" href="dashboard.php">THREATPULSE / SOC</a><nav><a href="dashboard.php">SIEM Dashboard</a><a href="incidents.php" aria-current="page">Incidents</a><a href="control_plane/index.php">SOAR Control Plane</a></nav></header>
 <main>
 <h1>Incident queue</h1>
-<p class="lead">Review correlated detections, attached SIEM alerts, and the investigation timeline. This screen cannot execute response actions.</p>
+<p class="lead">Review correlated detections, attached SIEM alerts, and the investigation timeline. Status progression uses the permission-checked incident API. Host containment actions are never initiated here.</p>
 <?php if ($error !== null): ?><section class="panel error" role="alert"><?= incidentEscape($error) ?></section><?php endif; ?>
 <section class="panel">
 <form method="get" action="incidents.php">
@@ -135,6 +153,23 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;margin:6px 0}.error
 <div><strong>Attack category</strong><?= incidentEscape($detail['attack_category'] ?: 'Unclassified') ?></div>
 <div><strong>Assigned analyst</strong><?= incidentEscape($detail['assigned_username'] ?: 'Unassigned') ?></div>
 </div>
+<?php if ($triageTransitions): ?>
+<div class="triage">
+<h2>Analyst triage</h2>
+<p>Choose a permitted next state and record a reason. This updates the incident timeline; it does not execute any containment or host action.</p>
+<form id="triage-form" data-incident-id="<?= incidentEscape($detail['id']) ?>">
+<input type="hidden" name="csrf_token" value="<?= incidentEscape($csrfToken) ?>">
+<div class="field"><label for="new-status">Next status</label><select id="new-status" name="new_status" required>
+<?php foreach ($triageTransitions as $nextStatus): ?><option value="<?= incidentEscape($nextStatus) ?>"><?= incidentEscape($nextStatus) ?></option><?php endforeach; ?>
+</select></div>
+<div class="field" style="flex:1"><label for="triage-reason">Reason for change</label><input id="triage-reason" name="reason" required maxlength="500" placeholder="Briefly explain the investigation decision"></div>
+<button type="submit">Update incident</button>
+</form>
+<div id="triage-feedback" class="triage-feedback" role="status" aria-live="polite"></div>
+</div>
+<?php elseif (!$canTriage): ?>
+<p class="muted">Read-only access: Tier 2 or higher is required to progress an incident.</p>
+<?php endif; ?>
 <h2>Description</h2><pre><?= incidentEscape($detail['description']) ?></pre>
 <h2>Linked SIEM alerts (<?= count($detail['alerts']) ?>)</h2>
 <?php foreach ($detail['alerts'] as $alert): ?><div class="event"><strong><?= incidentEscape($alert['category']) ?> · <?= incidentEscape($alert['severity']) ?></strong><small><?= incidentEscape($alert['event_timestamp']) ?> · Source <?= incidentEscape($alert['source_ip']) ?> · Log #<?= incidentEscape($alert['log_id']) ?></small><pre><?= incidentEscape($alert['message']) ?></pre></div><?php endforeach; ?>
@@ -146,5 +181,49 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;margin:6px 0}.error
 </section>
 <?php endif; ?>
 </main>
+<script>
+(function () {
+    const form = document.getElementById('triage-form');
+    if (!form) return;
+    const feedback = document.getElementById('triage-feedback');
+    form.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        const data = new FormData(form);
+        const nextStatus = String(data.get('new_status') || '');
+        const reason = String(data.get('reason') || '').trim();
+        if (!reason) { feedback.textContent = 'Please provide a reason.'; return; }
+        if (nextStatus === 'CLOSED' && !window.confirm('Close this incident? Closed incidents cannot be reopened.')) return;
+        const button = form.querySelector('button[type="submit"]');
+        button.disabled = true;
+        feedback.textContent = 'Saving incident status...';
+        try {
+            const response = await fetch('api/v1/incidents_detail.php', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': String(data.get('csrf_token') || '')
+                },
+                body: JSON.stringify({
+                    id: Number(form.dataset.incidentId),
+                    action: 'change_status',
+                    new_status: nextStatus,
+                    reason: reason
+                })
+            });
+            const result = await response.json();
+            if (!response.ok || result.success !== true) {
+                feedback.textContent = result.message || 'Status update failed. Please retry.';
+                return;
+            }
+            window.location.reload();
+        } catch (_) {
+            feedback.textContent = 'Could not contact the incident API. Please retry.';
+        } finally {
+            button.disabled = false;
+        }
+    });
+})();
+</script>
 </body>
 </html>
