@@ -318,6 +318,12 @@ class IncidentManager {
             if (!$targetUser) {
                 throw new InvalidArgumentException("Target user ID #{$analystId} does not exist.");
             }
+            // Assignment must not delegate incident responsibility to an account
+            // with no analyst triage capability (e.g. ordinary 'user' role).
+            $targetTier = SoarAuth::resolveTier($targetUser['role'] ?? null);
+            if (!SoarAuth::hasPermission($targetTier, 'change_status_normal')) {
+                throw new InvalidArgumentException("Target user is not an eligible incident analyst.");
+            }
 
             $this->repository->update($incidentId, ['assigned_to' => $analystId]);
 
