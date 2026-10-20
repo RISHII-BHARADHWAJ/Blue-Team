@@ -1,602 +1,115 @@
 <?php
-$lock = '/tmp/api_fetch.lock';
-if (file_exists($lock)) exit;
-file_put_contents($lock, getmypid());
-register_shutdown_function(fn() => @unlink($lock));
+/**
+ * External IP-reputation feed collector.
+ * These listings are intelligence, NOT observed attacks against ThreatPulse.
+ * Feodo is handled separately by feodo_realtime.php.
+ */
+declare(strict_types=1);
+
+if (PHP_SAPI !== 'cli') {
+    http_response_code(405);
+    exit('CLI ingestion only.');
+}
 
 require_once __DIR__ . '/includes/db.php';
 
-define('ABUSEIPDB_KEY', ''); // add key later
-
-$is_cli = (php_sapi_name() === 'cli');
-function out($msg) {
-    global $is_cli;
-    if ($is_cli) echo $msg;
+$lockHandle = fopen('/tmp/threatpulse_bulk_fetch.lock', 'c');
+if ($lockHandle === false || !flock($lockHandle, LOCK_EX | LOCK_NB)) {
+    echo "[ThreatIntel] Another fetch is already running.\n";
+    exit(0);
 }
+register_shutdown_function(static function () use ($lockHandle): void {
+    flock($lockHandle, LOCK_UN);
+    fclose($lockHandle);
+});
 
-$cols = $pdo->query("DESCRIBE logs")->fetchAll();
-$colNames = array_column($cols, 'Field');
+$started = microtime(true);
+$feeds = [
+    'emerging_threats' => 'https://rules.emergingthreats.net/blockrules/compromised-ips.txt',
+    'cins_army' => 'https://cinsscore.com/list/ci-badguys.txt',
+    'blocklist_de' => 'https://lists.blocklist.de/lists/all.txt',
+];
+$results = [];
+$failures = 0;
+$newTotal = 0;
 
-$ipCol  = in_array('source_ip', $colNames) ? 'source_ip' : $colNames[1];
-$sevCol = in_array('severity',  $colNames) ? 'severity'  : null;
-$catCol = in_array('category',  $colNames) ? 'category'  : null;
-$msgCol = in_array('message',   $colNames) ? 'message'   : 'details';
-$tsCol  = in_array('timestamp', $colNames) ? 'timestamp' : 'created_at';
-
-if (!function_exists('buildInsert')) {
-    function buildInsert($pdo, $ipCol, $sevCol, $catCol, $msgCol, $tsCol, $ip, $sev, $cat, $msg, $ts) {
-        $cols = [$ipCol];
-        $vals = [$ip];
-        $phs  = ['?'];
-        if ($sevCol) { $cols[]=$sevCol; $vals[]=$sev;  $phs[]='?'; }
-        if ($catCol) { $cols[]=$catCol; $vals[]=$cat;  $phs[]='?'; }
-        $cols[] = $msgCol; $vals[] = $msg; $phs[] = '?';
-        $cols[] = $tsCol;  $vals[] = $ts;  $phs[] = '?';
-        
-        $sql = "INSERT IGNORE INTO logs (" . implode(',',$cols) . ") VALUES (" . implode(',',$phs) . ")";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute($vals);
-        return $stmt->rowCount();
+try {
+    $exists = $pdo->query("SELECT COUNT(*) FROM information_schema.tables
+        WHERE table_schema = DATABASE() AND table_name = 'threat_feed_indicators'")->fetchColumn();
+    if ((int)$exists !== 1) {
+        throw new RuntimeException('Missing threat_feed_indicators table; apply migration 007.');
     }
-}
 
-out("[*] Fetching real threat intelligence...\n");
-$inserted = 0;
+    $upsert = $pdo->prepare("INSERT INTO threat_feed_indicators
+        (provider, indicator_type, indicator_value, threat_type, fetched_at)
+        VALUES (?, ?, ?, 'reported_malicious_ip', UTC_TIMESTAMP())
+        ON DUPLICATE KEY UPDATE fetched_at = UTC_TIMESTAMP()");
 
-// FEODO TRACKER
-out("[*] Fetching Feodo Tracker...\n");
-function fetchFeodo($pdo, $ipCol, $sevCol, 
-                   $catCol, $msgCol, $tsCol) {
-    
-    $inserted = 0;
-    $errors   = [];
-    
-    // Feodo Tracker has TWO feeds — try both
-    $feeds = [
-        // Feed 1: Full JSON with metadata (preferred)
-        'https://feodotracker.abuse.ch/downloads/ipblocklist.json',
-        // Feed 2: CSV fallback
-        'https://feodotracker.abuse.ch/downloads/ipblocklist_aggressive.json',
-    ];
-    
-    $list = [];
-    
-    foreach ($feeds as $url) {
-        $ctx = stream_context_create(['http' => [
-            'timeout'     => 15,
-            'user_agent'  => 'ThreatPulse-SIEM/1.0',
-            'ignore_errors' => true,
-        ]]);
-        
-        $json = @file_get_contents($url, false, $ctx);
-        if (!$json) continue;
-        
-        $data = json_decode($json, true);
-        if (json_last_error() !== JSON_ERROR_NONE) continue;
-        
-        // Handle multiple possible JSON structures
-        if (isset($data['blocklist']) 
-            && is_array($data['blocklist'])) {
-            $list = $data['blocklist'];
-            break;
-        }
-        if (isset($data['data']) 
-            && is_array($data['data'])) {
-            $list = $data['data'];
-            break;
-        }
-        if (is_array($data) && isset($data[0])) {
-            $list = $data;
-            break;
-        }
-    }
-    
-    // Fallback: plain text IP list if JSON fails
-    if (empty($list)) {
-        $txt = @file_get_contents(
-            'https://feodotracker.abuse.ch/downloads/ipblocklist.txt'
-        );
-        if ($txt) {
-            foreach (explode("\n", $txt) as $line) {
-                $line = trim($line);
-                if (empty($line) || $line[0] === '#') continue;
-                // Format: IP,PORT,MALWARE,FIRST_SEEN,LAST_SEEN
-                $parts = explode(',', $line);
-                if (filter_var($parts[0] ?? '', 
-                    FILTER_VALIDATE_IP)) {
-                    $list[] = [
-                        'ip_address'   => $parts[0],
-                        'port'         => $parts[1] ?? '',
-                        'malware'      => $parts[2] ?? 'Botnet',
-                        'first_seen'   => $parts[3] ?? '',
-                        'last_online'  => $parts[4] 
-                                       ?? date('Y-m-d'),
-                    ];
-                }
-            }
-        }
-    }
-    
-    if (empty($list)) {
-        error_log('[Feodo] All feeds failed');
-        return 0;
-    }
-    
-    // Prepare INSERT with dynamic columns
-    $colList = [$ipCol];
-    $phList  = ['?'];
-    if ($sevCol) { $colList[] = $sevCol; $phList[] = '?'; }
-    if ($catCol) { $colList[] = $catCol; $phList[] = '?'; }
-    $colList[] = $msgCol; $phList[] = '?';
-    $colList[] = $tsCol;  $phList[] = '?';
-    
-    $sql = "INSERT IGNORE INTO logs 
-            (" . implode(',', $colList) . ")
-            VALUES (" . implode(',', $phList) . ")";
-    $stmt = $pdo->prepare($sql);
-    
-    // Known malware families → attack category mapping
-    $malwareToCategory = [
-        'emotet'      => 'RCE',
-        'trickbot'    => 'RCE',
-        'qakbot'      => 'RCE',
-        'qbot'        => 'RCE',
-        'dridex'      => 'RCE',
-        'bazarloader' => 'RCE',
-        'cobalt'      => 'RCE',
-        'icedid'      => 'RCE',
-        'heodo'       => 'RCE',
-        'mirai'       => 'RCE',
-        'ssh'         => 'SSH',
-        'brute'       => 'SSH',
-        'telnet'      => 'SSH',
-        'ransomware'  => 'RCE',
-        'banker'      => 'SQLi',
-    ];
-    
-    foreach (array_slice($list, 0, 300) as $entry) {
-        // Extract IP — handle different field names
-        $ip = $entry['ip_address'] 
-           ?? $entry['ip'] 
-           ?? $entry['src_ip'] 
-           ?? $entry[0] 
-           ?? '';
-        
-        if (!filter_var($ip, FILTER_VALIDATE_IP,
-            FILTER_FLAG_NO_PRIV_RANGE)) continue;
-        
-        // Extract other fields
-        $port    = $entry['port']        
-                ?? $entry['dst_port']    
-                ?? '';
-        $malware = $entry['malware']     
-                ?? $entry['malware_family'] 
-                ?? $entry['threat']     
-                ?? 'Botnet C2';
-        $status  = $entry['status']      
-                ?? 'active';
-        $country = $entry['country']     
-                ?? '';
-        
-        // Real timestamp from API
-        $lastSeen = $entry['last_online'] 
-                 ?? $entry['last_seen']  
-                 ?? $entry['timestamp']  
-                 ?? $entry['first_seen'] 
-                 ?? date('Y-m-d H:i:s');
-        
-        // Parse timestamp safely
-        $ts = date('Y-m-d H:i:s', 
-              strtotime($lastSeen) ?: time());
-        
-        // Map malware name to attack category
-        $malwareLower = strtolower($malware);
-        $category = 'RCE'; // default for C2
-        foreach ($malwareToCategory as $key => $cat) {
-            if (str_contains($malwareLower, $key)) {
-                $category = $cat;
-                break;
-            }
-        }
-        
-        // Severity: active C2 = CRITICAL
-        $severity = ($status === 'active' 
-                  || empty($status)) 
-                  ? 'CRITICAL' : 'HIGH';
-        
-        // Build descriptive message
-        $portStr = $port ? " port {$port}" : '';
-        $ctry    = $country ? " [{$country}]" : '';
-        $message = "ALERT Botnet C2{$ctry}: {$malware}"
-                 . " command-and-control server"
-                 . " detected on{$portStr}";
-        
-        // Build values array matching columns
-        $vals = [$ip];
-        if ($sevCol) $vals[] = $severity;
-        if ($catCol) $vals[] = $category;
-        $vals[] = $message;
-        $vals[] = $ts;
-        
+    foreach ($feeds as $provider => $url) {
+        $new = 0;
+        $valid = 0;
         try {
-            $stmt->execute($vals);
-            $inserted += $stmt->rowCount();
-        } catch (PDOException $e) {
-            // Skip duplicates silently
-            if ($e->getCode() !== '23000') {
-                $errors[] = $e->getMessage();
+            $context = stream_context_create(['http' => [
+                'timeout' => 25,
+                'user_agent' => 'ThreatPulse-BlueTeam/1.0',
+                'ignore_errors' => false,
+            ]]);
+            $raw = @file_get_contents($url, false, $context);
+            if ($raw === false || strlen($raw) > 10 * 1024 * 1024) {
+                throw new RuntimeException('Feed unavailable or exceeds size limit.');
             }
-        }
-    }
-    
-    if (!empty($errors)) {
-        error_log('[Feodo] Errors: ' 
-            . implode('; ', array_slice($errors, 0, 3)));
-    }
-    
-    return $inserted;
-}
-function fetchEmergingThreats($pdo, $ipCol, $sevCol,
-                               $catCol, $msgCol, $tsCol) {
-    $url = 'https://rules.emergingthreats.net'
-         . '/blockrules/compromised-ips.txt';
-    
-    $txt = @file_get_contents($url, false,
-        stream_context_create(['http' => [
-            'timeout'    => 15,
-            'user_agent' => 'ThreatPulse-SIEM/1.0',
-        ]])
-    );
-    if (!$txt) return 0;
-    
-    $colList = [$ipCol];
-    $phList  = ['?'];
-    if ($sevCol) { $colList[] = $sevCol; $phList[] = '?'; }
-    if ($catCol) { $colList[] = $catCol; $phList[] = '?'; }
-    $colList[] = $msgCol; $phList[] = '?';
-    $colList[] = $tsCol;  $phList[] = '?';
-    
-    $stmt = $pdo->prepare(
-        "INSERT IGNORE INTO logs
-         (" . implode(',', $colList) . ")
-         VALUES (" . implode(',', $phList) . ")"
-    );
-    
-    $inserted = 0;
-    $lines    = explode("\n", trim($txt));
-    
-    foreach ($lines as $line) {
-        $ip = trim($line);
-        
-        // Skip comments and empty lines
-        if (empty($ip) || $ip[0] === '#') continue;
-        
-        // Validate IP
-        if (!filter_var($ip, FILTER_VALIDATE_IP,
-            FILTER_FLAG_NO_PRIV_RANGE)) continue;
-        
-        // Spread timestamps realistically
-        // over last 7 days so dashboard looks natural
-        $ts = date('Y-m-d H:i:s', 
-              time() - rand(0, 604800));
-        
-        $msg  = "ALERT Compromised host detected: "
-              . "{$ip} listed on Emerging Threats "
-              . "compromised IP blocklist";
-        
-        $vals = [$ip];
-        if ($sevCol) $vals[] = 'HIGH';
-        if ($catCol) $vals[] = 'Other';
-        $vals[] = $msg;
-        $vals[] = $ts;
-        
-        try {
-            $stmt->execute($vals);
-            $inserted += $stmt->rowCount();
-        } catch (PDOException $e) {
-            if ($e->getCode() !== '23000') continue;
-        }
-    }
-    return $inserted;
-}
-
-function fetchCINSArmy($pdo, $ipCol, $sevCol,
-                        $catCol, $msgCol, $tsCol) {
-    $url = 'https://cinsscore.com/list/ci-badguys.txt';
-    
-    $txt = @file_get_contents($url, false,
-        stream_context_create(['http' => [
-            'timeout'    => 20,
-            'user_agent' => 'ThreatPulse-SIEM/1.0',
-        ]])
-    );
-    if (!$txt) return 0;
-    
-    // CINS Army format: one IP per line, no headers
-    // Categories are mixed — use scoring to determine severity
-    $colList = [$ipCol];
-    $phList  = ['?'];
-    if ($sevCol) { $colList[] = $sevCol; $phList[] = '?'; }
-    if ($catCol) { $colList[] = $catCol; $phList[] = '?'; }
-    $colList[] = $msgCol; $phList[] = '?';
-    $colList[] = $tsCol;  $phList[] = '?';
-    
-    $stmt = $pdo->prepare(
-        "INSERT IGNORE INTO logs
-         (" . implode(',', $colList) . ")
-         VALUES (" . implode(',', $phList) . ")"
-    );
-    
-    // Attack type rotation for variety
-    // CINS Army catches all types so randomize
-    $categories = ['SSH','RCE','SQLi','XSS','SSTI','Other'];
-    $severities = [
-        'CRITICAL' => 30, // 30% chance
-        'HIGH'     => 50, // 50% chance
-        'WARNING'  => 20, // 20% chance
-    ];
-    
-    if (!function_exists('weightedSeverity')) {
-        function weightedSeverity($severities) {
-            $rand = rand(1, 100);
-            $cumulative = 0;
-            foreach ($severities as $sev => $weight) {
-                $cumulative += $weight;
-                if ($rand <= $cumulative) return $sev;
+            // Each feed is a plaintext IP blocklist. Never invent a timestamp,
+            // malware family, severity, or attack category for these IPs.
+            foreach (explode("\n", $raw) as $line) {
+                $ip = trim($line);
+                if ($ip === '' || $ip[0] === '#' || strlen($ip) > 45) continue;
+                if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) continue;
+                $type = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) ? 'IPV4' : 'IPV6';
+                $upsert->execute([$provider, $type, $ip]);
+                $new += $upsert->rowCount() === 1 ? 1 : 0;
+                $valid++;
+                if ($valid >= 2000) break;
             }
-            return 'HIGH';
+            if ($valid === 0) throw new RuntimeException('Feed returned no usable IP addresses.');
+            $newTotal += $new;
+            $results[$provider] = ['status' => 'ok', 'processed' => $valid, 'inserted' => $new];
+            echo "[ThreatIntel] {$provider}: {$valid} processed, {$new} new.\n";
+        } catch (Throwable $e) {
+            $failures++;
+            $results[$provider] = ['status' => 'error', 'processed' => $valid, 'inserted' => $new];
+            error_log("[ThreatIntel] {$provider}: " . $e->getMessage());
+            echo "[ThreatIntel] {$provider}: unavailable (see logs).\n";
         }
     }
-    
-    $inserted = 0;
-    $lines    = explode("\n", trim($txt));
-    
-    // Limit to 2000 IPs per fetch to avoid DB bloat
-    $lines = array_slice($lines, 0, 2000);
-    
-    foreach ($lines as $line) {
-        $ip = trim($line);
-        if (empty($ip) || $ip[0] === '#') continue;
-        if (!filter_var($ip, FILTER_VALIDATE_IP,
-            FILTER_FLAG_NO_PRIV_RANGE)) continue;
-        
-        $cat = $categories[array_rand($categories)];
-        $sev = weightedSeverity($severities);
-        
-        // Spread over last 30 days
-        $ts  = date('Y-m-d H:i:s',
-               time() - rand(0, 2592000));
-        
-        $attackTypes = [
-            'SSH'   => 'brute force SSH authentication attack',
-            'RCE'   => 'remote code execution attempt',
-            'SQLi'  => 'SQL injection attack attempt',
-            'XSS'   => 'cross-site scripting attempt',
-            'SSTI'  => 'server-side template injection',
-            'Other' => 'malicious activity detected',
-        ];
-        $desc = $attackTypes[$cat] 
-             ?? 'malicious activity detected';
-        $msg  = "ALERT CINS Army: {$ip} flagged for "
-              . "{$desc}";
-        
-        $vals = [$ip];
-        if ($sevCol) $vals[] = $sev;
-        if ($catCol) $vals[] = $cat;
-        $vals[] = $msg;
-        $vals[] = $ts;
-        
-        try {
-            $stmt->execute($vals);
-            $inserted += $stmt->rowCount();
-        } catch (PDOException $e) {
-            if ($e->getCode() !== '23000') continue;
-        }
+} catch (Throwable $e) {
+    $failures = count($feeds);
+    error_log('[ThreatIntel] ' . $e->getMessage());
+    echo "[ThreatIntel] Setup error: " . $e->getMessage() . "\n";
+}
+
+// ThreatFox requires an Auth-Key. It is deliberately not queried without
+// explicit configuration; a keyless request would silently fail.
+if (!getenv('THREATFOX_AUTH_KEY')) {
+    $results['threatfox'] = ['status' => 'not_configured'];
+}
+
+$status = $failures === 0 ? 'ok' : ($failures === count($feeds) ? 'error' : 'partial');
+$result = [
+    'timestamp' => gmdate('Y-m-d H:i:s'),
+    'status' => $status,
+    'new_indicators' => $newTotal,
+    'feeds' => $results,
+    'elapsed' => round(microtime(true) - $started, 2),
+];
+
+$statusDir = '/run/threatpulse';
+if (is_dir($statusDir) && is_writable($statusDir)) {
+    $tmp = tempnam($statusDir, '.bulk-');
+    if ($tmp !== false) {
+        file_put_contents($tmp, json_encode($result, JSON_UNESCAPED_SLASHES));
+        chmod($tmp, 0640);
+        rename($tmp, $statusDir . '/bulk_last_run.json');
     }
-    return $inserted;
 }
-
-function fetchBlocklistDE($pdo, $ipCol, $sevCol,
-                           $catCol, $msgCol, $tsCol) {
-
-    // BlocklistDE has category-specific feeds
-    // Fetch multiple for better categorization
-    $feeds = [
-        'ssh'   => [
-            'url' => 'https://lists.blocklist.de/lists/ssh.txt',
-            'cat' => 'SSH',
-            'sev' => 'HIGH',
-            'msg' => 'SSH brute force attack',
-        ],
-        'apache' => [
-            'url' => 'https://lists.blocklist.de/lists/apache.txt',
-            'cat' => 'XSS',
-            'sev' => 'HIGH',
-            'msg' => 'Apache web server attack',
-        ],
-        'imap'   => [
-            'url' => 'https://lists.blocklist.de/lists/imap.txt',
-            'cat' => 'Other',
-            'sev' => 'WARNING',
-            'msg' => 'IMAP credential brute force',
-        ],
-        'all'    => [
-            'url' => 'https://lists.blocklist.de/lists/all.txt',
-            'cat' => 'Other',
-            'sev' => 'HIGH',
-            'msg' => 'BlocklistDE: known attacker',
-        ],
-    ];
-    
-    $colList = [$ipCol];
-    $phList  = ['?'];
-    if ($sevCol) { $colList[] = $sevCol; $phList[] = '?'; }
-    if ($catCol) { $colList[] = $catCol; $phList[] = '?'; }
-    $colList[] = $msgCol; $phList[] = '?';
-    $colList[] = $tsCol;  $phList[] = '?';
-    
-    $stmt = $pdo->prepare(
-        "INSERT IGNORE INTO logs
-         (" . implode(',', $colList) . ")
-         VALUES (" . implode(',', $phList) . ")"
-    );
-    
-    $totalInserted = 0;
-    
-    // Only fetch 'all' feed to avoid duplicates
-    // Use specific feeds if you want category breakdown
-    $feed = $feeds['all'];
-    
-    $txt = @file_get_contents($feed['url'], false,
-        stream_context_create(['http' => [
-            'timeout'    => 25,
-            'user_agent' => 'ThreatPulse-SIEM/1.0',
-        ]])
-    );
-    if (!$txt) return 0;
-    
-    $lines = explode("\n", trim($txt));
-    
-    // Limit to 3000 to keep DB manageable
-    shuffle($lines); // randomize so we get variety
-    $lines = array_slice($lines, 0, 3000);
-    
-    foreach ($lines as $line) {
-        $ip = trim($line);
-        if (empty($ip) || $ip[0] === '#') continue;
-        if (!filter_var($ip, FILTER_VALIDATE_IP,
-            FILTER_FLAG_NO_PRIV_RANGE)) continue;
-        
-        // Spread over last 30 days
-        $ts  = date('Y-m-d H:i:s',
-               time() - rand(0, 2592000));
-        $msg = "ALERT BlocklistDE: {$ip} — "
-             . $feed['msg'];
-        
-        $vals = [$ip];
-        if ($sevCol) $vals[] = $feed['sev'];
-        if ($catCol) $vals[] = $feed['cat'];
-        $vals[] = $msg;
-        $vals[] = $ts;
-        
-        try {
-            $stmt->execute($vals);
-            $totalInserted += $stmt->rowCount();
-        } catch (PDOException $e) {
-            if ($e->getCode() !== '23000') continue;
-        }
-    }
-    return $totalInserted;
-}
-
-$total = 0;
-// Feodo is ingested by feodo_realtime.php into the dedicated
-// threat_feed_indicators table. A public blocklist is not a local attack log.
-out("[*] Feodo: managed by dedicated threat intelligence collector\n");
-
-$et = fetchEmergingThreats($pdo, $ipCol, $sevCol,
-                            $catCol, $msgCol, $tsCol);
-$total += $et;
-out("[+] Emerging Threats: +{$et} entries\n");
-
-$cins = fetchCINSArmy($pdo, $ipCol, $sevCol,
-                       $catCol, $msgCol, $tsCol);
-$total += $cins;
-out("[+] CINS Army: +{$cins} entries\n");
-
-$bde = fetchBlocklistDE($pdo, $ipCol, $sevCol,
-                         $catCol, $msgCol, $tsCol);
-$total += $bde;
-out("[+] BlocklistDE: +{$bde} entries\n");
-
-$inserted += $total;
-
-// THREATFOX
-out("[*] Fetching ThreatFox...\n");
-$ctx = stream_context_create(['http' => [
-    'method'  => 'POST',
-    'header'  => 'Content-Type: application/json',
-    'content' => json_encode(['query' => 'get_iocs', 'days'  => 7]),
-    'timeout' => 15,
-]]);
-$json = @file_get_contents('https://threatfox-api.abuse.ch/api/v1/', false, $ctx);
-if ($json) {
-    $data = json_decode($json, true);
-    $list = $data['data'] ?? [];
-    
-    $catMap = [
-        'botnet_cc'   => 'RCE',
-        'payload_delivery' => 'RCE',
-        'phishing'    => 'XSS',
-        'brute_force' => 'SSH',
-        'exploit'     => 'RCE',
-    ];
-    $sevMap = [
-        'botnet_cc'   => 'CRITICAL',
-        'exploit'     => 'CRITICAL',
-        'phishing'    => 'HIGH',
-        'brute_force' => 'HIGH',
-    ];
-    
-    foreach (array_slice($list, 0, 200) as $ioc) {
-        $raw = $ioc['ioc'] ?? '';
-        $ip  = explode(':', $raw)[0];
-        $ip  = str_replace(['http://','https://','[',']'], '', $ip);
-        if (!filter_var($ip, FILTER_VALIDATE_IP)) continue;
-        
-        $threat = $ioc['threat_type']      ?? 'malware';
-        $mal    = $ioc['malware']          ?? 'Unknown';
-        $conf   = $ioc['confidence_level'] ?? 50;
-        $seen   = $ioc['first_seen'] ?? $ioc['last_seen'] ?? date('Y-m-d H:i:s');
-        
-        $cat = $catMap[$threat]  ?? 'Other';
-        $sev = $sevMap[$threat] ?? ($conf >= 75 ? 'HIGH' : 'WARNING');
-        $msg = "ALERT {$threat}: {$mal} IOC detected";
-        $ts  = date('Y-m-d H:i:s', strtotime($seen) ?: time());
-        
-        $inserted += buildInsert($pdo, $ipCol, $sevCol, $catCol, $msgCol, $tsCol, $ip, $sev, $cat, $msg, $ts);
-    }
-    out("[+] ThreatFox: processed " . count($list) . " entries\n");
-} else {
-    out("[-] ThreatFox: could not reach API\n");
-}
-
-out("\n[*] Geolocating top attacker IPs...\n");
-$ips = $pdo->query("
-    SELECT DISTINCT l.source_ip 
-    FROM logs l
-    LEFT JOIN ip_geo g ON l.source_ip = g.ip
-    WHERE g.ip IS NULL
-      AND l.source_ip != ''
-      AND l.source_ip IS NOT NULL
-    LIMIT 30
-")->fetchAll(PDO::FETCH_COLUMN);
-
-$geoCount = 0;
-foreach ($ips as $ip) {
-    $url  = "http://ip-api.com/json/{$ip}?fields=status,country,countryCode,city,lat,lon";
-    $json = @file_get_contents($url);
-    if (!$json) continue;
-    
-    $geo = json_decode($json, true);
-    if (($geo['status'] ?? '') !== 'success') continue;
-    
-    $stmt = $pdo->prepare("
-        INSERT IGNORE INTO ip_geo 
-            (ip, country_code, country_name, city, latitude, longitude)
-        VALUES (?, ?, ?, ?, ?, ?)
-    ");
-    $stmt->execute([
-        $ip,
-        $geo['countryCode'] ?? '',
-        $geo['country']     ?? '',
-        $geo['city']        ?? '',
-        $geo['lat']         ?? 0,
-        $geo['lon']         ?? 0,
-    ]);
-    $geoCount++;
-    usleep(250000); 
-}
-out("[+] Geolocated {$geoCount} IPs\n");
-out("\n[+] Total entries inserted: {$inserted}\n");
-?>
+echo "[ThreatIntel] {$status}: {$newTotal} new indicators; no SIEM attack events created.\n";
+exit($status === 'error' ? 1 : 0);
