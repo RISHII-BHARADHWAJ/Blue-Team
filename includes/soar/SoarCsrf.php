@@ -7,12 +7,15 @@
  * with the configured Bearer token is not cookie-authenticated and is exempt.
  *
  * Call only after SoarAuth::getContext() has resolved the caller.
+ * Never use the actor/display name to decide whether a request is exempt.
  */
 final class SoarCsrf
 {
     public static function enforce(array $auth): void
     {
-        if (($auth['actor'] ?? '') === 'api_automation') {
+        // Actor names are display identifiers and must never grant an exemption.
+        // Only the verified bearer authentication path is exempt from CSRF.
+        if (($auth['auth_method'] ?? '') === 'bearer') {
             return;
         }
 
