@@ -38,6 +38,8 @@ $status = is_string($_GET['status'] ?? null) ? strtoupper(trim($_GET['status']))
 $severity = is_string($_GET['severity'] ?? null) ? strtoupper(trim($_GET['severity'])) : '';
 $validStatuses = ['NEW', 'OPEN', 'INVESTIGATING', 'CONTAINED', 'RESOLVED', 'CLOSED'];
 $validSeverities = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFO'];
+$myUserId = isset($auth['user_id']) && (int)$auth['user_id'] > 0 ? (int)$auth['user_id'] : null;
+$mine = $myUserId !== null && ($_GET['mine'] ?? null) === '1';
 if (!in_array($status, $validStatuses, true)) $status = '';
 if (!in_array($severity, $validSeverities, true)) $severity = '';
 $page = isset($_GET['page']) && is_scalar($_GET['page'])
@@ -47,7 +49,7 @@ $selectedId = isset($_GET['id']) && is_scalar($_GET['id'])
 
 $manager = new IncidentManager($pdo);
 $repository = new IncidentRepository($pdo);
-$filters = array_filter(['status' => $status, 'severity' => $severity]);
+$filters = array_filter(['status' => $status, 'severity' => $severity, 'assigned_to' => $mine ? $myUserId : null]);
 $error = null;
 $rows = [];
 $total = 0;
@@ -128,29 +130,31 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;margin:6px 0}.error
 <?php foreach ($validStatuses as $choice): ?><option value="<?= incidentEscape($choice) ?>" <?= $status === $choice ? 'selected' : '' ?>><?= incidentEscape($choice) ?></option><?php endforeach; ?></select></div>
 <div class="field"><label for="severity">Severity</label><select id="severity" name="severity"><option value="">All severities</option>
 <?php foreach ($validSeverities as $choice): ?><option value="<?= incidentEscape($choice) ?>" <?= $severity === $choice ? 'selected' : '' ?>><?= incidentEscape($choice) ?></option><?php endforeach; ?></select></div>
+<?php if ($myUserId !== null): ?><label for="mine"><input id="mine" name="mine" type="checkbox" value="1" <?= $mine ? 'checked' : '' ?>> Assigned to me</label><?php endif; ?>
 <button type="submit">Apply filters</button><a href="incidents.php">Clear</a>
 </form>
 </section>
 <section class="panel">
 <div class="metrics"><span class="metric"><?= incidentEscape($total) ?></span><span class="muted">matching incidents · showing up to 25 per page</span></div>
-<div class="table-scroll"><table><thead><tr><th>Incident</th><th>Title</th><th>Severity</th><th>Status</th><th>Priority</th><th>Alerts</th><th>Created</th></tr></thead><tbody>
+<div class="table-scroll"><table><thead><tr><th>Incident</th><th>Title</th><th>Severity</th><th>Status</th><th>Priority</th><th>Assigned to</th><th>Alerts</th><th>Created</th></tr></thead><tbody>
 <?php foreach ($rows as $incident): ?>
 <tr>
-<td><a href="<?= incidentEscape(incidentUrl(['id' => $incident['id'], 'status' => $status, 'severity' => $severity, 'page' => $page])) ?>"><?= incidentEscape($incident['incident_number']) ?></a></td>
+<td><a href="<?= incidentEscape(incidentUrl(['id' => $incident['id'], 'status' => $status, 'severity' => $severity, 'mine' => $mine ? '1' : '', 'page' => $page])) ?>"><?= incidentEscape($incident['incident_number']) ?></a></td>
 <td><?= incidentEscape($incident['title']) ?></td>
 <td><span class="pill <?= incidentEscape($incident['severity']) ?>"><?= incidentEscape($incident['severity']) ?></span></td>
 <td><?= incidentEscape($incident['status']) ?></td>
 <td><?= incidentEscape($incident['priority']) ?></td>
+<td><?= incidentEscape($incident['assigned_username'] ?? 'Unassigned') ?></td>
 <td><?= incidentEscape($incident['alert_count']) ?></td>
 <td class="muted"><?= incidentEscape($incident['created_at']) ?></td>
 </tr>
 <?php endforeach; ?>
-<?php if (!$rows): ?><tr><td colspan="7" class="muted">No incidents match these filters.</td></tr><?php endif; ?>
+<?php if (!$rows): ?><tr><td colspan="8" class="muted">No incidents match these filters.</td></tr><?php endif; ?>
 </tbody></table></div>
 <div class="pager"><span class="muted">Page <?= incidentEscape($page) ?> of <?= incidentEscape(max(1,(int)ceil($total/25))) ?></span>
 <div>
-<?php if ($page > 1): ?><a href="<?= incidentEscape(incidentUrl(['status'=>$status,'severity'=>$severity,'page'=>$page-1])) ?>">Previous</a><?php endif; ?>
-<?php if ($page * 25 < $total): ?><a href="<?= incidentEscape(incidentUrl(['status'=>$status,'severity'=>$severity,'page'=>$page+1])) ?>">Next</a><?php endif; ?>
+<?php if ($page > 1): ?><a href="<?= incidentEscape(incidentUrl(['status'=>$status,'severity'=>$severity,'mine'=>$mine ? '1' : '','page'=>$page-1])) ?>">Previous</a><?php endif; ?>
+<?php if ($page * 25 < $total): ?><a href="<?= incidentEscape(incidentUrl(['status'=>$status,'severity'=>$severity,'mine'=>$mine ? '1' : '','page'=>$page+1])) ?>">Next</a><?php endif; ?>
 </div></div>
 </section>
 <?php if ($selectedId !== false): ?>
