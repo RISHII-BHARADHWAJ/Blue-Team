@@ -83,6 +83,24 @@ if ($method === 'POST') {
         exit;
     }
 
+    // CSRF is not authorization: enforce the action's capability independently.
+    // Tier 1 can inspect incidents but cannot mutate their state or evidence.
+    $requiredCapability = match ($action) {
+        'change_status' => 'change_status_normal',
+        'assign' => 'assign_incidents',
+        'attach_alert' => 'attach_alerts',
+        default => null,
+    };
+    if ($requiredCapability !== null && !SoarAuth::hasPermission($auth['tier'], $requiredCapability)) {
+        http_response_code(403);
+        echo json_encode([
+            'success' => false,
+            'error' => 'forbidden',
+            'message' => 'Insufficient permission for this incident action.'
+        ], JSON_UNESCAPED_SLASHES);
+        exit;
+    }
+
     try {
         switch ($action) {
             case 'change_status':
