@@ -43,6 +43,7 @@ require_once __DIR__ . '/../includes/soar/enrichment/ThreatIntelProviderRegistry
 require_once __DIR__ . '/../includes/soar/enrichment/HttpClient.php';
 require_once __DIR__ . '/../includes/soar/EnrichmentService.php';
 require_once __DIR__ . '/../includes/soar/IncidentIocService.php';
+require_once __DIR__ . '/../includes/soar/SoarAuth.php';
 
 $totalTests = 38;
 $passedCount = 0;
@@ -59,7 +60,7 @@ function runTest(int $num, string $name, callable $fn): void {
             reportResult($num, $name, false, is_string($result) ? $result : 'Assertion returned false');
             $failedCount++;
         }
-    } catch (Exception $e) {
+    } catch (Throwable $e) {
         reportResult($num, $name, false, 'Exception: ' . $e->getMessage());
         $failedCount++;
     }
@@ -68,9 +69,9 @@ function runTest(int $num, string $name, callable $fn): void {
 // -----------------------------------------------------------------------------
 // Test 1: IPv4 Normalization
 // -----------------------------------------------------------------------------
-runTest(1, "IPv4 normalization strips leading zeros and returns canonical string", function() {
+runTest(1, "IPv4 normalization rejects ambiguous leading-zero octets", function() {
     $norm = IocNormalizer::normalize('IPV4', '198.51.100.025');
-    return $norm['valid'] && $norm['value'] === '198.51.100.25';
+    return !$norm['valid'] && ($norm['error'] ?? null) === 'INVALID_IPV4';
 });
 
 // -----------------------------------------------------------------------------

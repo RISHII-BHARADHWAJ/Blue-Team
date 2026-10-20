@@ -201,6 +201,6 @@ class AlertNormalizer {
         if ($rawMessage === null) {
             return '';
         }
-        return trim((string)$rawMessage);
+        return (string)$rawMessage;
     }
 }
