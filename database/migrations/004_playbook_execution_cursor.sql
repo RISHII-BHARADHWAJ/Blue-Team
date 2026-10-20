@@ -27,8 +27,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- This prevents accidental double-recording of the same execution attempt.
 -- Multiple rows ARE valid for the same (run_id, step_order) with different attempt_numbers.
 ALTER TABLE playbook_step_results
-    ADD CONSTRAINT IF NOT EXISTS uq_step_result_attempt
-        UNIQUE (playbook_run_id, step_order, attempt_number);
+    ADD UNIQUE KEY IF NOT EXISTS uq_step_result_attempt (playbook_run_id, step_order, attempt_number);
 
 -- Document the semantics of current_step_order as an execution cursor.
 -- This column already exists from migration 001 (default = 1).

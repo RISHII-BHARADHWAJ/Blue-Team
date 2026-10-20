@@ -34,6 +34,24 @@ jobs:
         run: docker compose exec -T web php database/verify_schema.php
       - name: Check HTTP login route
         run: curl --fail --show-error --silent http://localhost:8080/login.php --output /dev/null
+      - name: Reject HTTP database reset and diagnostic endpoints
+        run: |
+          for path in /reset_db.php /db_test.php; do
+            status=$(curl --silent --output /dev/null --write-out '%{http_code}' "http://localhost:8080$path")
+            if [ "$status" != "404" ]; then
+              echo "Expected 404 for $path; got $status" >&2
+              exit 1
+            fi
+          done
+      - name: Reject HTTP requests for protected project files
+        run: |
+          for path in /database.sql /database/verify_schema.php /includes/config.php; do
+            status=$(curl --silent --output /dev/null --write-out '%{http_code}' "http://localhost:8080$path")
+            if [ "$status" != "403" ]; then
+              echo "Expected 403 for $path; got $status" >&2
+              exit 1
+            fi
+          done
       - name: Verify SOAR CSRF guard behavior
         run: docker compose exec -T web sh tests/check_soar_csrf.sh
       - name: Show container logs on failure

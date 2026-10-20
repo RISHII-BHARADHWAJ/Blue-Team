@@ -76,6 +76,6 @@ EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
 ALTER TABLE playbooks
-    ADD CONSTRAINT IF NOT EXISTS uq_playbook_name_version UNIQUE (playbook_name, version);
+    ADD UNIQUE KEY IF NOT EXISTS uq_playbook_name_version (playbook_name, version);
 
 SET FOREIGN_KEY_CHECKS = 1;
