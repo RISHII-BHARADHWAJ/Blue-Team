@@ -60,7 +60,7 @@ function runTest(int $num, string $name, callable $fn): void {
             reportResult($num, $name, false, is_string($result) ? $result : 'Assertion returned false');
             $failedCount++;
         }
-    } catch (Exception $e) {
+    } catch (Throwable $e) {
         reportResult($num, $name, false, 'Exception: ' . $e->getMessage());
         $failedCount++;
     }
