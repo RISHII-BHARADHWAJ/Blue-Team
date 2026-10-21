@@ -69,7 +69,7 @@ class AlertNormalizer {
         $iocType = $this->normalizeIocType($raw['ioc_type'] ?? null);
         $iocValue = !empty($raw['ioc_value']) ? trim((string)$raw['ioc_value']) : null;
         $metadata = is_array($raw['metadata'] ?? null) ? $raw['metadata'] : [];
-        $receivedAt = date('Y-m-d H:i:s');
+        $receivedAt = gmdate('Y-m-d H:i:s');
 
         return new AlertSchema(
             message:          $message,
@@ -90,7 +90,8 @@ class AlertNormalizer {
             ioc_type:         $iocType,
             ioc_value:        $iocValue,
             metadata:         $metadata,
-            received_at:      $receivedAt
+            received_at:      $receivedAt,
+            is_simulated:     ($raw['is_simulated'] ?? false) === true
         );
     }
 
@@ -148,23 +149,20 @@ class AlertNormalizer {
      */
     public function normalizeTimestamp($rawTimestamp): string {
         if ($rawTimestamp === null || $rawTimestamp === '') {
-            return date('Y-m-d H:i:s');
+            return gmdate('Y-m-d H:i:s');
         }
 
         if (is_numeric($rawTimestamp)) {
-            $ts = (int)$rawTimestamp;
-            if ($ts > 0 && $ts < 21474836470) {
-                if ($ts > 2147483647) { // Milliseconds
-                    $ts = (int)($ts / 1000);
-                }
-                return date('Y-m-d H:i:s', $ts);
-            }
-        }
-
-        if (is_string($rawTimestamp)) {
-            $parsed = strtotime($rawTimestamp);
-            if ($parsed !== false && $parsed > 0) {
-                return date('Y-m-d H:i:s', $parsed);
+            $ts = (float)$rawTimestamp;
+            // Modern Unix milliseconds have 13 digits; retain compatibility with seconds.
+            if ($ts >= 100000000000) $ts /= 1000;
+            if ($ts > 0 && $ts <= 253402300799) return gmdate('Y-m-d H:i:s', (int)$ts);
+        } elseif (is_string($rawTimestamp)) {
+            try {
+                $parsed = new DateTimeImmutable($rawTimestamp, new DateTimeZone('UTC'));
+                if ($parsed->getTimestamp() > 0) return $parsed->setTimezone(new DateTimeZone('UTC'))->format('Y-m-d H:i:s');
+            } catch (Exception $e) {
+                // The caller receives the same structured validation error below.
             }
         }
 

@@ -202,7 +202,7 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;margin:6px 0}.error
 <?php endif; ?>
 <h2>Description</h2><pre><?= incidentEscape($detail['description']) ?></pre>
 <h2>Linked SIEM alerts (<?= count($detail['alerts']) ?>)</h2>
-<?php foreach ($detail['alerts'] as $alert): ?><div class="event"><strong><?= incidentEscape($alert['category']) ?> · <?= incidentEscape($alert['severity']) ?></strong><small><?= incidentEscape($alert['event_timestamp']) ?> · Source <?= incidentEscape($alert['source_ip']) ?> · Log #<?= incidentEscape($alert['log_id']) ?></small><pre><?= incidentEscape($alert['message']) ?></pre></div><?php endforeach; ?>
+<?php foreach ($detail['alerts'] as $alert): ?><div class="event"><strong><?= incidentEscape($alert['category']) ?> · <?= incidentEscape($alert['severity']) ?></strong><small><?= incidentEscape($alert['event_timestamp']) ?> · Source <?= incidentEscape($alert['source_ip']) ?> · <a href="events.php?log_id=<?= incidentEscape($alert['log_id']) ?>#evidence">Log #<?= incidentEscape($alert['log_id']) ?> · inspect evidence</a></small><pre><?= incidentEscape($alert['message']) ?></pre></div><?php endforeach; ?>
 <?php if (!$detail['alerts']): ?><p class="muted">No linked SIEM logs.</p><?php endif; ?>
 <h2 style="margin-top:20px">Investigation timeline</h2>
 <?php foreach ($detail['timeline'] as $event): ?><div class="event"><strong><?= incidentEscape($event['event_type']) ?></strong><small><?= incidentEscape($event['created_at']) ?> · <?= incidentEscape($event['actor_name']) ?></small><?= incidentEscape($event['summary']) ?></div><?php endforeach; ?>

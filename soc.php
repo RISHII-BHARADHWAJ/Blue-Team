@@ -143,7 +143,8 @@ code{font-size:12px;color:#abd2e1}
     <div class="nav-title">Workspace</div>
     <nav class="nav" aria-label="Main navigation">
       <a href="soc.php" aria-current="page">Overview</a>
-      <a href="dashboard.php">SIEM events</a>
+      <a href="events.php">Event evidence</a>
+      <a href="dashboard.php">Legacy SIEM</a>
       <a href="threat-intel.php">Threat intelligence</a>
       <a href="incidents.php">Incidents</a>
       <a href="control_plane/index.php">SOAR approvals</a>

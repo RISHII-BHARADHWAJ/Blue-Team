@@ -62,6 +62,9 @@ class AlertDeduplicator {
             'time_bucket:'    . $timeBucket,
         ];
 
+        // Distinct source event IDs represent distinct observations, even within a burst.
+        if (isset($data['source_event_id']) && $data['source_event_id'] !== '') $lines[] = 'source_event_id:' . $data['source_event_id'];
+        if (!empty($data['is_simulated'])) $lines[] = 'is_simulated:true';
         $serialized = implode("\n", $lines);
         return hash('sha256', $serialized);
     }
@@ -78,7 +81,7 @@ class AlertDeduplicator {
         $now = time();
 
         // 1. Check in-memory cache
-        if (isset(self::$memoryCache[$fingerprint])) {
+        if (!$pdo && isset(self::$memoryCache[$fingerprint])) {
             $expiry = self::$memoryCache[$fingerprint];
             if ($expiry > $now) {
                 return [
@@ -94,36 +97,24 @@ class AlertDeduplicator {
             try {
                 $key = 'soar_dedup_' . substr($fingerprint, 0, 80);
                 
-                // Clean old entries
-                $stmt = $pdo->prepare("DELETE FROM rate_limits WHERE ip_action_key LIKE 'soar_dedup_%' AND window_start < DATE_SUB(NOW(), INTERVAL ? SECOND)");
-                $stmt->execute([$ttlSeconds]);
-
-                // Check existing
-                $stmt = $pdo->prepare("SELECT request_count, window_start FROM rate_limits WHERE ip_action_key = ?");
+                // Atomic registration serializes concurrent submissions of the same fingerprint.
+                // Both operations participate in the caller's transaction, so retries after
+                // an evidence/correlation failure are accepted instead of silently suppressed.
+                $stmt = $pdo->prepare("DELETE FROM rate_limits WHERE ip_action_key = ? AND window_start < DATE_SUB(NOW(), INTERVAL ? SECOND)");
+                $stmt->execute([$key, $ttlSeconds]);
+                $stmt = $pdo->prepare("INSERT INTO rate_limits (ip_action_key, request_count, window_start)
+                    VALUES (?, 1, NOW()) ON DUPLICATE KEY UPDATE request_count = request_count + 1");
                 $stmt->execute([$key]);
-                $row = $stmt->fetch();
-
-                if ($row) {
-                    // Update count
-                    $stmt = $pdo->prepare("UPDATE rate_limits SET request_count = request_count + 1 WHERE ip_action_key = ?");
-                    $stmt->execute([$key]);
-
-                    self::$memoryCache[$fingerprint] = $now + $ttlSeconds;
-
-                    return [
-                        'is_duplicate' => true,
-                        'fingerprint'  => $fingerprint,
-                        'reason'       => "Identical alert fingerprint seen within {$ttlSeconds}s time window (Database)."
-                    ];
+                if ($stmt->rowCount() !== 1) {
+                    return ['is_duplicate' => true, 'fingerprint' => $fingerprint,
+                        'reason' => "Identical alert fingerprint seen within {$ttlSeconds}s time window (Database)."];
                 }
 
-                // Insert new deduplication record
-                $stmt = $pdo->prepare("INSERT INTO rate_limits (ip_action_key, request_count, window_start) VALUES (?, 1, NOW())");
-                $stmt->execute([$key]);
-
             } catch (Exception $e) {
-                // Fallback to in-memory if DB fails
+                // A durable transaction must fail if deduplication cannot persist.
+                throw $e;
             }
+            return ['is_duplicate' => false, 'fingerprint' => $fingerprint, 'reason' => 'New distinct alert accepted.'];
         }
 
         // Register in memory

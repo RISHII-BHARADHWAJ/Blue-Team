@@ -39,6 +39,18 @@ class AlertValidator {
     public function validate(array $data): array {
         $errors = [];
 
+        // Reject structured values before casts/normalization can hide malformed input.
+        foreach (array_merge(array_keys(self::MAX_LENGTHS), ['severity', 'protocol', 'ioc_type']) as $field) {
+            if (isset($data[$field]) && !is_string($data[$field])
+                && !($field === 'source_event_id' && is_int($data[$field]))) {
+                $errors[] = ['field' => $field, 'code' => 'INVALID_TYPE', 'message' => "$field must be a string."];
+            }
+        }
+        if (array_key_exists('is_simulated', $data) && !is_bool($data['is_simulated'])) {
+            $errors[] = ['field' => 'is_simulated', 'code' => 'INVALID_TYPE', 'message' => 'is_simulated must be a JSON boolean.'];
+        }
+        if ($errors) return ['valid' => false, 'errors' => $errors];
+
         // 1. Required: message
         if (!isset($data['message']) || trim((string)$data['message']) === '') {
             $errors[] = [

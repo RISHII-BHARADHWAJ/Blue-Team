@@ -364,6 +364,8 @@ class IncidentManager {
         ?string $customTitle = null,
         ?string $customDescription = null
     ): array {
+        $this->repository->assertNotSimulated($logId);
+
         // 1. Check if alert is already attached to an active incident
         $existingLink = $this->repository->isLogAttached($logId);
         if ($existingLink && IncidentStateMachine::isActive($existingLink['status'])) {
