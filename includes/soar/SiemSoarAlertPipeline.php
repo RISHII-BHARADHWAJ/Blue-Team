@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/AlertIngestionService.php';
 require_once __DIR__ . '/IncidentManager.php';
+require_once __DIR__ . '/ThreatIntelMatcher.php';
 
 final class SiemSoarAlertPipeline
 {
@@ -59,8 +60,14 @@ final class SiemSoarAlertPipeline
             ]);
             $logId = (int) $this->pdo->lastInsertId();
 
+            $intelMatches = (new ThreatIntelMatcher($this->pdo))->matchSourceIp($alert['source_ip'] ?? null);
             $correlation = $this->incidents->processAlert($alert, $logId, $actor);
             $result['log_id'] = $logId;
+            $result['threat_intelligence'] = [
+                'matched' => count($intelMatches) > 0,
+                'matches' => $intelMatches,
+                'note' => 'External reputation context only; not confirmation of an attack.',
+            ];
             $result['correlation'] = [
                 'decision' => $correlation['decision'],
                 'incident_id' => isset($correlation['incident']['id'])
