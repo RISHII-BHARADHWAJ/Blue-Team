@@ -128,6 +128,14 @@ try {
         'message' => 'Sensor event ' . bin2hex(random_bytes(8)),
         'event_timestamp' => date('Y-m-d H:i:s'),
     ];
+    // Real database-backed reputation matching: separate feed intelligence from
+    // observed telemetry, with full rollback at the end of this CI test.
+    $intelStmt = $pdo->prepare("INSERT INTO threat_feed_indicators
+        (provider, indicator_type, indicator_value, threat_type, malware_family,
+         source_last_seen, fetched_at)
+        VALUES ('ci_test_feed', 'IPV4', ?, 'reported_malicious_ip', 'CI-Example',
+                UTC_TIMESTAMP(), UTC_TIMESTAMP())");
+    $intelStmt->execute([$sensorEvent['source_ip']]);
     $sensorResult = $pipeline->ingest($sensorEvent, 'ci-sensor');
     checkIntegration(
         ($sensorResult['status'] ?? '') === 'accepted' && (int)($sensorResult['log_id'] ?? 0) > 0,
@@ -137,6 +145,18 @@ try {
         ($sensorResult['correlation']['decision'] ?? '') === 'CREATE'
             && (int)($sensorResult['correlation']['incident_id'] ?? 0) > 0,
         'accepted HTTP sensor event reaches incident correlation'
+    );
+    checkIntegration(
+        ($sensorResult['threat_intelligence']['matched'] ?? false) === true
+            && ($sensorResult['threat_intelligence']['matches'][0]['provider'] ?? '') === 'ci_test_feed',
+        'accepted alert includes matching external feed attribution'
+    );
+    $intelMatcher = new ThreatIntelMatcher($pdo);
+    $bulkMatches = $intelMatcher->matchSourceIps([$sensorEvent['source_ip'], '203.0.113.56']);
+    checkIntegration(
+        count($bulkMatches[$sensorEvent['source_ip']] ?? []) === 1
+            && empty($bulkMatches['203.0.113.56']),
+        'incident evidence batch lookup matches only listed source IP'
     );
     $sensorDuplicate = $pipeline->ingest($sensorEvent, 'ci-sensor');
     checkIntegration(
@@ -150,6 +170,10 @@ try {
     $mediumEvent['severity'] = 'MEDIUM';
     $mediumEvent['message'] = 'Medium severity event ' . bin2hex(random_bytes(8));
     $mediumResult = $pipeline->ingest($mediumEvent, 'ci-sensor');
+    checkIntegration(
+        ($mediumResult['threat_intelligence']['matched'] ?? true) === false,
+        'unlisted source IP is not falsely marked as a feed match'
+    );
     $severityStmt = $pdo->prepare('SELECT severity FROM logs WHERE id = ?');
     $severityStmt->execute([(int)$mediumResult['log_id']]);
     checkIntegration(

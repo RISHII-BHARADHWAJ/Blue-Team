@@ -8,6 +8,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/soar/SoarAuth.php';
 require_once __DIR__ . '/includes/soar/IncidentManager.php';
+require_once __DIR__ . '/includes/soar/ThreatIntelMatcher.php';
 
 $auth = SoarAuth::getContext($pdo);
 if ($auth['actor'] === 'anonymous') {
@@ -55,11 +56,17 @@ $rows = [];
 $total = 0;
 $detail = null;
 $assignableUsers = [];
+$intelMatchesByIp = [];
 try {
     $total = $repository->countIncidents($filters);
     $rows = $manager->listIncidents($filters, 25, ($page - 1) * 25);
     if ($selectedId !== false) {
         $detail = $manager->getIncident((int)$selectedId);
+        if ($detail !== null) {
+            $intelMatchesByIp = (new ThreatIntelMatcher($pdo))->matchSourceIps(
+                array_column($detail['alerts'], 'source_ip')
+            );
+        }
         if ($detail !== null && $canAssign) {
             $accounts = $pdo->query('SELECT id, username, role FROM users ORDER BY username LIMIT 500')->fetchAll();
             foreach ($accounts as $account) {
@@ -202,7 +209,28 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;margin:6px 0}.error
 <?php endif; ?>
 <h2>Description</h2><pre><?= incidentEscape($detail['description']) ?></pre>
 <h2>Linked SIEM alerts (<?= count($detail['alerts']) ?>)</h2>
-<?php foreach ($detail['alerts'] as $alert): ?><div class="event"><strong><?= incidentEscape($alert['category']) ?> · <?= incidentEscape($alert['severity']) ?></strong><small><?= incidentEscape($alert['event_timestamp']) ?> · Source <?= incidentEscape($alert['source_ip']) ?> · <a href="events.php?log_id=<?= incidentEscape($alert['log_id']) ?>#evidence">Log #<?= incidentEscape($alert['log_id']) ?> · inspect evidence</a></small><pre><?= incidentEscape($alert['message']) ?></pre></div><?php endforeach; ?>
+<?php foreach ($detail['alerts'] as $alert): ?>
+<div class="event">
+    <strong><?= incidentEscape($alert['category']) ?> · <?= incidentEscape($alert['severity']) ?></strong>
+    <small><?= incidentEscape($alert['event_timestamp']) ?> · Source <?= incidentEscape($alert['source_ip']) ?> · <a href="events.php?log_id=<?= incidentEscape($alert['log_id']) ?>#evidence">Log #<?= incidentEscape($alert['log_id']) ?> · inspect evidence</a></small>
+    <pre><?= incidentEscape($alert['message']) ?></pre>
+    <?php $intelListings = $intelMatchesByIp[$alert['source_ip'] ?? ''] ?? []; ?>
+    <?php if ($intelListings): ?>
+    <div style="border-top:1px solid #25506a;padding-top:10px;margin-top:10px">
+        <strong style="color:#6cdecd">External threat-intelligence matches (<?= count($intelListings) ?>)</strong>
+        <p class="muted" style="margin:5px 0 10px">These are public reputation listings for this source IP, not proof that this event was malicious.</p>
+        <?php foreach ($intelListings as $listing): ?>
+        <div style="padding:7px 0">
+            <strong><?= incidentEscape(str_replace('_', ' ', $listing['provider'])) ?></strong>
+            · <?= incidentEscape($listing['threat_type'] ?: 'Unclassified') ?>
+            <?php if (!empty($listing['malware_family'])): ?> · <?= incidentEscape($listing['malware_family']) ?><?php endif; ?>
+            <small>Source last seen: <?= incidentEscape($listing['source_last_seen'] ?: 'Not provided') ?> · Last imported (UTC): <?= incidentEscape($listing['fetched_at']) ?></small>
+        </div>
+        <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
+</div>
+<?php endforeach; ?>
 <?php if (!$detail['alerts']): ?><p class="muted">No linked SIEM logs.</p><?php endif; ?>
 <h2 style="margin-top:20px">Investigation timeline</h2>
 <?php foreach ($detail['timeline'] as $event): ?><div class="event"><strong><?= incidentEscape($event['event_type']) ?></strong><small><?= incidentEscape($event['created_at']) ?> · <?= incidentEscape($event['actor_name']) ?></small><?= incidentEscape($event['summary']) ?></div><?php endforeach; ?>

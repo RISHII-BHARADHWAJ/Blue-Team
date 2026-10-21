@@ -105,6 +105,14 @@ For an existing local database volume, back up the database first, then apply `d
 
 For migration 008 on an existing installation, follow the [non-destructive evidence upgrade instructions](docs/event-evidence.md#upgrade-an-existing-installation) before submitting new alerts.
 
+## SIEM alert and threat-intelligence correlation
+
+When an authenticated security sensor submits a valid event to `POST /api/v1/alerts.php`, the existing SIEM-to-SOAR pipeline stores the event and evaluates incident correlation. The response now includes `threat_intelligence.matched` and the matching public-feed records, if the alert's source IP is listed in `threat_feed_indicators`.
+
+Open `/incidents.php?id=<incident ID>` to see the same source-IP reputation context alongside linked SIEM evidence. This lookup is read-only and reflects the **current** inventory; it is not a historical reputation snapshot. Duplicate alerts are still suppressed, and matching a feed cannot automatically trigger containment or alter incident severity.
+
+The backend checks for migration 007 and works without it, returning no matches on older local databases. Data from external blocklists must never be interpreted as proof of activity against this environment.
+
 ## Testing and development
 
 The GitHub Actions CI workflow covers PHP syntax checks and database-backed SIEM/SOAR regression tests, including incident workflows and HTTP authorization scenarios. Review the [Actions tab](https://github.com/RISHII-BHARADHWAJ/Blue-Team/actions) for the latest results.
