@@ -111,6 +111,9 @@ class RequestApprovalAction implements PlaybookActionHandler {
     public function __construct(?PDO $pdo = null) { $this->pdo = $pdo; }
 
     public function execute(array $parameters, array $context, bool $dryRun = false): ActionResult {
+        if ($dryRun && !empty($context['incident']['is_simulated'])) {
+            return new ActionResult(ActionResult::STATUS_SUCCESS, 'Would request approval; simulated cases do not create approval requests.', [], true);
+        }
         if ($dryRun) {
             return new ActionResult(ActionResult::STATUS_WAITING_APPROVAL, 'Would pause execution and request analyst approval.', [], true);
         }

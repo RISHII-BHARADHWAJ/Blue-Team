@@ -85,7 +85,8 @@ foreach ($expectedSiemTables as $table => $expectedCols) {
 
 // 3. Check All 15 SOAR Tables
 $expectedSoarTables = [
-    'incidents'          => ['id', 'incident_number', 'title', 'description', 'severity', 'status', 'priority', 'risk_score', 'assigned_to', 'lead_analyst', 'attack_category', 'mitre_tactics', 'mitre_techniques', 'contained_at', 'resolved_at', 'closed_at', 'created_at', 'updated_at'],
+    'demo_sessions' => ['id','request_key','created_by','incident_id','finding_id','playbook_run_id','created_at'],
+    'incidents'          => ['is_simulated', 'id', 'incident_number', 'title', 'description', 'severity', 'status', 'priority', 'risk_score', 'assigned_to', 'lead_analyst', 'attack_category', 'mitre_tactics', 'mitre_techniques', 'contained_at', 'resolved_at', 'closed_at', 'created_at', 'updated_at'],
     'incident_alerts'    => ['id', 'incident_id', 'log_id', 'correlation_rule', 'added_at'],
     'incident_events'    => ['id', 'incident_id', 'event_source', 'raw_event_id', 'event_timestamp', 'summary', 'raw_payload', 'added_at'],
     'incident_timeline'  => ['id', 'incident_id', 'event_type', 'actor_type', 'actor_name', 'summary', 'details', 'created_at'],

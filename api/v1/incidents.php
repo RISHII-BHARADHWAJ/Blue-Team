@@ -50,6 +50,7 @@ if ($method === 'GET') {
     }
 
     $filters = [
+        'kind' => is_string($_GET['kind'] ?? null) ? $_GET['kind'] : 'observed',
         'status'         => !empty($_GET['status']) ? strtoupper(trim($_GET['status'])) : null,
         'severity'       => !empty($_GET['severity']) ? strtoupper(trim($_GET['severity'])) : null,
         'priority'       => !empty($_GET['priority']) ? strtoupper(trim($_GET['priority'])) : null,

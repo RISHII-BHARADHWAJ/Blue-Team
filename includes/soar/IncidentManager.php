@@ -99,6 +99,7 @@ class IncidentManager {
                 'severity'         => $severity,
                 'status'           => IncidentStateMachine::STATE_NEW,
                 'priority'         => $priority,
+                'is_simulated'     => !empty($params['is_simulated']),
                 'risk_score'       => 0, // Phase 5 will implement real risk scoring
                 'assigned_to'      => $params['assigned_to'] ?? null,
                 'lead_analyst'     => $params['lead_analyst'] ?? null,

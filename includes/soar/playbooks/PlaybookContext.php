@@ -31,8 +31,8 @@ class PlaybookContext {
         $this->riskAssessment = $riskAssessment;
         $this->analyst        = $analyst;
         $this->playbookRun    = $playbookRun;
-        $this->mode           = in_array(strtoupper($mode), ['MANUAL','AUTOMATIC','DRY_RUN'], true)
-                                 ? strtoupper($mode) : 'MANUAL';
+        $this->mode           = !empty($incident['is_simulated']) ? 'DRY_RUN' : (in_array(strtoupper($mode), ['MANUAL','AUTOMATIC','DRY_RUN'], true)
+                                 ? strtoupper($mode) : 'MANUAL');
         $this->createdAt      = date('Y-m-d H:i:s');
     }
 

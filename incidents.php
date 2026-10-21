@@ -37,6 +37,7 @@ function incidentEscape(mixed $value): string {
     return htmlspecialchars((string)($value ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
+$kind = in_array($_GET['kind'] ?? '', ['simulated', 'all'], true) ? $_GET['kind'] : 'observed';
 $status = is_string($_GET['status'] ?? null) ? strtoupper(trim($_GET['status'])) : '';
 $severity = is_string($_GET['severity'] ?? null) ? strtoupper(trim($_GET['severity'])) : '';
 $validStatuses = ['NEW', 'OPEN', 'INVESTIGATING', 'CONTAINED', 'RESOLVED', 'CLOSED'];
@@ -52,7 +53,7 @@ $selectedId = isset($_GET['id']) && is_scalar($_GET['id'])
 
 $manager = new IncidentManager($pdo);
 $repository = new IncidentRepository($pdo);
-$filters = array_filter(['status' => $status, 'severity' => $severity, 'assigned_to' => $mine ? $myUserId : null]);
+$filters = array_filter(['kind'=>$kind, 'status' => $status, 'severity' => $severity, 'assigned_to' => $mine ? $myUserId : null]);
 $error = null;
 $rows = [];
 $total = 0;
@@ -61,11 +62,16 @@ $assignableUsers = [];
 $caseNotes = ['notes'=>[], 'total'=>0, 'page'=>1, 'pages'=>1];
 $notesPage = filter_var($_GET['notes_page'] ?? 1, FILTER_VALIDATE_INT, ['options'=>['min_range'=>1]]) ?: 1;
 $intelMatchesByIp = [];
+$demoId = null;
 try {
     $total = $repository->countIncidents($filters);
     $rows = $manager->listIncidents($filters, 25, ($page - 1) * 25);
     if ($selectedId !== false) {
         $detail = $manager->getIncident((int)$selectedId);
+        if (!empty($detail['is_simulated'])) {
+            $demoStmt = $pdo->prepare('SELECT id FROM demo_sessions WHERE incident_id = ? LIMIT 1');
+            $demoStmt->execute([$selectedId]); $demoId = $demoStmt->fetchColumn();
+        }
         if ($detail !== null) $caseNotes = (new CaseNoteService($pdo))->list((int)$selectedId, $notesPage);
         if ($detail !== null) {
             $intelMatchesByIp = (new ThreatIntelMatcher($pdo))->matchSourceIps(
@@ -134,10 +140,15 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;margin:6px 0}.error
 <header><a class="brand" href="dashboard.php">THREATPULSE / SOC</a><nav><a href="dashboard.php">SIEM Dashboard</a><a href="incidents.php" aria-current="page">Incidents</a><a href="control_plane/index.php">SOAR Control Plane</a></nav></header>
 <main>
 <h1>Incident queue</h1>
+<p><a href="demo.php">Simulated incident walkthrough</a></p>
 <p class="lead">Review correlated detections, attached SIEM alerts, and the investigation timeline. Status progression uses the permission-checked incident API. Host containment actions are never initiated here.</p>
 <?php if ($error !== null): ?><section class="panel error" role="alert"><?= incidentEscape($error) ?></section><?php endif; ?>
 <section class="panel">
 <form method="get" action="incidents.php">
+<div class="field"><label for="kind">Data</label><select id="kind" name="kind">
+<?php foreach (['observed'=>'Real incidents', 'simulated'=>'Simulated incidents', 'all'=>'All incidents'] as $value=>$label): ?>
+<option value="<?= $value ?>" <?= $kind === $value ? 'selected' : '' ?>><?= $label ?></option>
+<?php endforeach; ?></select></div>
 <div class="field"><label for="status">Status</label><select id="status" name="status"><option value="">All statuses</option>
 <?php foreach ($validStatuses as $choice): ?><option value="<?= incidentEscape($choice) ?>" <?= $status === $choice ? 'selected' : '' ?>><?= incidentEscape($choice) ?></option><?php endforeach; ?></select></div>
 <div class="field"><label for="severity">Severity</label><select id="severity" name="severity"><option value="">All severities</option>
@@ -151,8 +162,8 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;margin:6px 0}.error
 <div class="table-scroll"><table><thead><tr><th>Incident</th><th>Title</th><th>Severity</th><th>Status</th><th>Priority</th><th>Assigned to</th><th>Alerts</th><th>Created</th></tr></thead><tbody>
 <?php foreach ($rows as $incident): ?>
 <tr>
-<td><a href="<?= incidentEscape(incidentUrl(['id' => $incident['id'], 'status' => $status, 'severity' => $severity, 'mine' => $mine ? '1' : '', 'page' => $page])) ?>"><?= incidentEscape($incident['incident_number']) ?></a></td>
-<td><?= incidentEscape($incident['title']) ?></td>
+<td><a href="<?= incidentEscape(incidentUrl(['kind'=>$kind, 'id' => $incident['id'], 'status' => $status, 'severity' => $severity, 'mine' => $mine ? '1' : '', 'page' => $page])) ?>"><?= incidentEscape($incident['incident_number']) ?></a></td>
+<td><?= incidentEscape($incident['title']) ?><?php if (!empty($incident['is_simulated'])): ?><br><strong>SIMULATED</strong><?php endif; ?></td>
 <td><span class="pill <?= incidentEscape($incident['severity']) ?>"><?= incidentEscape($incident['severity']) ?></span></td>
 <td><?= incidentEscape($incident['status']) ?></td>
 <td><?= incidentEscape($incident['priority']) ?></td>
@@ -165,14 +176,16 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;margin:6px 0}.error
 </tbody></table></div>
 <div class="pager"><span class="muted">Page <?= incidentEscape($page) ?> of <?= incidentEscape(max(1,(int)ceil($total/25))) ?></span>
 <div>
-<?php if ($page > 1): ?><a href="<?= incidentEscape(incidentUrl(['status'=>$status,'severity'=>$severity,'mine'=>$mine ? '1' : '','page'=>$page-1])) ?>">Previous</a><?php endif; ?>
-<?php if ($page * 25 < $total): ?><a href="<?= incidentEscape(incidentUrl(['status'=>$status,'severity'=>$severity,'mine'=>$mine ? '1' : '','page'=>$page+1])) ?>">Next</a><?php endif; ?>
+<?php if ($page > 1): ?><a href="<?= incidentEscape(incidentUrl(['kind'=>$kind, 'status'=>$status,'severity'=>$severity,'mine'=>$mine ? '1' : '','page'=>$page-1])) ?>">Previous</a><?php endif; ?>
+<?php if ($page * 25 < $total): ?><a href="<?= incidentEscape(incidentUrl(['kind'=>$kind, 'status'=>$status,'severity'=>$severity,'mine'=>$mine ? '1' : '','page'=>$page+1])) ?>">Next</a><?php endif; ?>
 </div></div>
 </section>
 <?php if ($selectedId !== false): ?>
 <section class="panel" id="details">
 <h2><?= $detail ? incidentEscape($detail['incident_number']) . ' · ' . incidentEscape($detail['title']) : 'Incident not found' ?></h2>
 <?php if ($detail): ?>
+<?php if (!empty($detail['is_simulated'])): ?><p class="error"><strong>SIMULATED TEST DATA</strong> — investigation practice only. All playbooks are forced to dry-run. Live enrichment is disabled.</p><?php endif; ?>
+<?php if ($demoId): ?><p><a href="demo.php?id=<?= (int)$demoId ?>">Continue the simulated walkthrough</a></p><?php endif; ?>
 <div class="info-grid">
 <div><strong>Status</strong><?= incidentEscape($detail['status']) ?></div>
 <div><strong>Severity / Priority</strong><?= incidentEscape($detail['severity']) ?> / <?= incidentEscape($detail['priority']) ?></div>
@@ -226,8 +239,8 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;margin:6px 0}.error
 <?php foreach ($caseNotes['notes'] as $note): ?><article class="event"><strong><?= incidentEscape($note['author']) ?></strong><small>Note #<?= incidentEscape($note['id']) ?> · <?= incidentEscape($note['created_at']) ?> (server time)</small><pre><?= incidentEscape($note['note_text']) ?></pre></article><?php endforeach; ?>
 <?php if (!$caseNotes['notes']): ?><p class="muted">No case notes yet. Record what you checked, what you found, and the next investigation step.</p><?php endif; ?>
 <?php if ($caseNotes['pages'] > 1): ?><div class="pager"><span>Notes page <?= incidentEscape($caseNotes['page']) ?> of <?= incidentEscape($caseNotes['pages']) ?></span><span>
-<?php if ($caseNotes['page'] > 1): ?><a href="<?= incidentEscape(incidentUrl(['id'=>$detail['id'], 'notes_page'=>$caseNotes['page']-1])) ?>#case-notes">Newer notes</a><?php endif; ?>
-<?php if ($caseNotes['page'] < $caseNotes['pages']): ?><a href="<?= incidentEscape(incidentUrl(['id'=>$detail['id'], 'notes_page'=>$caseNotes['page']+1])) ?>#case-notes">Older notes</a><?php endif; ?>
+<?php if ($caseNotes['page'] > 1): ?><a href="<?= incidentEscape(incidentUrl(['kind'=>$kind, 'id'=>$detail['id'], 'notes_page'=>$caseNotes['page']-1])) ?>#case-notes">Newer notes</a><?php endif; ?>
+<?php if ($caseNotes['page'] < $caseNotes['pages']): ?><a href="<?= incidentEscape(incidentUrl(['kind'=>$kind, 'id'=>$detail['id'], 'notes_page'=>$caseNotes['page']+1])) ?>#case-notes">Older notes</a><?php endif; ?>
 </span></div><?php endif; ?>
 </section>
 <h2>Description</h2><pre><?= incidentEscape($detail['description']) ?></pre>

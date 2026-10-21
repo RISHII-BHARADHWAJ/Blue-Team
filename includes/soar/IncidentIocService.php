@@ -50,6 +50,10 @@ class IncidentIocService {
             throw new InvalidArgumentException("Incident #{$incidentId} does not exist.");
         }
 
+        if (!empty($incident['is_simulated'])) {
+            throw new DomainException('Live IOC discovery and enrichment are disabled for simulated incidents. Use a dry-run playbook.');
+        }
+
         // 1. Fetch attached SIEM alerts
         $attachedAlerts = $this->incRepo->getAttachedAlerts($incidentId);
         $discovered = [];

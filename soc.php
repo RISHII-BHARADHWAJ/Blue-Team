@@ -45,9 +45,9 @@ try {
     $hasIncidents = $pdo->query("SELECT COUNT(*) FROM information_schema.tables
         WHERE table_schema = DATABASE() AND table_name = 'incidents'")->fetchColumn();
     if ((int)$hasIncidents > 0) {
-        $incidentCount = (int)$pdo->query("SELECT COUNT(*) FROM incidents WHERE status NOT IN ('RESOLVED','CLOSED')")->fetchColumn();
+        $incidentCount = (int)$pdo->query("SELECT COUNT(*) FROM incidents WHERE is_simulated = 0 AND status NOT IN ('RESOLVED','CLOSED')")->fetchColumn();
         $incidentRows = $pdo->query("SELECT id, incident_number, title, severity, status, created_at
-            FROM incidents ORDER BY created_at DESC, id DESC LIMIT 6")->fetchAll(PDO::FETCH_ASSOC);
+            FROM incidents WHERE is_simulated = 0 ORDER BY created_at DESC, id DESC LIMIT 6")->fetchAll(PDO::FETCH_ASSOC);
     }
 } catch (Throwable $e) {
     error_log('SOC overview query failed: ' . $e->getMessage());
