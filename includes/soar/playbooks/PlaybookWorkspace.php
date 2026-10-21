@@ -36,7 +36,9 @@ final class PlaybookWorkspace
                 throw new UnexpectedValueException('This request key was used for another preview. Reload the page before starting a new one.');
             }
             if ($request['run_id'] !== null) {
-                $run = $this->repo->findRun((int)$request['run_id']);
+                // A waiting retry may have an older REPEATABLE READ snapshot.
+                // Match the request's current locking read when loading its run.
+                $run = $this->repo->findRun((int)$request['run_id'], true);
             } else {
                 if (!$playbook['is_active'] || (int)$playbook['version'] !== $version) {
                     throw new UnexpectedValueException('The playbook changed or was disabled. Reload and inspect its current definition.');
@@ -61,6 +63,7 @@ final class PlaybookWorkspace
                 $this->pdo->prepare('UPDATE playbook_preview_requests SET run_id = ? WHERE id = ?')->execute([$run['id'], $request['id']]);
                 $run = $this->repo->findRun((int)$run['id']);
             }
+            if (!$run) throw new RuntimeException('The saved preview run could not be loaded.');
             if ($own) $this->pdo->commit(); else $this->pdo->exec("RELEASE SAVEPOINT $sp");
             return $run;
         } catch (Throwable $e) {

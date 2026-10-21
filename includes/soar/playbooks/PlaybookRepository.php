@@ -94,9 +94,9 @@ class PlaybookRepository {
 
     // ---------- Runs ---------------------------------------------------------
 
-    public function findRun(int $runId): ?array {
+    public function findRun(int $runId, bool $forUpdate = false): ?array {
         if (!$this->pdo) return null;
-        $stmt = $this->pdo->prepare("SELECT * FROM playbook_runs WHERE id = ? LIMIT 1");
+        $stmt = $this->pdo->prepare("SELECT * FROM playbook_runs WHERE id = ? LIMIT 1" . ($forUpdate ? " FOR UPDATE" : ""));
         $stmt->execute([$runId]);
         $row = $stmt->fetch();
         if (!$row) return null;
