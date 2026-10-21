@@ -81,6 +81,11 @@ jobs:
         run: |
           docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/integration_case_notes.php
           sh tests/check_case_notes_http.sh
+      - name: Verify configurable detections, concurrency and HTTP permissions
+        run: |
+          docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/integration_detections.php
+          docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/concurrent_detections.php
+          sh tests/check_detections_http.sh
       - name: Show container logs on failure
         if: failure()
         run: docker compose logs --no-color --tail=200

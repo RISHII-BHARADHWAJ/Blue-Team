@@ -15,6 +15,7 @@ require_once __DIR__ . '/AlertIngestionService.php';
 require_once __DIR__ . '/IncidentManager.php';
 require_once __DIR__ . '/../siem/EventEvidenceRepository.php';
 require_once __DIR__ . '/ThreatIntelMatcher.php';
+require_once __DIR__ . '/../siem/DetectionEngine.php';
 
 final class SiemSoarAlertPipeline
 {
@@ -41,6 +42,8 @@ final class SiemSoarAlertPipeline
         }
 
         try {
+            $detections = new DetectionEngine($this->pdo);
+            $rules = $detections->lockRules();
             $result = $this->ingestion->ingest($payload, $actor);
             if (!$result['success'] || !empty($result['duplicate'])) {
                 if ($ownsTransaction) {
@@ -69,11 +72,22 @@ final class SiemSoarAlertPipeline
             $result['evidence_id'] = (new EventEvidenceRepository($this->pdo))->append(
                 $logId, $alert, $payload, $result['fingerprint'], $actor, $rawBody
             );
+            $intelMatches = (new ThreatIntelMatcher($this->pdo))->matchSourceIp($alert['source_ip'] ?? null);
+            $findings = $detections->evaluate($rules, $alert, $result['evidence_id'], $actor, $intelMatches);
+            $result['detections'] = $findings;
+            // Only the correlation copy receives detection severity. Original evidence stays intact.
+            $effectiveAlert = $alert;
+            $weights = ['INFO'=>0, 'LOW'=>1, 'MEDIUM'=>2, 'HIGH'=>3, 'CRITICAL'=>4];
+            foreach ($findings as $finding) {
+                if ($weights[$finding['severity']] > $weights[$effectiveAlert['severity']]) {
+                    $effectiveAlert['severity'] = $finding['severity'];
+                }
+            }
             // Demo evidence must never attach to a real case or trigger response work.
             $correlation = $alert['is_simulated']
                 ? ['decision' => 'SIMULATION_ONLY', 'incident' => null]
-                : $this->incidents->processAlert($alert, $logId, $actor);
-            $intelMatches = (new ThreatIntelMatcher($this->pdo))->matchSourceIp($alert['source_ip'] ?? null);
+                : $this->incidents->processAlert($effectiveAlert, $logId, $actor);
+            $detections->linkIncident($findings, isset($correlation['incident']['id']) ? (int)$correlation['incident']['id'] : null);
             $result['log_id'] = $logId;
             $result['threat_intelligence'] = [
                 'matched' => count($intelMatches) > 0,
