@@ -115,7 +115,7 @@ class RequestApprovalAction implements PlaybookActionHandler {
             return new ActionResult(ActionResult::STATUS_SUCCESS, 'Would request approval; simulated cases do not create approval requests.', [], true);
         }
         if ($dryRun) {
-            return new ActionResult(ActionResult::STATUS_WAITING_APPROVAL, 'Would pause execution and request analyst approval.', [], true);
+            return new ActionResult(ActionResult::STATUS_SUCCESS, 'Would request analyst approval; dry-run does not create an approval request.', [], true);
         }
         // Actual approval creation is handled by PlaybookStepExecutor.
         // This handler signals the need for it.

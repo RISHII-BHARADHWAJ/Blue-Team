@@ -85,6 +85,7 @@ foreach ($expectedSiemTables as $table => $expectedCols) {
 
 // 3. Check All 15 SOAR Tables
 $expectedSoarTables = [
+    'playbook_preview_requests' => ['id','user_id','request_key','incident_id','playbook_id','playbook_version','run_id','created_at'],
     'demo_sessions' => ['id','request_key','created_by','incident_id','finding_id','playbook_run_id','created_at'],
     'incidents'          => ['is_simulated', 'id', 'incident_number', 'title', 'description', 'severity', 'status', 'priority', 'risk_score', 'assigned_to', 'lead_analyst', 'attack_category', 'mitre_tactics', 'mitre_techniques', 'contained_at', 'resolved_at', 'closed_at', 'created_at', 'updated_at'],
     'incident_alerts'    => ['id', 'incident_id', 'log_id', 'correlation_rule', 'added_at'],

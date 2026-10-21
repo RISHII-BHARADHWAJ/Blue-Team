@@ -198,9 +198,9 @@ runTest(23, "Dry-run step returns dry_run=true with no mutations", function() us
 
 // ===== APPROVAL ==============================================================
 
-runTest(24, "REQUEST_APPROVAL action returns WAITING_APPROVAL status", function() use ($executor) {
+runTest(24, "Live REQUEST_APPROVAL action returns WAITING_APPROVAL status", function() use ($executor) {
     $step = ['id' => 2, 'step_order' => 2, 'step_name' => 'Approve', 'action_type' => 'REQUEST_APPROVAL', 'action_parameters' => [], 'timeout_seconds' => 0];
-    $ctx  = new PlaybookContext(['id' => 10, 'incident_number' => 'INC-001', 'title' => 'T', 'severity' => 'HIGH', 'priority' => 'P1', 'risk_score' => 80, 'status' => 'OPEN', 'attack_category' => '', 'description' => ''], [], [], [], [], [], 'DRY_RUN');
+    $ctx  = new PlaybookContext(['id' => 10, 'incident_number' => 'INC-001', 'title' => 'T', 'severity' => 'HIGH', 'priority' => 'P1', 'risk_score' => 80, 'status' => 'OPEN', 'attack_category' => '', 'description' => ''], [], [], [], [], [], 'MANUAL');
     $r    = $executor->executeStep($step, $ctx, 0);
     return $r->status === ActionResult::STATUS_WAITING_APPROVAL;
 });

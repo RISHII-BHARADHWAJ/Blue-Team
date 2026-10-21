@@ -100,6 +100,11 @@ jobs:
         run: |
           docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/integration_risk_workspace.php
           sh tests/check_risk_workspace_http.sh
+      - name: Verify playbook workspace previews, retries and HTTP permissions
+        run: |
+          docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/integration_playbook_workspace.php
+          docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/concurrent_playbook_previews.php
+          sh tests/check_playbook_workspace_http.sh
       - name: Show container logs on failure
         if: failure()
         run: docker compose logs --no-color --tail=200
