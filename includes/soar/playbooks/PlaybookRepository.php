@@ -164,13 +164,14 @@ class PlaybookRepository {
         }
         $completed = in_array($status, ['COMPLETED','FAILED','CANCELLED']) ? 'NOW()' : 'NULL';
         $params = [$status];
+        // Bind in SQL order: status, optional error, optional cursor, run ID.
+        if ($error !== null) $params[] = substr($error, 0, 1000);
         $stepSql = '';
         if ($currentStep !== null) {
             $stepSql = ', current_step_order = ?';
             $params[] = $currentStep;
         }
         if ($error !== null) {
-            $params[] = substr($error, 0, 1000);
             $params[] = $runId;
             $this->pdo->prepare("UPDATE playbook_runs SET status = ?, error_message = ?{$stepSql}, completed_at = {$completed} WHERE id = ?")->execute($params);
         } else {

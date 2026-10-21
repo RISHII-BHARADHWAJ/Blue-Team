@@ -42,6 +42,7 @@ try{
  $failedPb=$repo->createPlaybook(['playbook_name'=>$name.'_failed','display_name'=>'Missing note','category'=>'INVESTIGATION'],$uid);
  $repo->createStep($failedPb,['step_order'=>1,'step_name'=>'Empty note','action_type'=>'ADD_INCIDENT_NOTE','action_parameters'=>[]]);
  $failedKey=bin2hex(random_bytes(16));$failed=$service->preview($id,$failedPb,1,$uid,$failedKey);
+ previewCheck((int)$failed['current_step_order']===1 && str_contains($failed['error_message'],'note'),'failed run preserves numeric cursor and error message in the correct columns');
  previewCheck($failed['status']==='FAILED' && (int)$service->preview($id,$failedPb,1,$uid,$failedKey)['id']===(int)$failed['id'],'failed preview remains inspectable and retry does not run again');
  $empty=$repo->createPlaybook(['playbook_name'=>$name.'_empty','display_name'=>'Empty','category'=>'INVESTIGATION'],$uid);
  $beforeRequests=(int)$pdo->query('SELECT COUNT(*) FROM playbook_preview_requests')->fetchColumn();$invalid=false;
