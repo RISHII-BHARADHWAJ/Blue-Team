@@ -40,7 +40,7 @@ try {
 <title>ThreatPulse | Event evidence</title><link rel="stylesheet" href="assets/css/workspace.css"></head><body>
 <a class="skip" href="#main">Skip to event evidence</a>
 <div class="workspace"><aside class="sidebar"><a class="brand" href="soc.php">ThreatPulse</a>
-<nav aria-label="SOC navigation"><a href="soc.php">Overview</a><a href="events.php" aria-current="page">Event evidence</a><a href="detections.php">Detections</a><a href="threat-intel.php">Threat intelligence</a><a href="incidents.php">Incidents</a><a href="control_plane/index.php">SOAR approvals</a><a href="dashboard.php">Legacy SIEM</a></nav>
+<nav aria-label="SOC navigation"><a href="soc.php">Overview</a><a href="events.php" aria-current="page">Event evidence</a><a href="detections.php">Detections</a><a href="threat-intel.php">Threat intelligence</a><a href="feeds.php">Feed health</a><a href="incidents.php">Incidents</a><a href="control_plane/index.php">SOAR approvals</a><a href="dashboard.php">Legacy SIEM</a></nav>
 <p>Development environment<br>Evidence from authenticated submissions</p></aside><main id="main">
 <span class="eyebrow">Investigate / source evidence</span><h1>Event evidence</h1>
 <p>Search accepted sensor submissions and inspect their original evidence. A submitted alert is a source claim, not independent confirmation of an attack.</p>

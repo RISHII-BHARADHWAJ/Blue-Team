@@ -54,19 +54,11 @@ try {
     $dbError = 'Some SOC data is currently unavailable. Check the database schema and service logs.';
 }
 
-$feodo = null;
-$feodoFile = '/run/threatpulse/feodo_last_run.json';
-if (is_readable($feodoFile)) {
-    $decoded = json_decode((string)file_get_contents($feodoFile), true);
-    if (is_array($decoded) && isset($decoded['timestamp'])) $feodo = $decoded;
-}
-
-$bulkStatus = null;
-$bulkFile = '/run/threatpulse/bulk_last_run.json';
-if (is_readable($bulkFile)) {
-    $decoded = json_decode((string)file_get_contents($bulkFile), true);
-    if (is_array($decoded) && isset($decoded['timestamp'])) $bulkStatus = $decoded;
-}
+$feedSources=[]; $feedError=null;
+try {
+    require_once __DIR__ . '/includes/intel/FeedRepository.php';
+    $feedSources=(new FeedRepository($pdo))->sources();
+} catch (Throwable $e) { $feedError='Feed history unavailable; check migration 010 and database health.'; }
 
 $severityColors = [
     'CRITICAL' => '#ef6978', 'HIGH' => '#f3a75e', 'WARNING' => '#f4cb6b',
@@ -146,7 +138,7 @@ code{font-size:12px;color:#abd2e1}
       <a href="events.php">Event evidence</a>
       <a href="dashboard.php">Legacy SIEM</a>
       <a href="detections.php">Detections</a><a href="threat-intel.php">Threat intelligence</a>
-      <a href="incidents.php">Incidents</a>
+      <a href="feeds.php">Feed health</a><a href="incidents.php">Incidents</a>
       <a href="control_plane/index.php">SOAR approvals</a>
     </nav>
   </div>
@@ -190,26 +182,13 @@ code{font-size:12px;color:#abd2e1}
     </section>
     <div>
       <section class="panel" aria-labelledby="feed-title">
-        <div class="panel-head"><h2 id="feed-title">Feodo feed</h2><span class="pill">Last local run</span></div>
-        <?php if ($feodo): ?>
-          <div class="fact"><b>Last attempted</b><span><?= socEscape($feodo['timestamp']) ?> (server time)</span></div>
-          <div class="fact"><b>New indicators</b><span><?= socEscape((int)($feodo['inserted'] ?? 0)) ?></span></div>
-          <div class="fact"><b>Indicators processed</b><span><?= socEscape((int)($feodo['processed'] ?? 0)) ?></span></div>
-          <p><?= ($feodo['status'] ?? '') === 'ok' ? 'Collector completed; scheduled refresh still needs monitoring.' : 'Last collector attempt failed; check the ingestion log.' ?></p>
-          <p><a href="threat-intel.php">Explore external indicators →</a></p>
-        <?php else: ?>
-          <p>No local run status available. Start a manual Feodo fetch or investigate scheduled ingestion.</p>
-        <?php endif; ?>
-        <div class="divider"></div>
-        <h2>Other intelligence feeds</h2>
-        <?php if ($bulkStatus): ?>
-          <div class="fact"><b>Last attempted</b><span><?= socEscape($bulkStatus['timestamp']) ?> UTC</span></div>
-          <?php foreach (($bulkStatus['feeds'] ?? []) as $provider => $feedInfo): ?>
-            <div class="fact"><b><?= socEscape(str_replace('_', ' ', $provider)) ?></b><span><?= socEscape($feedInfo['status'] ?? 'unknown') ?><?php if (isset($feedInfo['processed'])): ?> · <?= socEscape($feedInfo['processed']) ?> processed<?php endif; ?></span></div>
-          <?php endforeach; ?>
-        <?php else: ?>
-          <p>No bulk-feed status available yet.</p>
-        <?php endif; ?>
+        <div class="panel-head"><h2 id="feed-title">Feed health</h2><a href="feeds.php">Collection history →</a></div>
+        <?php if ($feedError): ?><p><?= socEscape($feedError) ?></p><?php endif; ?>
+        <?php if (getenv('FEED_COLLECTION_ENABLED')==='0'): ?><p>Collection paused by deployment setting.</p><?php endif; ?>
+        <?php foreach ($feedSources as $feed): ?>
+          <div class="fact"><b><?= socEscape(FeedCatalog::FEEDS[$feed['provider']]['name']??$feed['provider']) ?></b><span><?= socEscape($feed['health']) ?><br><?= socEscape($feed['last_attempt_at']??'Never attempted') ?></span></div>
+        <?php endforeach; ?>
+        <p>Status reflects recorded collection results, not confirmation of local attacks.</p>
         <div class="divider"></div>
         <h2>Severity distribution</h2>
         <?php if ($metrics['records'] > 0): ?>

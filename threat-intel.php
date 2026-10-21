@@ -97,7 +97,7 @@ code{color:#b6d8e8;font-size:12px}
     <a href="events.php">Event evidence</a>
       <a href="dashboard.php">Legacy SIEM</a>
     <a href="threat-intel.php" aria-current="page">Threat intelligence</a>
-    <a href="incidents.php">Incidents</a>
+    <a href="feeds.php">Feed health</a><a href="incidents.php">Incidents</a>
     <a href="control_plane/index.php">SOAR approvals</a>
   </nav>
 </aside>
@@ -113,7 +113,7 @@ code{color:#b6d8e8;font-size:12px}
     <div class="card"><div class="label">Known external indicators</div><div class="value"><?= intelEscape(number_format($total)) ?></div></div>
     <div class="card"><div class="label">Last stored refresh (UTC)</div><div class="value" style="font-size:23px"><?= intelEscape($lastFetched ?: 'No imports yet') ?></div></div>
   </div>
-  <div class="notice">Source: external feed listings. Do not interpret these IPs as attackers observed by a local SIEM sensor. Refresh time reflects stored data, not guaranteed feed availability.</div>
+  <div class="notice">Source: external feed listings. Do not interpret these IPs as attackers observed by a local SIEM sensor. Refresh time reflects stored data, not guaranteed feed availability. <a href="feeds.php">View collection health and history.</a></div>
   <section class="panel" style="margin-top:19px" aria-labelledby="providers-title"><h2 id="providers-title">Connected intelligence sources</h2>
   <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:14px">
     <?php foreach ($providerCounts as $source): ?><span class="badge"><?= intelEscape(str_replace('_', ' ', $source['provider'])) ?> · <?= intelEscape(number_format((int)$source['total'])) ?></span><?php endforeach; ?>

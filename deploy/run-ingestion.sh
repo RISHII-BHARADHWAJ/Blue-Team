@@ -18,4 +18,4 @@ fi
 # shellcheck source=/dev/null
 source "$config"
 cd /var/www/html
-exec /usr/local/bin/php "$job"
+exec /usr/local/bin/php "$job" --scheduled

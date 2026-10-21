@@ -1,2 +1,2 @@
-*/5 * * * * www-data /bin/bash /var/www/html/deploy/run-ingestion.sh feodo_realtime.php >> /var/log/feodo_realtime.log 2>&1
-*/30 * * * * www-data /bin/bash /var/www/html/deploy/run-ingestion.sh api_fetch.php >> /var/log/threat_fetch.log 2>&1
+* * * * * www-data /bin/bash /var/www/html/deploy/run-ingestion.sh feodo_realtime.php >> /var/log/feodo_realtime.log 2>&1
+* * * * * www-data /bin/bash /var/www/html/deploy/run-ingestion.sh api_fetch.php >> /var/log/threat_fetch.log 2>&1

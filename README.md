@@ -19,6 +19,7 @@ ThreatPulse is a PHP and MariaDB-based Blue Team project for collecting and visu
 
 ### SIEM capabilities
 
+- **Feed health and history:** `feeds.php` shows durable collection outcomes, counts, failures and incomplete imports, with administrator refresh settings. See [migration 010 and scheduling](docs/feed-collection.md).
 - **Configurable detections:** `detections.php` exposes authentication-failure and source-IP intelligence findings, evidence links, simulation isolation, and audited administrator settings. Apply migration 009; see [detection rules](docs/detection-rules.md).
 - **Event evidence:** `events.php` searches newly accepted submissions and exposes preserved payloads, source attribution, timestamps, metadata, and incident links. See [evidence upgrades and limitations](docs/event-evidence.md).
 - **SOC dashboard:** `dashboard.php` visualizes attack activity, categories, source locations and trends.
@@ -67,6 +68,7 @@ Requirements: Docker Engine/Desktop with the Compose plugin.
 3. Open **http://localhost:8080/** and sign in using your configured local development account. Useful pages:
 
    - Event evidence: `/events.php`
+   - Feed health and collection history: `/feeds.php`
    - Detection findings and rule settings: `/detections.php`
    - SIEM dashboard: `/dashboard.php`
    - Incident queue: `/incidents.php`
@@ -78,7 +80,7 @@ Requirements: Docker Engine/Desktop with the Compose plugin.
    docker compose down
    ```
 
-**Database initialization:** For a **new** MariaDB volume, Compose loads `database.sql`, `database/bootstrap/01_siem_tables.sql`, and SOAR migrations `001` through `006`, then migrations `007` (threat intelligence), `008` (event evidence), and `009` (detection rules), in order. MariaDB initialization scripts **do not run again** for an existing volume. Back up existing data and use a reviewed migration process when upgrading. **Do not delete an existing volume to force migrations.**
+**Database initialization:** For a **new** MariaDB volume, Compose loads `database.sql`, `database/bootstrap/01_siem_tables.sql`, and SOAR migrations `001` through `006`, then migrations `007` (threat intelligence), `008` (event evidence), `009` (detection rules), and `010` (feed collection history), in order. MariaDB initialization scripts **do not run again** for an existing volume. Back up existing data and use a reviewed migration process when upgrading. **Do not delete an existing volume to force migrations.**
 
 **Credentials:** The repository contains development-oriented database and seeded-account settings. Treat them as unsafe defaults: replace passwords/secrets and secure or disable seeded demo accounts before connecting this project to a real network. Do not expose this local stack directly to the internet.
 
@@ -88,7 +90,7 @@ For local development without Compose:
 
 1. Set up PHP, Apache and MySQL/MariaDB, then copy the project into your web root.
 2. Create a database named `cybertech_db`.
-3. Import `database.sql`, then `database/bootstrap/01_siem_tables.sql`, followed by `database/migrations/001_create_soar_schema.sql` through `009_detection_rules.sql` **in numeric order** for a new database.
+3. Import `database.sql`, then `database/bootstrap/01_siem_tables.sql`, followed by `database/migrations/001_create_soar_schema.sql` through `010_feed_collection_history.sql` **in numeric order** for a new database.
 4. Configure the application's database connection (`includes/db.php` and environment/configuration used by the scripts) for your local database. Use non-demo credentials.
 5. Open the application through your local web server. Configure scheduled ingestion only after checking feed/network requirements and logging:
 
@@ -105,7 +107,7 @@ After migration `007`, Feodo Tracker indicators are stored in `threat_feed_indic
 
 For an existing local database volume, back up the database first, then apply `database/migrations/007_threat_feed_indicators.sql` using your normal MariaDB migration workflow. Compose only auto-initializes **new** volumes. Do not delete an existing volume to force this migration.
 
-For migration 008 on an existing installation, follow the [non-destructive evidence upgrade instructions](docs/event-evidence.md#upgrade-an-existing-installation) then the [migration 009 detection upgrade](docs/detection-rules.md#upgrade-existing-volumes) before submitting new alerts.
+For migration 008 on an existing installation, follow the [non-destructive evidence upgrade instructions](docs/event-evidence.md#upgrade-an-existing-installation) then the [migration 009 detection upgrade](docs/detection-rules.md#upgrade-existing-volumes) before submitting new alerts. Apply [migration 010](docs/feed-collection.md#upgrade-existing-installations) before running the updated feed collectors.
 
 ## SIEM alert and threat-intelligence correlation
 
