@@ -5,6 +5,7 @@
 Back up your existing MariaDB database using your normal backup procedure. Keep
 its Docker volume. Apply migrations 001–007 if they are not already installed,
 then apply **008_event_evidence.sql before running the new ingestion code**.
+Current application versions also require [migration 009](detection-rules.md#upgrade-existing-volumes).
 Migration 008 adds one table; it does not update or delete any existing records.
 It is safe to re-run because it uses `CREATE TABLE IF NOT EXISTS`.
 
@@ -65,8 +66,8 @@ return directly to this evidence view.
 The view includes only newly accepted submissions with durable provenance.
 External indicators remain in `/threat-intel.php`. Older mixed `logs` rows remain
 in the legacy dashboard and are not retroactively relabeled as observed telemetry.
-A sensor's severity/classification remains a source claim, not a detection generated
-by a new rules engine. No raw-telemetry rule engine is introduced by this milestone.
+A sensor's severity/classification remains a source claim. The [detection engine](detection-rules.md)
+now generates separate findings and preserves the original submitted severity.
 
 ## Simulated submissions
 
@@ -92,8 +93,7 @@ isolation, filtering, pagination, malformed input, and UTC normalization.
 HTML escaping, simulation labels, and bad-date responses in the disposable stack.
 These are HTTP checks, not interactive browser testing.
 
-Still pending: independently registered sensors, collection history, configurable
-detection rules, historical reputation snapshots, retention/archival policies,
+Still pending: independently registered sensors, collection history, retention/archival policies,
 a full simulated case lifecycle, unified navigation across all legacy screens,
 and complete browser validation. Raw submitted evidence can include sensitive
 sensor data; collection should avoid credentials and unnecessary personal data.

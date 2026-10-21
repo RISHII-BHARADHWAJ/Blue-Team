@@ -13,7 +13,8 @@ repository directory in PowerShell or a Unix shell. Do not delete the data volum
 Pause sensor submission during the application/schema upgrade.
 
 ```sh
-docker compose exec -T web php -r 'require "includes/db.php"; $pdo->exec(file_get_contents("database/migrations/009_detection_rules.sql"));'
+docker compose cp database/migrations/009_detection_rules.sql db:/tmp/009_detection_rules.sql
+docker compose exec -T db sh -c 'mariadb -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE" < /tmp/009_detection_rules.sql'
 docker compose up -d --build
 ```
 
