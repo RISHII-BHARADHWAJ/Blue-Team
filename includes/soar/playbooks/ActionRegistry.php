@@ -89,13 +89,18 @@ class AddIncidentNoteAction implements PlaybookActionHandler {
         }
         $incidentId = (int)($context['incident']['id'] ?? 0);
         if ($this->pdo && $incidentId) {
-            $stmt = $this->pdo->prepare("
-                INSERT INTO case_notes (incident_id, author_id, note_text)
-                VALUES (?, 1, ?)
-            ");
-            $stmt->execute([$incidentId, $note]);
-            $noteId = (int)$this->pdo->lastInsertId();
-            return new ActionResult(ActionResult::STATUS_SUCCESS, 'Case note added.', ['note_id' => $noteId], false);
+            $authorId = (int)($context['analyst']['id'] ?? 0);
+            if ($authorId < 1) {
+                return new ActionResult(ActionResult::STATUS_FAILED, 'A verified analyst account is required to author a case note.', [], false);
+            }
+            require_once __DIR__ . '/../CaseNoteService.php';
+            try {
+                $saved = (new CaseNoteService($this->pdo))->add($incidentId, $authorId, $note);
+                return new ActionResult(ActionResult::STATUS_SUCCESS, 'Case note added.', ['note_id' => $saved['id']], false);
+            } catch (Throwable $e) {
+                error_log('Playbook case note failed: ' . $e->getMessage());
+                return new ActionResult(ActionResult::STATUS_FAILED, 'Case note could not be saved with verified attribution.', [], false);
+            }
         }
         return new ActionResult(ActionResult::STATUS_FAILED, 'Database unavailable.', [], $dryRun);
     }

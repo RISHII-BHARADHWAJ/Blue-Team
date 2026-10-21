@@ -8,6 +8,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/soar/SoarAuth.php';
 require_once __DIR__ . '/includes/soar/IncidentManager.php';
+require_once __DIR__ . '/includes/soar/CaseNoteService.php';
 require_once __DIR__ . '/includes/soar/ThreatIntelMatcher.php';
 
 $auth = SoarAuth::getContext($pdo);
@@ -24,7 +25,8 @@ require_once __DIR__ . '/includes/security.php';
 $canTriage = SoarAuth::hasPermission($auth['tier'], 'change_status_normal');
 $canAssign = SoarAuth::hasPermission($auth['tier'], 'assign_incidents');
 $canClose = SoarAuth::hasPermission($auth['tier'], 'close_incidents');
-$csrfToken = $canTriage ? generateCSRFToken() : '';
+$canNote = $auth['auth_method'] === 'session' && !empty($auth['user_id']) && SoarAuth::hasPermission($auth['tier'], 'add_notes');
+$csrfToken = ($canTriage || $canNote) ? generateCSRFToken() : '';
 
 header('X-Frame-Options: DENY');
 header('X-Content-Type-Options: nosniff');
@@ -56,12 +58,15 @@ $rows = [];
 $total = 0;
 $detail = null;
 $assignableUsers = [];
+$caseNotes = ['notes'=>[], 'total'=>0, 'page'=>1, 'pages'=>1];
+$notesPage = filter_var($_GET['notes_page'] ?? 1, FILTER_VALIDATE_INT, ['options'=>['min_range'=>1]]) ?: 1;
 $intelMatchesByIp = [];
 try {
     $total = $repository->countIncidents($filters);
     $rows = $manager->listIncidents($filters, 25, ($page - 1) * 25);
     if ($selectedId !== false) {
         $detail = $manager->getIncident((int)$selectedId);
+        if ($detail !== null) $caseNotes = (new CaseNoteService($pdo))->list((int)$selectedId, $notesPage);
         if ($detail !== null) {
             $intelMatchesByIp = (new ThreatIntelMatcher($pdo))->matchSourceIps(
                 array_column($detail['alerts'], 'source_ip')
@@ -112,7 +117,7 @@ a{color:#5ed8ee}header{display:flex;justify-content:space-between;align-items:ce
 h1{margin:0;font-size:29px}h2{font-size:20px;margin:0 0 15px}.lead{color:var(--muted);margin:3px 0 25px}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px;margin:16px 0}
 form{display:flex;align-items:end;flex-wrap:wrap;gap:15px}.field{display:flex;flex-direction:column;gap:4px}.field label{color:var(--muted);font-size:12px}
-select,button{border:1px solid #376285;color:var(--text);background:#0d2541;padding:9px 12px;border-radius:6px;font:inherit}
+select,button,textarea{border:1px solid #376285;color:var(--text);background:#0d2541;padding:9px 12px;border-radius:6px;font:inherit}
 button{cursor:pointer}button:hover{background:#16436d}table{width:100%;border-collapse:collapse}th{text-align:left;color:var(--muted);font-size:11px;letter-spacing:1px}
 th,td{padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:top}tr:hover td{background:#0b2440}
 .table-scroll{overflow:auto}.muted{color:var(--muted)}.pill{font-size:11px;font-weight:800;border:1px solid #497293;border-radius:30px;padding:3px 9px;white-space:nowrap}
@@ -207,6 +212,24 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;margin:6px 0}.error
 <div id="assignment-feedback" class="triage-feedback" role="status" aria-live="polite"></div>
 </div>
 <?php endif; ?>
+<section class="triage" id="case-notes" aria-labelledby="case-notes-title">
+<h2 id="case-notes-title">Case notes (<?= incidentEscape($caseNotes['total']) ?>)</h2>
+<p>Append investigation findings and handoff context. Notes preserve their author and timeline entry; adding a note does not change case status or execute a response.</p>
+<?php if ($canNote): ?>
+<form id="case-note-form" data-incident-id="<?= incidentEscape($detail['id']) ?>">
+<input type="hidden" name="csrf_token" value="<?= incidentEscape($csrfToken) ?>">
+<div class="field" style="width:100%"><label for="case-note-text">Investigation note · maximum 10,000 UTF-8 bytes</label>
+<textarea id="case-note-text" name="note" rows="4" maxlength="10000" required style="width:100%;resize:vertical"></textarea></div>
+<button type="submit">Add case note</button></form>
+<div id="case-note-feedback" class="triage-feedback" role="status" aria-live="polite"></div>
+<?php else: ?><p>Sign in with a named user account to add a note.</p><?php endif; ?>
+<?php foreach ($caseNotes['notes'] as $note): ?><article class="event"><strong><?= incidentEscape($note['author']) ?></strong><small>Note #<?= incidentEscape($note['id']) ?> · <?= incidentEscape($note['created_at']) ?> (server time)</small><pre><?= incidentEscape($note['note_text']) ?></pre></article><?php endforeach; ?>
+<?php if (!$caseNotes['notes']): ?><p class="muted">No case notes yet. Record what you checked, what you found, and the next investigation step.</p><?php endif; ?>
+<?php if ($caseNotes['pages'] > 1): ?><div class="pager"><span>Notes page <?= incidentEscape($caseNotes['page']) ?> of <?= incidentEscape($caseNotes['pages']) ?></span><span>
+<?php if ($caseNotes['page'] > 1): ?><a href="<?= incidentEscape(incidentUrl(['id'=>$detail['id'], 'notes_page'=>$caseNotes['page']-1])) ?>#case-notes">Newer notes</a><?php endif; ?>
+<?php if ($caseNotes['page'] < $caseNotes['pages']): ?><a href="<?= incidentEscape(incidentUrl(['id'=>$detail['id'], 'notes_page'=>$caseNotes['page']+1])) ?>#case-notes">Older notes</a><?php endif; ?>
+</span></div><?php endif; ?>
+</section>
 <h2>Description</h2><pre><?= incidentEscape($detail['description']) ?></pre>
 <h2>Linked SIEM alerts (<?= count($detail['alerts']) ?>)</h2>
 <?php foreach ($detail['alerts'] as $alert): ?>
@@ -326,5 +349,6 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;margin:6px 0}.error
     }
 })();
 </script>
+<script src="assets/js/case-notes.js" defer></script>
 </body>
 </html>
