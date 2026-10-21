@@ -24,6 +24,8 @@ jobs:
     name: Docker Compose database and HTTP smoke test
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    env:
+      FEED_COLLECTION_ENABLED: "0"
     steps:
       - uses: actions/checkout@v4
       - name: Validate Compose configuration
@@ -86,6 +88,10 @@ jobs:
           docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/integration_detections.php
           docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/concurrent_detections.php
           sh tests/check_detections_http.sh
+      - name: Verify feed collection, schedules, rollback and HTTP permissions
+        run: |
+          docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/integration_feed_collection.php
+          sh tests/check_feed_health_http.sh
       - name: Show container logs on failure
         if: failure()
         run: docker compose logs --no-color --tail=200
@@ -104,6 +110,7 @@ jobs:
           docker run --rm -v "$PWD:/src:ro" -w /src php:8.2-cli sh -ec '
             failed=0
             for suite in \
+              tests/feed_parser_tests.php \
               tests/run_phase2_tests.php \
               tests/run_phase5_tests.php \
               tests/run_phase6_tests.php \

@@ -1,17 +1,14 @@
 <?php
 header('Content-Type: application/json');
 header('Cache-Control: no-cache, no-store');
-header('Access-Control-Allow-Origin: same-origin');
-
-// Auth check
-session_start();
-if (empty($_SESSION['analyst'])) {
-    http_response_code(401);
-    echo json_encode(['error' => 'Unauthorized']);
-    exit;
-}
+header('X-Content-Type-Options: nosniff');
 
 require_once __DIR__ . '/includes/db.php';
+require_once __DIR__ . '/includes/soar/SoarAuth.php';
+$auth=SoarAuth::getContext($pdo);
+if ($auth['auth_method']==='anonymous') {
+    http_response_code(401); echo json_encode(['error'=>'Unauthorized']); exit;
+}
 
 // Get stats since last check
 $since = $_GET['since'] ?? date('Y-m-d H:i:s', 
@@ -50,11 +47,13 @@ $totals = $pdo->query("
     FROM logs
 ")->fetch();
 
-// Last Feodo run status
-$lastRun = @json_decode(
-    file_get_contents('/tmp/feodo_last_run.json'), 
-    true
-) ?? ['status' => 'unknown'];
+// Durable status; no inference from temporary files or inventory timestamps.
+$lastRun=['status'=>'unknown'];
+try {
+    $run=$pdo->query("SELECT status, started_at AS timestamp, finished_at, processed_count AS processed,
+        inserted_count AS inserted FROM feed_collection_runs WHERE provider='feodo_tracker' ORDER BY id DESC LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+    if ($run) { $lastRun=$run; $lastRun['status']=strtolower($run['status']); }
+} catch (Throwable $e) { $lastRun=['status'=>'unavailable']; }
 
 echo json_encode([
     'new_count'   => (int)$newCount,

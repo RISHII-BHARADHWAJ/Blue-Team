@@ -93,7 +93,7 @@ isolation, filtering, pagination, malformed input, and UTC normalization.
 HTML escaping, simulation labels, and bad-date responses in the disposable stack.
 These are HTTP checks, not interactive browser testing.
 
-Still pending: independently registered sensors, collection history, retention/archival policies,
+Still pending: independently registered sensors, retention/archival policies,
 a full simulated case lifecycle, unified navigation across all legacy screens,
 and complete browser validation. Raw submitted evidence can include sensitive
 sensor data; collection should avoid credentials and unnecessary personal data.

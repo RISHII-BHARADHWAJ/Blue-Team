@@ -86,8 +86,9 @@ fi
 # ── Initial Data Fetch ───────────────────────────
 echo "[*] Running initial threat intelligence fetch..."
 cd /var/www/html
-php api_fetch.php 2>/dev/null &
+php api_fetch.php --scheduled &
 FETCH_PID=$!
+php feodo_realtime.php --scheduled &
 
 # Don't wait for fetch to finish — let it run in background
 echo "[*] Threat fetch running in background (PID: $FETCH_PID)"
@@ -103,6 +104,7 @@ install -d -m 0700 -o www-data -g www-data /run/threatpulse
         printf 'export DB_HOST=%q\n' "${DB_HOST:-localhost}"
         printf 'export DB_USER=%q\n' "${DB_USER:-redteam_user}"
         printf 'export DB_PASS=%q\n' "${DB_PASS:-root}"
+        printf 'export FEED_COLLECTION_ENABLED=%q\n' "${FEED_COLLECTION_ENABLED:-1}"
         printf 'export DB_NAME=%q\n' "${DB_NAME:-cybertech_db}"
     } > /run/threatpulse/ingestion.env
 )

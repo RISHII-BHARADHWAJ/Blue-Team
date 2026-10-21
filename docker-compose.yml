@@ -11,6 +11,7 @@ services:
       - DB_USER=redteam_user
       - DB_PASS=root
       - DB_NAME=cybertech_db
+      - FEED_COLLECTION_ENABLED=${FEED_COLLECTION_ENABLED:-1}
     networks:
       - ctf-net
     volumes:
@@ -36,6 +37,7 @@ services:
       - ./database/migrations/007_threat_feed_indicators.sql:/docker-entrypoint-initdb.d/08_threat_feed_indicators.sql:ro
       - ./database/migrations/008_event_evidence.sql:/docker-entrypoint-initdb.d/09_event_evidence.sql:ro
       - ./database/migrations/009_detection_rules.sql:/docker-entrypoint-initdb.d/10_detection_rules.sql:ro
+      - ./database/migrations/010_feed_collection_history.sql:/docker-entrypoint-initdb.d/11_feed_collection_history.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 --silent"]
       interval: 5s
