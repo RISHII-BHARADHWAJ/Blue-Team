@@ -38,6 +38,10 @@ jobs:
           docker compose exec -T -u www-data web bash -c 'source /run/threatpulse/ingestion.env; test "$DB_HOST" = db; test -w /var/log/feodo_realtime.log; test -w /var/log/threat_fetch.log'
       - name: Exercise SIEM-to-SOAR integration (transactional, dry-run only)
         run: docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/integration_soar_pipeline.php
+      - name: Verify analyst case note persistence and HTTP permissions
+        run: |
+          docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/integration_case_notes.php
+          sh tests/check_case_notes_http.sh
       - name: Run database-backed Phase 3 and 4 legacy suites
         run: |
           docker compose exec -T -e SOAR_LEGACY_DB_TEST=1 web php tests/run_phase3_tests.php
