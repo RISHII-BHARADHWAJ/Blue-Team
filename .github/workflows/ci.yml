@@ -96,6 +96,10 @@ jobs:
         run: |
           docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/integration_demo.php
           sh tests/check_demo_http.sh
+      - name: Verify risk workspace persistence and HTTP permissions
+        run: |
+          docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/integration_risk_workspace.php
+          sh tests/check_risk_workspace_http.sh
       - name: Show container logs on failure
         if: failure()
         run: docker compose logs --no-color --tail=200
@@ -115,6 +119,7 @@ jobs:
             failed=0
             for suite in \
               tests/feed_parser_tests.php \
+              tests/risk_policy_tests.php \
               tests/run_phase2_tests.php \
               tests/run_phase5_tests.php \
               tests/run_phase6_tests.php \

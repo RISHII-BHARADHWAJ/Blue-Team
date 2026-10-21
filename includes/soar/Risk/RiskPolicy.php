@@ -1,6 +1,6 @@
 <?php
 /**
- * ThreatPulse SOAR - Risk Policy v1.0
+ * ThreatPulse SOAR - Risk Policy v1.1
  * 
  * Versioned repository of all deterministic risk scoring weights, thresholds,
  * factor caps, and priority mapping boundaries.
@@ -10,7 +10,7 @@
 
 class RiskPolicy {
 
-    public const VERSION = 'v1.0';
+    public const VERSION = 'v1.1';
 
     /**
      * Factor 1: Alert Severity Contributions

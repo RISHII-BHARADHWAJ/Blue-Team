@@ -1,5 +1,7 @@
 # ThreatPulse SOAR: Incident Risk Scoring & Prioritization Specification
 
+> This is the original v1.0 phase specification. Current policy v1.1 corrects recency, missing topology and stored-intelligence selection; GET no longer recalculates. See the [current risk workspace guide](../incident-risk-workspace.md) for behavior and limitations. Historical v1.0 records remain preserved.
+
 > **ARCHITECTURAL SCOPE & NON-GOALS:**
 > **Phase 5 implements a 100% Deterministic, Explainable Risk Scoring and Priority Mapping Engine.**
 > It does **NOT** use machine learning, neural networks, or LLMs. Every single point in the 0–100 score is directly traceable to concrete evidence factors.
