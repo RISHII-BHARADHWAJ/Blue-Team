@@ -40,14 +40,14 @@ try {
 <title>ThreatPulse | Event evidence</title><link rel="stylesheet" href="assets/css/workspace.css"></head><body>
 <a class="skip" href="#main">Skip to event evidence</a>
 <div class="workspace"><aside class="sidebar"><a class="brand" href="soc.php">ThreatPulse</a>
-<nav aria-label="SOC navigation"><a href="soc.php">Overview</a><a href="events.php" aria-current="page">Event evidence</a><a href="threat-intel.php">Threat intelligence</a><a href="incidents.php">Incidents</a><a href="control_plane/index.php">SOAR approvals</a><a href="dashboard.php">Legacy SIEM</a></nav>
+<nav aria-label="SOC navigation"><a href="soc.php">Overview</a><a href="events.php" aria-current="page">Event evidence</a><a href="detections.php">Detections</a><a href="threat-intel.php">Threat intelligence</a><a href="incidents.php">Incidents</a><a href="control_plane/index.php">SOAR approvals</a><a href="dashboard.php">Legacy SIEM</a></nav>
 <p>Development environment<br>Evidence from authenticated submissions</p></aside><main id="main">
 <span class="eyebrow">Investigate / source evidence</span><h1>Event evidence</h1>
 <p>Search accepted sensor submissions and inspect their original evidence. A submitted alert is a source claim, not independent confirmation of an attack.</p>
 <?php if ($error): ?><div class="notice error" role="alert"><?= eventEscape($error) ?></div><?php endif; ?>
 <?php if (!$available && !$error): ?><div class="notice">Evidence storage is not initialized. Apply migration <code>008_event_evidence.sql</code> using the upgrade instructions before submitting new alerts.</div>
 <?php elseif ($available): ?>
-<div class="notice">Only submissions stored after the evidence upgrade appear here. External feed indicators remain in <a href="threat-intel.php">Threat intelligence</a>; older records remain in <a href="dashboard.php">Legacy SIEM</a> with unverified provenance.</div>
+<div class="notice">Only submissions stored after the evidence upgrade appear here. External feed indicators remain in <a href="detections.php">Detections</a><a href="threat-intel.php">Threat intelligence</a>; older records remain in <a href="dashboard.php">Legacy SIEM</a> with unverified provenance.</div>
 <section class="panel" aria-label="Event filters"><form class="filters" method="get" action="events.php">
 <div class="field wide"><label for="q">Message or source event ID</label><input id="q" name="q" maxlength="200" value="<?= eventEscape($filters['q']) ?>" placeholder="Search submitted evidence"></div>
 <div class="field"><label for="source">Source name (exact)</label><input id="source" name="source" maxlength="100" value="<?= eventEscape($filters['source']) ?>"></div>

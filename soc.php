@@ -145,7 +145,7 @@ code{font-size:12px;color:#abd2e1}
       <a href="soc.php" aria-current="page">Overview</a>
       <a href="events.php">Event evidence</a>
       <a href="dashboard.php">Legacy SIEM</a>
-      <a href="threat-intel.php">Threat intelligence</a>
+      <a href="detections.php">Detections</a><a href="threat-intel.php">Threat intelligence</a>
       <a href="incidents.php">Incidents</a>
       <a href="control_plane/index.php">SOAR approvals</a>
     </nav>

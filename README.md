@@ -19,6 +19,7 @@ ThreatPulse is a PHP and MariaDB-based Blue Team project for collecting and visu
 
 ### SIEM capabilities
 
+- **Configurable detections:** `detections.php` exposes authentication-failure and source-IP intelligence findings, evidence links, simulation isolation, and audited administrator settings. Apply migration 009; see [detection rules](docs/detection-rules.md).
 - **Event evidence:** `events.php` searches newly accepted submissions and exposes preserved payloads, source attribution, timestamps, metadata, and incident links. See [evidence upgrades and limitations](docs/event-evidence.md).
 - **SOC dashboard:** `dashboard.php` visualizes attack activity, categories, source locations and trends.
 - **Threat-intelligence ingestion:** `api_fetch.php` and `feodo_realtime.php` collect data from configured external feeds.
@@ -66,6 +67,7 @@ Requirements: Docker Engine/Desktop with the Compose plugin.
 3. Open **http://localhost:8080/** and sign in using your configured local development account. Useful pages:
 
    - Event evidence: `/events.php`
+   - Detection findings and rule settings: `/detections.php`
    - SIEM dashboard: `/dashboard.php`
    - Incident queue: `/incidents.php`
    - SOAR control plane: `/control_plane/index.php`
