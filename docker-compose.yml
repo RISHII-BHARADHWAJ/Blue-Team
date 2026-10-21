@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   web:
     build: .
@@ -36,6 +34,7 @@ services:
       - ./database/migrations/005_notifications.sql:/docker-entrypoint-initdb.d/06_notifications.sql:ro
       - ./database/migrations/006_phase7_control_plane.sql:/docker-entrypoint-initdb.d/07_control_plane.sql:ro
       - ./database/migrations/007_threat_feed_indicators.sql:/docker-entrypoint-initdb.d/08_threat_feed_indicators.sql:ro
+      - ./database/migrations/008_event_evidence.sql:/docker-entrypoint-initdb.d/09_event_evidence.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 --silent"]
       interval: 5s

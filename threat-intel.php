@@ -94,7 +94,8 @@ code{color:#b6d8e8;font-size:12px}
   <a class="brand" href="soc.php">ThreatPulse</a>
   <nav aria-label="SOC navigation">
     <a href="soc.php">Overview</a>
-    <a href="dashboard.php">SIEM events</a>
+    <a href="events.php">Event evidence</a>
+      <a href="dashboard.php">Legacy SIEM</a>
     <a href="threat-intel.php" aria-current="page">Threat intelligence</a>
     <a href="incidents.php">Incidents</a>
     <a href="control_plane/index.php">SOAR approvals</a>

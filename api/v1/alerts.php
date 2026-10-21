@@ -222,8 +222,14 @@ if (json_last_error() !== JSON_ERROR_NONE || !is_array($data)) {
 
 // 8. Ingest, persist legacy SIEM record, and correlate to a SOAR incident
 try {
+    if (!(new EventEvidenceRepository($pdo))->available()) {
+        http_response_code(503);
+        echo json_encode(['success' => false, 'error' => 'evidence_storage_unavailable',
+            'message' => 'Event evidence storage is not initialized. Apply migration 008 before submitting alerts.']);
+        exit;
+    }
     $service = new SiemSoarAlertPipeline($pdo);
-    $result = $service->ingest($data, $actor);
+    $result = $service->ingest($data, $actor, $rawBody);
 
     if (!$result['success']) {
         http_response_code(422);

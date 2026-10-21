@@ -15,10 +15,11 @@ ThreatPulse is a PHP and MariaDB-based Blue Team project for collecting and visu
 | Investigate suspected attacks | Triage, assign analysts, and track case timelines |
 | | Run allowlisted investigation playbooks and approval workflows |
 
-**End-to-end flow:** telemetry / threat feeds → SIEM logs and dashboard → normalized alerts → incident correlation → IOC enrichment and risk assessment → analyst triage → approval-gated SOAR playbooks and audit trail.
+**Event flow:** authenticated sensor alert → preserved evidence and SIEM record → incident correlation → investigation → controlled SOAR workflows and audit history. External threat feeds populate a separate intelligence inventory; a feed listing is not an observed attack.
 
 ### SIEM capabilities
 
+- **Event evidence:** `events.php` searches newly accepted submissions and exposes preserved payloads, source attribution, timestamps, metadata, and incident links. See [evidence upgrades and limitations](docs/event-evidence.md).
 - **SOC dashboard:** `dashboard.php` visualizes attack activity, categories, source locations and trends.
 - **Threat-intelligence ingestion:** `api_fetch.php` and `feodo_realtime.php` collect data from configured external feeds.
 - **Geographic context:** geolocation-backed views help analysts explore source IPs.
@@ -64,6 +65,7 @@ Requirements: Docker Engine/Desktop with the Compose plugin.
 
 3. Open **http://localhost:8080/** and sign in using your configured local development account. Useful pages:
 
+   - Event evidence: `/events.php`
    - SIEM dashboard: `/dashboard.php`
    - Incident queue: `/incidents.php`
    - SOAR control plane: `/control_plane/index.php`
@@ -74,7 +76,7 @@ Requirements: Docker Engine/Desktop with the Compose plugin.
    docker compose down
    ```
 
-**Database initialization:** For a **new** MariaDB volume, Compose loads `database.sql`, `database/bootstrap/01_siem_tables.sql`, and SOAR migrations `001` through `006`, then threat-intelligence migration `007`, in order. MariaDB initialization scripts **do not run again** for an existing volume. Back up existing data and use a reviewed migration process when upgrading. **Do not delete an existing volume to force migrations.**
+**Database initialization:** For a **new** MariaDB volume, Compose loads `database.sql`, `database/bootstrap/01_siem_tables.sql`, and SOAR migrations `001` through `006`, then migrations `007` (threat intelligence) and `008` (event evidence), in order. MariaDB initialization scripts **do not run again** for an existing volume. Back up existing data and use a reviewed migration process when upgrading. **Do not delete an existing volume to force migrations.**
 
 **Credentials:** The repository contains development-oriented database and seeded-account settings. Treat them as unsafe defaults: replace passwords/secrets and secure or disable seeded demo accounts before connecting this project to a real network. Do not expose this local stack directly to the internet.
 
@@ -84,7 +86,7 @@ For local development without Compose:
 
 1. Set up PHP, Apache and MySQL/MariaDB, then copy the project into your web root.
 2. Create a database named `cybertech_db`.
-3. Import `database.sql`, then `database/bootstrap/01_siem_tables.sql`, followed by `database/migrations/001_create_soar_schema.sql` through `007_threat_feed_indicators.sql` **in numeric order** for a new database.
+3. Import `database.sql`, then `database/bootstrap/01_siem_tables.sql`, followed by `database/migrations/001_create_soar_schema.sql` through `008_event_evidence.sql` **in numeric order** for a new database.
 4. Configure the application's database connection (`includes/db.php` and environment/configuration used by the scripts) for your local database. Use non-demo credentials.
 5. Open the application through your local web server. Configure scheduled ingestion only after checking feed/network requirements and logging:
 
@@ -100,6 +102,8 @@ These schedules are examples, not a requirement for exploring the built-in SOAR 
 After migration `007`, Feodo Tracker indicators are stored in `threat_feed_indicators` and displayed at `/threat-intel.php`. These are externally reported indicators, **not** confirmed attacks against your environment. The bulk collector now imports Emerging Threats, CINS Army and Blocklist.de IP reputation lists into the same inventory without fabricating incident events. ThreatFox requires a separate API authentication key and is not automatically queried without one. Historical rows in `logs` are preserved; they are not automatically reclassified.
 
 For an existing local database volume, back up the database first, then apply `database/migrations/007_threat_feed_indicators.sql` using your normal MariaDB migration workflow. Compose only auto-initializes **new** volumes. Do not delete an existing volume to force this migration.
+
+For migration 008 on an existing installation, follow the [non-destructive evidence upgrade instructions](docs/event-evidence.md#upgrade-an-existing-installation) before submitting new alerts.
 
 ## SIEM alert and threat-intelligence correlation
 

@@ -10,6 +10,7 @@
  */
 
 class AlertSchema {
+    public bool $is_simulated;
     public string $source;
     public string $source_type;
     public ?string $source_event_id;
@@ -64,8 +65,10 @@ class AlertSchema {
         ?string $ioc_type = null,
         ?string $ioc_value = null,
         array $metadata = [],
-        ?string $received_at = null
+        ?string $received_at = null,
+        bool $is_simulated = false
     ) {
+        $this->is_simulated = $is_simulated;
         $this->message = $message;
         $this->severity = $severity;
         $this->category = $category;
@@ -92,6 +95,7 @@ class AlertSchema {
      */
     public function toArray(): array {
         return [
+            'is_simulated'      => $this->is_simulated,
             'source'            => $this->source,
             'source_type'       => $this->source_type,
             'source_event_id'   => $this->source_event_id,
@@ -137,7 +141,8 @@ class AlertSchema {
             ioc_type:         $data['ioc_type'] ?? null,
             ioc_value:        $data['ioc_value'] ?? null,
             metadata:         is_array($data['metadata'] ?? null) ? $data['metadata'] : [],
-            received_at:      $data['received_at'] ?? null
+            received_at:      $data['received_at'] ?? null,
+            is_simulated:     ($data['is_simulated'] ?? false) === true
         );
     }
 }

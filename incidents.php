@@ -235,7 +235,7 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;margin:6px 0}.error
 <?php foreach ($detail['alerts'] as $alert): ?>
 <div class="event">
     <strong><?= incidentEscape($alert['category']) ?> · <?= incidentEscape($alert['severity']) ?></strong>
-    <small><?= incidentEscape($alert['event_timestamp']) ?> · Source <?= incidentEscape($alert['source_ip']) ?> · Log #<?= incidentEscape($alert['log_id']) ?></small>
+    <small><?= incidentEscape($alert['event_timestamp']) ?> · Source <?= incidentEscape($alert['source_ip']) ?> · <a href="events.php?log_id=<?= incidentEscape($alert['log_id']) ?>#evidence">Log #<?= incidentEscape($alert['log_id']) ?> · inspect evidence</a></small>
     <pre><?= incidentEscape($alert['message']) ?></pre>
     <?php $intelListings = $intelMatchesByIp[$alert['source_ip'] ?? ''] ?? []; ?>
     <?php if ($intelListings): ?>

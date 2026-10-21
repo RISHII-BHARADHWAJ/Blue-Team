@@ -180,7 +180,19 @@ class IncidentRepository {
     /**
      * Attach a SIEM log record to an incident in the incident_alerts junction.
      */
+    public function assertNotSimulated(int $logId): void {
+        if (!$this->pdo) return;
+        require_once __DIR__ . '/../siem/EventEvidenceRepository.php';
+        if (!(new EventEvidenceRepository($this->pdo))->available()) return;
+        $stmt = $this->pdo->prepare('SELECT is_simulated FROM event_evidence WHERE log_id = ?');
+        $stmt->execute([$logId]);
+        if ((int)$stmt->fetchColumn() === 1) {
+            throw new InvalidArgumentException('Simulated evidence cannot be attached to a real incident.');
+        }
+    }
+
     public function attachAlert(int $incidentId, int $logId, string $correlationRule = 'CORRELATION'): int {
+        $this->assertNotSimulated($logId);
         if (!$this->pdo) {
             static $mockJunctionId = 1;
             return $mockJunctionId++;
