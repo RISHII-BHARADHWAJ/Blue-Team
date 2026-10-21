@@ -89,7 +89,7 @@ final class DetectionEngine
     public function linkIncident(array $findings, ?int $incidentId): void
     {
         if ($incidentId === null) return;
-        $stmt = $this->pdo->prepare('UPDATE detection_findings SET incident_id = ? WHERE id = ? AND is_simulated = 0');
+        $stmt = $this->pdo->prepare('UPDATE detection_findings f JOIN incidents i ON i.id = ? AND i.is_simulated = f.is_simulated SET f.incident_id = i.id WHERE f.id = ?');
         foreach ($findings as $finding) $stmt->execute([$incidentId, $finding['id']]);
     }
 }

@@ -76,6 +76,10 @@ try {
     ], JSON_UNESCAPED_SLASHES);
     exit;
 
+} catch (DomainException $e) {
+    http_response_code(409);
+    echo json_encode(['success'=>false, 'error'=>'simulation_only', 'message'=>$e->getMessage()]);
+    exit;
 } catch (InvalidArgumentException $e) {
     http_response_code(404);
     echo json_encode(['success' => false, 'error' => 'not_found', 'message' => $e->getMessage()], JSON_UNESCAPED_SLASHES);

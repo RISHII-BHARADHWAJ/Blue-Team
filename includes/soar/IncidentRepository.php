@@ -78,7 +78,7 @@ class IncidentRepository {
             LEFT JOIN incident_alerts ia ON i.id = ia.incident_id
             LEFT JOIN logs l ON ia.log_id = l.id
             WHERE i.status IN ('NEW', 'OPEN', 'INVESTIGATING', 'CONTAINED')
-              AND i.created_at >= ?
+              AND i.is_simulated = 0 AND i.created_at >= ?
         ";
         $params = [$lookbackSince];
 
@@ -128,8 +128,8 @@ class IncidentRepository {
             INSERT INTO incidents (
                 incident_number, title, description, severity, status, priority, risk_score,
                 assigned_to, lead_analyst, attack_category, mitre_tactics, mitre_techniques,
-                created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+                is_simulated, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
         ");
 
         $stmt->execute([
@@ -144,7 +144,8 @@ class IncidentRepository {
             $data['lead_analyst'] ?? null,
             $data['attack_category'] ?? null,
             $data['mitre_tactics'] ?? null,
-            $data['mitre_techniques'] ?? null
+            $data['mitre_techniques'] ?? null,
+            (int)!empty($data['is_simulated'])
         ]);
 
         return (int)$this->pdo->lastInsertId();
@@ -163,6 +164,7 @@ class IncidentRepository {
 
         foreach ($data as $key => $val) {
             if ($key === 'id') continue;
+            if ($key === 'is_simulated') throw new InvalidArgumentException('Incident simulation classification is immutable.');
             $fields[] = "`$key` = ?";
             $params[] = $val;
         }
@@ -192,12 +194,20 @@ class IncidentRepository {
     }
 
     public function attachAlert(int $incidentId, int $logId, string $correlationRule = 'CORRELATION'): int {
-        $this->assertNotSimulated($logId);
         if (!$this->pdo) {
             static $mockJunctionId = 1;
             return $mockJunctionId++;
         }
 
+        $incident = $this->find($incidentId);
+        if (!$incident) throw new InvalidArgumentException('Incident not found.');
+        if (!empty($incident['is_simulated'])) {
+            $check = $this->pdo->prepare('SELECT is_simulated FROM event_evidence WHERE log_id = ?');
+            $check->execute([$logId]);
+            if ((int)$check->fetchColumn() !== 1) throw new InvalidArgumentException('Simulated cases require simulated evidence.');
+        } else {
+            $this->assertNotSimulated($logId);
+        }
         $stmt = $this->pdo->prepare("
             INSERT INTO incident_alerts (incident_id, log_id, correlation_rule, added_at)
             VALUES (?, ?, ?, NOW())
@@ -257,7 +267,8 @@ class IncidentRepository {
         $limit = max(1, min(200, $limit));
         $offset = max(0, $offset);
 
-        $where = ['1=1'];
+        $kind = $filters['kind'] ?? 'observed';
+        $where = $kind === 'all' ? ['1=1'] : ['is_simulated = ' . ($kind === 'simulated' ? '1' : '0')];
         $params = [];
 
         if (!empty($filters['status'])) {
@@ -327,7 +338,8 @@ class IncidentRepository {
             return 0;
         }
 
-        $where = ['1=1'];
+        $kind = $filters['kind'] ?? 'observed';
+        $where = $kind === 'all' ? ['1=1'] : ['is_simulated = ' . ($kind === 'simulated' ? '1' : '0')];
         $params = [];
 
         if (!empty($filters['status'])) {

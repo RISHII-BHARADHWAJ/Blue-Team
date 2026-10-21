@@ -87,6 +87,8 @@ class PlaybookEngine {
             throw new InvalidArgumentException("Incident #{$incidentId} not found.");
         }
 
+        if (!empty($incident['is_simulated'])) $mode = 'DRY_RUN';
+
         // Create run record locking to the exact playbook definition version; cursor starts at 1
         $version = (int)($playbook['version'] ?? 1);
         $run     = $this->runManager->createRun($playbookId, $incidentId, $mode, $actor['id'] ?? null, $version);
