@@ -2,7 +2,7 @@
 /**
  * ThreatPulse SOAR - Deterministic Risk Score Calculator
  * 
- * Executes pure mathematical calculation of risk factors based on Policy v1.0.
+ * Executes pure mathematical calculation of risk factors based on Policy v1.1.
  * Produces point-by-point explainable factor breakdowns and overall scoring confidence.
  * 
  * Safety: ZERO machine learning, ZERO LLM calls, ZERO network queries.
@@ -32,7 +32,7 @@ class RiskScoreCalculator {
         ?int $currentTimestamp = null
     ): RiskAssessment {
         $factors = [];
-        $now = $currentTimestamp ?: time();
+        $now = $currentTimestamp ?? time();
 
         // ---------------------------------------------------------------------
         // 1. Alert Severity Factor (Max 30)
@@ -40,6 +40,7 @@ class RiskScoreCalculator {
         $highestSeverity = strtoupper(trim($incident['severity'] ?? 'INFO'));
         foreach ($alerts as $a) {
             $sev = strtoupper(trim($a['severity'] ?? 'INFO'));
+            if ($sev === 'WARNING') $sev = 'MEDIUM';
             $w = RiskPolicy::SEVERITY_WEIGHTS[$sev] ?? 0;
             $currW = RiskPolicy::SEVERITY_WEIGHTS[$highestSeverity] ?? 0;
             if ($w > $currW) {
@@ -52,13 +53,13 @@ class RiskScoreCalculator {
             value:        $highestSeverity,
             contribution: $sevContribution,
             max_possible: 30,
-            reason:       "Incident contains {$highestSeverity} severity telemetry."
+            reason:       "Highest incident or attached alert classification is {$highestSeverity}."
         );
 
         // ---------------------------------------------------------------------
         // 2. Alert Volume Factor (Max 18)
         // ---------------------------------------------------------------------
-        $alertCount = count($alerts) ?: 1;
+        $alertCount = count($alerts);
         $volContribution = RiskPolicy::getVolumeContribution($alertCount);
         $factors[] = new RiskFactor(
             name:         'alert_volume',
@@ -96,7 +97,7 @@ class RiskScoreCalculator {
             value:        $chainType,
             contribution: $chainContribution,
             max_possible: RiskPolicy::ATTACK_CHAIN_CAP,
-            reason:       "Attack progression evaluated as {$chainType} across categories: " . implode(', ', $categories)
+            reason:       "Category pattern {$chainType} across: " . implode(', ', $categories) . ". This heuristic does not verify an attack sequence."
         );
 
         // ---------------------------------------------------------------------
@@ -108,7 +109,7 @@ class RiskScoreCalculator {
         $distinctProviders = [];
 
         foreach ($iocs as $ioc) {
-            $assessment = strtoupper(trim($ioc['assessment'] ?? ($ioc['threat_type'] ? 'MALICIOUS' : 'UNKNOWN')));
+            $assessment = strtoupper(trim($ioc['assessment'] ?? 'UNKNOWN'));
             if ($assessment === 'MALICIOUS') {
                 $maliciousIocCount++;
                 $strongestIocAssessment = 'MALICIOUS';
@@ -120,8 +121,8 @@ class RiskScoreCalculator {
                 $strongestIocAssessment = 'BENIGN';
             }
 
-            $conf = isset($ioc['confidence_score']) ? (int)$ioc['confidence_score'] : 50;
-            $highestConfidenceScore = max($highestConfidenceScore, $conf);
+            $conf = max(0, min(100, (int)($ioc['confidence_score'] ?? 0)));
+            if ($assessment === 'MALICIOUS') $highestConfidenceScore = max($highestConfidenceScore, $conf);
 
             if (!empty($ioc['providers']) && is_array($ioc['providers'])) {
                 foreach ($ioc['providers'] as $pName => $pData) {
@@ -193,12 +194,18 @@ class RiskScoreCalculator {
         // ---------------------------------------------------------------------
         // 8. Network Exposure / Context Factor (Max 5)
         // ---------------------------------------------------------------------
-        $contextType = 'EXTERNAL_TO_INTERNAL'; // Standard default for external attack telemetry
-        $sourceIp = $alerts[0]['source_ip'] ?? ($incident['source_ip'] ?? '');
-        if (!empty($sourceIp)) {
-            if (!filter_var($sourceIp, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE)) {
-                $contextType = 'INTERNAL_TO_INTERNAL';
-            }
+        $contextType = 'UNKNOWN';
+        foreach ($alerts as $alert) {
+            $source = self::addressScope($alert['source_ip'] ?? '');
+            $destination = self::addressScope($alert['destination_ip'] ?? '');
+            $candidate = match ([$source, $destination]) {
+                ['PUBLIC', 'PRIVATE'] => 'EXTERNAL_TO_INTERNAL',
+                ['PRIVATE', 'PRIVATE'] => 'INTERNAL_TO_INTERNAL',
+                ['PUBLIC', 'PUBLIC'] => 'EXTERNAL_TO_EXTERNAL',
+                default => 'UNKNOWN',
+            };
+            if ((RiskPolicy::CONTEXT_WEIGHTS[$candidate] ?? 0) > (RiskPolicy::CONTEXT_WEIGHTS[$contextType] ?? 0)) $contextType = $candidate;
+            elseif ($contextType === 'UNKNOWN' && $candidate !== 'UNKNOWN') $contextType = $candidate;
         }
         $contextContribution = RiskPolicy::CONTEXT_WEIGHTS[$contextType] ?? 0;
         $factors[] = new RiskFactor(
@@ -206,27 +213,34 @@ class RiskScoreCalculator {
             value:        $contextType,
             contribution: $contextContribution,
             max_possible: 5,
-            reason:       "Traffic exposure topology: {$contextType}."
+            reason:       "Reported source/destination topology: {$contextType}. Missing or special-use addresses add no exposure points."
         );
 
         // ---------------------------------------------------------------------
         // 9. Attack Recency / Activity Factor (Max 5)
         // ---------------------------------------------------------------------
-        $latestAlertTimestamp = $now;
+        $latestAlertTimestamp = null;
         foreach ($alerts as $a) {
-            $ts = !empty($a['event_timestamp']) ? strtotime($a['event_timestamp']) : (!empty($a['timestamp']) ? strtotime($a['timestamp']) : false);
-            if ($ts !== false && $ts > 0) {
-                $latestAlertTimestamp = max($latestAlertTimestamp, $ts);
+            $raw = $a['event_timestamp'] ?? $a['timestamp'] ?? null;
+            // Stored canonical and legacy DATETIME values are interpreted as UTC.
+            $ts = false;
+            if (is_string($raw) && $raw !== '') {
+                try { $ts = (new DateTimeImmutable($raw, new DateTimeZone('UTC')))->getTimestamp(); }
+                catch (Exception $e) { /* Invalid source time contributes no recency. */ }
+            }
+            if ($ts !== false && $ts > 0 && $ts <= $now) {
+                $latestAlertTimestamp = max($latestAlertTimestamp ?? 0, $ts);
             }
         }
-        $secondsSinceLast = max(0, $now - $latestAlertTimestamp);
-        $recencyContribution = RiskPolicy::getRecencyContribution($secondsSinceLast);
+        $secondsSinceLast = $latestAlertTimestamp === null ? null : $now - $latestAlertTimestamp;
+        $recencyContribution = $secondsSinceLast === null ? 0 : RiskPolicy::getRecencyContribution($secondsSinceLast);
         $factors[] = new RiskFactor(
             name:         'attack_recency',
-            value:        "{$secondsSinceLast}s ago",
+            value:        $secondsSinceLast === null ? 'UNKNOWN' : "{$secondsSinceLast}s ago",
             contribution: $recencyContribution,
             max_possible: RiskPolicy::RECENCY_CAP,
-            reason:       "Latest alert activity observed {$secondsSinceLast} seconds prior to assessment."
+            reason:       $secondsSinceLast === null ? 'No valid, non-future alert timestamp; no recency points.'
+                          : "Latest non-future alert timestamp was {$secondsSinceLast} seconds before assessment (UTC)."
         );
 
         // ---------------------------------------------------------------------
@@ -270,8 +284,25 @@ class RiskScoreCalculator {
             confidence:     $confidence,
             factors:        $factors,
             policy_version: RiskPolicy::VERSION,
-            calculated_at:  date('Y-m-d H:i:s', $now),
+            calculated_at:  gmdate('Y-m-d H:i:s', $now),
             calculated_by:  'RiskScoreCalculator'
         );
     }
+    private static function addressScope(string $ip): string {
+        if (!filter_var($ip, FILTER_VALIDATE_IP)) return 'UNKNOWN';
+        $bytes = inet_pton($ip);
+        if (strlen($bytes) === 4) {
+            $a = ord($bytes[0]); $b = ord($bytes[1]); $c = ord($bytes[2]);
+            if ($a === 10 || ($a === 172 && $b >= 16 && $b <= 31) || ($a === 192 && $b === 168)) return 'PRIVATE';
+            // Documentation, shared address and benchmarking ranges are not public exposure evidence.
+            if (($a === 192 && $b === 0 && $c === 2) || ($a === 198 && $b === 51 && $c === 100)
+                || ($a === 203 && $b === 0 && $c === 113) || ($a === 100 && $b >= 64 && $b <= 127)
+                || ($a === 198 && ($b === 18 || $b === 19)) || $a >= 224) return 'UNKNOWN';
+        } else {
+            if ((ord($bytes[0]) & 0xfe) === 0xfc) return 'PRIVATE';
+            if (ord($bytes[0]) === 0xff || substr($bytes, 0, 4) === hex2bin('20010db8')) return 'UNKNOWN';
+        }
+        return filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) ? 'PUBLIC' : 'UNKNOWN';
+    }
+
 }

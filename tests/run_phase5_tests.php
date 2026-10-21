@@ -248,7 +248,7 @@ runTest(16, "SQLi attack category receives +8 category points", function() use (
 // Test 17: Context Contribution (+5 for public external attacking internal)
 // -----------------------------------------------------------------------------
 runTest(17, "Public external IP traffic contributes +5 network exposure points", function() use ($calculator, $fixedTime) {
-    $alerts = [['source_ip' => '198.51.100.25']];
+    $alerts = [['source_ip' => '8.8.8.8', 'destination_ip' => '10.0.0.5']];
     $res = $calculator->calculate([], $alerts, [], [], $fixedTime);
     $factor = array_values(array_filter($res->factors, fn($f) => $f->name === 'network_context'))[0];
     return $factor->contribution === 5 && $factor->value === 'EXTERNAL_TO_INTERNAL';
