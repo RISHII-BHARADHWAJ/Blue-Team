@@ -100,6 +100,12 @@ class AlertDeduplicator {
                 // Atomic registration serializes concurrent submissions of the same fingerprint.
                 // Both operations participate in the caller's transaction, so retries after
                 // an evidence/correlation failure are accepted instead of silently suppressed.
+                // Keep one-off source event IDs from accumulating expired registrations.
+                // Bound maintenance work and leave unrelated HTTP rate-limit keys intact.
+                $cleanup = $pdo->prepare("DELETE FROM rate_limits
+                    WHERE ip_action_key LIKE 'soar!_dedup!_%' ESCAPE '!'
+                    AND window_start < DATE_SUB(NOW(), INTERVAL ? SECOND) LIMIT 1000");
+                $cleanup->execute([$ttlSeconds]);
                 $stmt = $pdo->prepare("DELETE FROM rate_limits WHERE ip_action_key = ? AND window_start < DATE_SUB(NOW(), INTERVAL ? SECOND)");
                 $stmt->execute([$key, $ttlSeconds]);
                 $stmt = $pdo->prepare("INSERT INTO rate_limits (ip_action_key, request_count, window_start)

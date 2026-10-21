@@ -21,8 +21,17 @@ try {
         'protocol' => 'tcp', 'destination_port' => 22,
         'event_timestamp' => gmdate('Y-m-d\TH:i:s\Z'), 'metadata' => ['host' => 'lab-01'],
     ];
+    $expiredKey = 'soar_dedup_' . bin2hex(random_bytes(32));
+    $unrelatedKey = 'soarXdedupX' . bin2hex(random_bytes(8));
+    $expired = $pdo->prepare('INSERT INTO rate_limits (ip_action_key, request_count, window_start) VALUES (?, 1, DATE_SUB(NOW(), INTERVAL 1 DAY))');
+    $expired->execute([$expiredKey]); $expired->execute([$unrelatedKey]);
     $body = json_encode($payload, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR) . "\n";
     $result = $pipeline->ingest($payload, 'ci-evidence', $body);
+    $remaining = $pdo->prepare('SELECT COUNT(*) FROM rate_limits WHERE ip_action_key = ?');
+    $remaining->execute([$expiredKey]);
+    evidenceCheck((int)$remaining->fetchColumn() === 0, 'expired one-off deduplication registrations are cleaned up');
+    $remaining->execute([$unrelatedKey]);
+    evidenceCheck((int)$remaining->fetchColumn() === 1, 'deduplication cleanup preserves unrelated rate-limit keys');
     $row = $repo->findByLogId((int)$result['log_id']);
     evidenceCheck($row !== null && (int)$row['id'] === $result['evidence_id'], 'accepted alert has durable evidence ID');
     evidenceCheck($row['raw_payload'] === $body && hash('sha256', $body) === $row['payload_sha256'], 'exact submitted bytes and checksum retained');
