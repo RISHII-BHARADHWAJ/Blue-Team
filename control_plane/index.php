@@ -508,8 +508,9 @@ $canApprove = SoarAuth::hasPermission($userTier, 'approve_actions');
     <div class="notif-popup" id="notifPopup">
         <div style="padding:10px 16px; border-bottom:1px solid var(--border-blue); display:flex; justify-content:space-between; align-items:center;">
             <strong style="font-size:0.8rem; color:var(--neon-cyan); letter-spacing:1px;">NOTIFICATIONS</strong>
-            <button id="markAllReadBtn" class="btn" style="padding:2px 8px; font-size:0.7rem;">Mark Read</button>
+            <a href="../notifications.php" class="btn" style="padding:2px 8px; font-size:0.7rem;">Open inbox</a>
         </div>
+        <div id="notifFeedback" role="status" aria-live="polite"></div>
         <div id="notifList" style="overflow-y:auto; flex:1;">
             <div style="padding:16px; text-align:center; color:var(--text-muted); font-size:0.8rem;">No notifications.</div>
         </div>
@@ -751,15 +752,21 @@ $canApprove = SoarAuth::hasPermission($userTier, 'approve_actions');
         }
 
         async function handleNotifClick(notifId, approvalId) {
-            // Mark as read
-            fetch('../api/v1/notifications.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF_TOKEN },
-                body: JSON.stringify({ notification_id: notifId })
-            });
-            document.getElementById('notifPopup').classList.remove('open');
-            if (approvalId) {
-                openDetail(approvalId);
+            const feedback = document.getElementById('notifFeedback');
+            feedback.textContent = '';
+            try {
+                const response = await fetch('../api/v1/notifications.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF_TOKEN },
+                    body: JSON.stringify({ notification_id: notifId })
+                });
+                const result = await response.json();
+                if (!response.ok || !result.success) throw new Error('acknowledgement_failed');
+                await fetchNotifications();
+                document.getElementById('notifPopup').classList.remove('open');
+                if (approvalId) openDetail(approvalId);
+            } catch (_) {
+                feedback.textContent = 'Could not confirm the read status. Open your inbox to retry.';
             }
         }
 
@@ -1209,6 +1216,11 @@ $canApprove = SoarAuth::hasPermission($userTier, 'approve_actions');
             return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
         }
 
+        const requestedApproval = new URLSearchParams(window.location.search).get('approval_id');
+        if (requestedApproval && /^[1-9][0-9]*$/.test(requestedApproval) && Number.isSafeInteger(Number(requestedApproval))) {
+            openDetail(Number(requestedApproval));
+        }
+
         // Setup Events & Polling
         document.getElementById('statusFilter').addEventListener('change', fetchQueue);
         document.getElementById('priorityFilter').addEventListener('change', fetchQueue);
@@ -1224,11 +1236,6 @@ $canApprove = SoarAuth::hasPermission($userTier, 'approve_actions');
             if (!popup.contains(e.target) && e.target !== document.getElementById('bellBtn')) {
                 popup.classList.remove('open');
             }
-        });
-
-        document.getElementById('markAllReadBtn').addEventListener('click', async () => {
-            // Re-fetch notifications and close
-            document.getElementById('notifPopup').classList.remove('open');
         });
 
         // Polling with Visibility API (Correction 3)

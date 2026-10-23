@@ -119,7 +119,7 @@ function incidentUrl(array $params): string {
 :root{color-scheme:dark;--bg:#020b18;--panel:#071629;--line:#183652;--text:#e0eeff;--muted:#92b0ce;--cyan:#17d4be;--amber:#ffb703}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.6 system-ui,Arial,sans-serif}
 a{color:#5ed8ee}header{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding:16px max(20px,calc((100vw - 1180px)/2))}
-.brand{color:var(--cyan);font-weight:800;letter-spacing:1.2px;font-size:19px;text-decoration:none}nav{display:flex;gap:18px}main{max-width:1180px;margin:auto;padding:25px 20px 60px}
+.brand{color:var(--cyan);font-weight:800;letter-spacing:1.2px;font-size:19px;text-decoration:none}nav{display:flex;gap:18px;flex-wrap:wrap}main{max-width:1180px;margin:auto;padding:25px 20px 60px}
 h1{margin:0;font-size:29px}h2{font-size:20px;margin:0 0 15px}.lead{color:var(--muted);margin:3px 0 25px}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px;margin:16px 0}
 form{display:flex;align-items:end;flex-wrap:wrap;gap:15px}.field{display:flex;flex-direction:column;gap:4px}.field label{color:var(--muted);font-size:12px}
@@ -137,7 +137,7 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;margin:6px 0}.error
 </style>
 </head>
 <body>
-<header><a class="brand" href="dashboard.php">THREATPULSE / SOC</a><nav><a href="dashboard.php">SIEM Dashboard</a><a href="incidents.php" aria-current="page">Incidents</a><a href="control_plane/index.php">SOAR Control Plane</a></nav></header>
+<header><a class="brand" href="dashboard.php">THREATPULSE / SOC</a><nav><a href="dashboard.php">SIEM Dashboard</a><a href="incidents.php" aria-current="page">Incidents</a><a href="control_plane/index.php">SOAR Control Plane</a><a href="notifications.php">My inbox</a></nav></header>
 <main>
 <h1>Incident queue</h1>
 <p><a href="demo.php">Simulated incident walkthrough</a></p>

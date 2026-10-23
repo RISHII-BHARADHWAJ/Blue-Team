@@ -136,11 +136,11 @@ class NotifyAnalystAction implements PlaybookActionHandler {
         $incidentId = (int)($context['incident']['id'] ?? 0);
         $analystId  = (int)($context['analyst']['id'] ?? 0);
         if ($this->pdo && $analystId) {
-            $stmt = $this->pdo->prepare("
-                INSERT INTO notifications (recipient_id, incident_id, title, message, notification_type)
-                VALUES (?, ?, ?, ?, 'INCIDENT_ASSIGNED')
-            ");
-            $stmt->execute([$analystId, $incidentId ?: null, substr($title, 0, 255), $message]);
+            require_once __DIR__.'/../notifications/NotificationService.php';
+            $sent=(new NotificationService($this->pdo))->notify($analystId,'PLAYBOOK_NOTIFICATION',$title,$message,[
+                'incident_id'=>$incidentId ?: null, 'playbook_run_id'=>$context['playbook_run']['id'] ?? null,
+            ]);
+            if (!$sent) return new ActionResult(ActionResult::STATUS_FAILED,'Could not save the analyst notification.',[],false);
             return new ActionResult(ActionResult::STATUS_SUCCESS, 'Analyst notified.', ['notification_id' => (int)$this->pdo->lastInsertId()], false);
         }
         return new ActionResult(ActionResult::STATUS_SKIPPED, 'No target analyst resolved from context.', [], $dryRun);
