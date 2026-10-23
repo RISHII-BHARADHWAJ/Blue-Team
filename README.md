@@ -33,6 +33,8 @@ ThreatPulse is a PHP and MariaDB-based Blue Team project for collecting and visu
 
 ### SOAR capabilities
 
+- **Lead/admin severity assessment:** update case severity and mapped priority with a required reason, current-role checks, stale-value conflicts, and atomic case-note/timeline/audit history. See [severity assessment and retry semantics](docs/severity-assessment.md).
+
 - **Searchable approval queue:** the control plane searches all requests with paginated results, full-result counts, priority/expiry ordering, and explicit simulation views. See [queue semantics and expiration](docs/approval-queue.md).
 
 - **Lead/admin audit history:** `audit.php` searches recorded action metadata with outcome/date filters and recognized case references, enforcing current database roles. See [audit visibility and limits](docs/audit-history.md).
