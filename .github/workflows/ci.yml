@@ -150,6 +150,11 @@ jobs:
         run: |
           docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/integration_source_activity.php
           sh tests/check_source_activity_http.sh
+      - name: Verify collaborative status triage, atomic history and HTTP conflicts
+        run: |
+          docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/integration_status_triage.php
+          docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/concurrent_status_triage.php
+          sh tests/check_status_triage_http.sh
       - name: Show container logs on failure
         if: failure()
         run: docker compose logs --no-color --tail=200

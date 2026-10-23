@@ -21,6 +21,7 @@ require_once __DIR__ . '/SoarAuth.php';
 require_once __DIR__ . '/notifications/NotificationService.php';
 
 final class IncidentAssignmentConflict extends RuntimeException {}
+final class IncidentStatusConflict extends RuntimeException {}
 
 class IncidentManager {
     private ?PDO $pdo;
@@ -234,12 +235,20 @@ class IncidentManager {
     /**
      * Transition an incident to a new lifecycle status with validation and auditing.
      */
-    public function changeStatus(int $incidentId, string $newStatus, string $actor, ?string $reason = null): array {
+    public function changeStatus(int $incidentId, string $newStatus, string $actor, ?string $reason = null, ?string $expectedStatus = null): array {
         $newStatusUpper = strtoupper(trim($newStatus));
+        if ($expectedStatus !== null) {
+            $expectedStatus = strtoupper(trim($expectedStatus));
+            if (!in_array($expectedStatus, IncidentStateMachine::STATES, true)) {
+                throw new InvalidStateTransitionException('Unknown expected incident status.');
+            }
+        }
 
         $inTx = $this->pdo && $this->pdo->inTransaction();
-        if ($this->pdo && !$inTx) {
-            $this->pdo->beginTransaction();
+        $savepoint = 'status_' . bin2hex(random_bytes(8));
+        if ($this->pdo) {
+            if (!$inTx) $this->pdo->beginTransaction();
+            else $this->pdo->exec("SAVEPOINT $savepoint");
         }
 
         try {
@@ -247,19 +256,28 @@ class IncidentManager {
             if (!$incident) {
                 throw new InvalidArgumentException("Incident #{$incidentId} does not exist.");
             }
-
             $currentStatus = $incident['status'];
 
-            // 1. Assert State Machine Transition Validity
-            IncidentStateMachine::assertValidTransition($currentStatus, $newStatusUpper);
-
-            // 2. Check Authorization
+            // Authorization also applies to retries of a closed case.
             $userTier = SoarAuth::getContext($this->pdo)['tier'];
             if ($newStatusUpper === IncidentStateMachine::STATE_CLOSED && !SoarAuth::hasPermission($userTier, 'close_incidents')) {
                 throw new DomainException("Permission denied: Tier {$userTier} cannot close incidents. Requires LEAD or ADMIN.");
             }
+            if ($currentStatus === $newStatusUpper) {
+                // A replay must not refresh timestamps or duplicate history. Locked fields may
+                // be newer than a caller's pre-existing repeatable-read snapshot.
+                $result = array_replace($this->getIncident($incidentId) ?? [], $incident);
+                if ($this->pdo) {
+                    if (!$inTx) $this->pdo->commit();
+                    else $this->pdo->exec("RELEASE SAVEPOINT $savepoint");
+                }
+                return $result;
+            }
+            if ($expectedStatus !== null && $expectedStatus !== $currentStatus) {
+                throw new IncidentStatusConflict('Case status changed since this page was loaded. Reload the case before changing its status.');
+            }
+            IncidentStateMachine::assertValidTransition($currentStatus, $newStatusUpper);
 
-            // 3. Prepare Update Payload
             $updateData = ['status' => $newStatusUpper];
             if ($newStatusUpper === IncidentStateMachine::STATE_CONTAINED && empty($incident['contained_at'])) {
                 $updateData['contained_at'] = date('Y-m-d H:i:s');
@@ -268,10 +286,7 @@ class IncidentManager {
             } elseif ($newStatusUpper === IncidentStateMachine::STATE_CLOSED && empty($incident['closed_at'])) {
                 $updateData['closed_at'] = date('Y-m-d H:i:s');
             }
-
             $this->repository->update($incidentId, $updateData);
-
-            // 4. Timeline Entry
             $this->timeline->addEvent(
                 $incidentId,
                 'STATUS_CHANGE',
@@ -280,24 +295,26 @@ class IncidentManager {
                 "Status changed from {$currentStatus} to {$newStatusUpper}" . ($reason ? ": $reason" : ""),
                 ['old_status' => $currentStatus, 'new_status' => $newStatusUpper, 'reason' => $reason]
             );
-
-            // 5. Audit Log
             $this->auditLog($actor, 'change_incident_status', $incident['incident_number'], 'success', [
                 'incident_id' => $incidentId,
                 'old_status'  => $currentStatus,
                 'new_status'  => $newStatusUpper,
                 'reason'      => $reason
-            ]);
+            ], true);
 
-            if ($this->pdo && !$inTx) {
-                $this->pdo->commit();
+            $result = $this->getIncident($incidentId);
+            if ($this->pdo) {
+                if (!$inTx) $this->pdo->commit();
+                else $this->pdo->exec("RELEASE SAVEPOINT $savepoint");
             }
-
-            return $this->getIncident($incidentId);
-
-        } catch (Exception $e) {
-            if ($this->pdo && !$inTx && $this->pdo->inTransaction()) {
-                $this->pdo->rollBack();
+            return $result;
+        } catch (Throwable $e) {
+            if ($this->pdo && $this->pdo->inTransaction()) {
+                if (!$inTx) $this->pdo->rollBack();
+                else {
+                    $this->pdo->exec("ROLLBACK TO SAVEPOINT $savepoint");
+                    $this->pdo->exec("RELEASE SAVEPOINT $savepoint");
+                }
             }
             throw $e;
         }

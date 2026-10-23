@@ -218,8 +218,8 @@ foreach ($queueChoices as $key=>[$label,$choices]): ?>
 <?php if ($triageTransitions): ?>
 <div class="triage">
 <h2>Analyst triage</h2>
-<p>Choose a permitted next state and record a reason. This updates the incident timeline; it does not execute any containment or host action.</p>
-<form id="triage-form" data-incident-id="<?= incidentEscape($detail['id']) ?>">
+<p>Choose a permitted next state and record a reason. Status changes are checked against the state shown here. Repeating a completed change adds no duplicate history. This does not execute containment or host actions.</p>
+<form id="triage-form" data-incident-id="<?= incidentEscape($detail['id']) ?>" data-current-status="<?= incidentEscape($detail['status']) ?>">
 <input type="hidden" name="csrf_token" value="<?= incidentEscape($csrfToken) ?>">
 <div class="field"><label for="new-status">Next status</label><select id="new-status" name="new_status" required>
 <?php foreach ($triageTransitions as $nextStatus): ?><option value="<?= incidentEscape($nextStatus) ?>"><?= incidentEscape($nextStatus) ?></option><?php endforeach; ?>
@@ -327,12 +327,19 @@ foreach ($queueChoices as $key=>[$label,$choices]): ?>
                     id: Number(form.dataset.incidentId),
                     action: 'change_status',
                     new_status: nextStatus,
+                    expected_status: form.dataset.currentStatus,
                     reason: reason
                 })
             });
             const result = await response.json();
             if (!response.ok || result.success !== true) {
                 feedback.textContent = result.message || 'Status update failed. Please retry.';
+                if (response.status === 409) {
+                    const reload = document.createElement('a');
+                    reload.href = window.location.href;
+                    reload.textContent = 'Reload case';
+                    feedback.append(' ', reload);
+                }
                 return;
             }
             window.location.reload();

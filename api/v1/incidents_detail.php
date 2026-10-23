@@ -104,16 +104,31 @@ if ($method === 'POST') {
     try {
         switch ($action) {
             case 'change_status':
-                $newStatus = !empty($body['new_status']) ? trim((string)$body['new_status']) : '';
-                $reason = !empty($body['reason']) ? trim((string)$body['reason']) : null;
-
-                if (empty($newStatus)) {
+                if (!is_string($body['new_status'] ?? null) ||
+                    !in_array(strtoupper(trim($body['new_status'])), IncidentStateMachine::STATES, true)) {
                     http_response_code(422);
-                    echo json_encode(['success' => false, 'error' => 'missing_status', 'message' => 'new_status parameter is required.'], JSON_UNESCAPED_SLASHES);
+                    echo json_encode(['success'=>false,'error'=>'invalid_status','message'=>'new_status must be a recognized incident status.']);
                     exit;
                 }
-
-                $updated = $manager->changeStatus($incidentId, $newStatus, $auth['actor'], $reason);
+                $newStatus = strtoupper(trim($body['new_status']));
+                if (isset($body['reason']) && !is_string($body['reason'])) {
+                    http_response_code(422);
+                    echo json_encode(['success'=>false,'error'=>'invalid_reason','message'=>'reason must be text or null.']);
+                    exit;
+                }
+                $reason = isset($body['reason']) ? trim($body['reason']) : null;
+                // Optional for existing API clients; the case page always sends its displayed state.
+                $expectedStatus = null;
+                if (array_key_exists('expected_status', $body)) {
+                    if (!is_string($body['expected_status']) ||
+                        !in_array(strtoupper(trim($body['expected_status'])), IncidentStateMachine::STATES, true)) {
+                        http_response_code(422);
+                        echo json_encode(['success'=>false,'error'=>'invalid_expected_status','message'=>'expected_status must be a recognized incident status when supplied.']);
+                        exit;
+                    }
+                    $expectedStatus = strtoupper(trim($body['expected_status']));
+                }
+                $updated = $manager->changeStatus($incidentId, $newStatus, $auth['actor'], $reason, $expectedStatus);
                 echo json_encode(['success' => true, 'action' => 'status_changed', 'data' => $updated], JSON_UNESCAPED_SLASHES);
                 exit;
 
@@ -159,6 +174,10 @@ if ($method === 'POST') {
                 exit;
         }
 
+    } catch (IncidentStatusConflict $e) {
+        http_response_code(409);
+        echo json_encode(['success'=>false,'error'=>'status_conflict','message'=>$e->getMessage()], JSON_UNESCAPED_SLASHES);
+        exit;
     } catch (IncidentAssignmentConflict $e) {
         http_response_code(409);
         echo json_encode(['success'=>false,'error'=>'assignment_conflict','message'=>$e->getMessage()], JSON_UNESCAPED_SLASHES);
