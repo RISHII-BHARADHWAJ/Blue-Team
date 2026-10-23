@@ -17,6 +17,7 @@ if (!SoarAuth::hasPermission($auth['tier'], 'view_incidents')) {
     http_response_code(403);
     exit('Not authorized to view the SOC workspace.');
 }
+header('Cache-Control: no-store');
 header('X-Frame-Options: DENY');
 header('X-Content-Type-Options: nosniff');
 header('Referrer-Policy: strict-origin-when-cross-origin');
@@ -26,32 +27,16 @@ function socEscape(mixed $value): string {
     return htmlspecialchars((string)($value ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
-$metrics = ['records' => 0, 'sources' => 0, 'critical' => 0, 'high' => 0];
-$severities = [];
-$recent = [];
-$incidentCount = null;
-$incidentRows = [];
-$dbError = null;
-try {
-    $summary = $pdo->query("SELECT COUNT(*) AS records, COUNT(DISTINCT source_ip) AS sources,
-        COALESCE(SUM(severity = 'CRITICAL'),0) AS critical,
-        COALESCE(SUM(severity = 'HIGH'),0) AS high FROM logs")->fetch(PDO::FETCH_ASSOC);
-    foreach ($metrics as $key => $_) $metrics[$key] = (int)($summary[$key] ?? 0);
-    $severities = $pdo->query("SELECT severity, COUNT(*) AS n FROM logs GROUP BY severity ORDER BY FIELD(severity,'CRITICAL','HIGH','WARNING','INFO','LOW')")->fetchAll(PDO::FETCH_ASSOC);
-    $recent = $pdo->query("SELECT timestamp, source_ip, severity, category, message
-        FROM logs ORDER BY timestamp DESC, id DESC LIMIT 12")->fetchAll(PDO::FETCH_ASSOC);
-
-    // The SOAR schema may not be present in a legacy/local database yet.
-    $hasIncidents = $pdo->query("SELECT COUNT(*) FROM information_schema.tables
-        WHERE table_schema = DATABASE() AND table_name = 'incidents'")->fetchColumn();
-    if ((int)$hasIncidents > 0) {
-        $incidentCount = (int)$pdo->query("SELECT COUNT(*) FROM incidents WHERE is_simulated = 0 AND status NOT IN ('RESOLVED','CLOSED')")->fetchColumn();
-        $incidentRows = $pdo->query("SELECT id, incident_number, title, severity, status, created_at
-            FROM incidents WHERE is_simulated = 0 ORDER BY created_at DESC, id DESC LIMIT 6")->fetchAll(PDO::FETCH_ASSOC);
-    }
-} catch (Throwable $e) {
-    error_log('SOC overview query failed: ' . $e->getMessage());
-    $dbError = 'Some SOC data is currently unavailable. Check the database schema and service logs.';
+require_once __DIR__ . '/includes/soc/SocOverviewService.php';
+$overview = (new SocOverviewService($pdo))->build();
+$evidence = $overview['evidence'];
+$workload = $overview['incidents'];
+$intelligence = $overview['intelligence'];
+$recent = $evidence['recent'] ?? [];
+$severities = $evidence['severities'] ?? [];
+$incidentRows = $workload['rows'] ?? [];
+function socNumber(?array $section, string $key): string {
+    return $section === null ? '—' : number_format($section[$key]);
 }
 
 $feedSources=[]; $feedError=null;
@@ -149,37 +134,47 @@ code{font-size:12px;color:#abd2e1}
   <div class="top">
     <div><span class="eyebrow">Security operations / overview</span>
       <h1>Security workspace</h1>
-      <p>Investigate recorded telemetry, threat-feed entries, and analyst cases.</p>
+      <p>Investigate accepted sensor evidence and real cases. External intelligence is shown separately.</p>
     </div>
     <div class="user">Signed in as <?= socEscape($auth['actor']) ?><br><span class="pill"><?= socEscape($auth['tier']) ?></span></div>
   </div>
 
-  <?php if ($dbError !== null): ?><div class="callout error" role="alert"><?= socEscape($dbError) ?></div><?php endif; ?>
+  <p>Overview as of <?= socEscape($overview['as_of_utc'] ?? 'unavailable') ?> UTC · <a href="soc.php">Refresh overview</a></p>
+  <?php if ($overview['errors']): ?><div class="callout error" role="alert">Some sections are unavailable: <?= socEscape(implode(', ', $overview['errors'])) ?>. Check database health and the documented migrations. A dash means unavailable, not zero.</div><?php endif; ?>
   <div class="cards">
-    <div class="card"><div class="label">Stored SIEM records</div><div class="number"><?= socEscape(number_format($metrics['records'])) ?></div><div class="note">Includes imported threat feeds</div></div>
-    <div class="card"><div class="label">Distinct source IPs</div><div class="number"><?= socEscape(number_format($metrics['sources'])) ?></div><div class="note">Across stored records</div></div>
-    <div class="card"><div class="label">Critical-labelled records</div><div class="number"><?= socEscape(number_format($metrics['critical'])) ?></div><div class="note">Not necessarily local attacks</div></div>
-    <div class="card"><div class="label">Active incidents</div><div class="number"><?= $incidentCount === null ? '—' : socEscape(number_format($incidentCount)) ?></div><div class="note"><?= $incidentCount === null ? 'SOAR schema not initialized' : 'Not resolved or closed' ?></div></div>
+    <div class="card"><div class="label">Accepted sensor events</div><div class="number"><?= socEscape(socNumber($evidence,'total')) ?></div><div class="note">All preserved non-simulated submissions</div></div>
+    <div class="card"><div class="label">Received in 24 hours</div><div class="number"><?= socEscape(socNumber($evidence,'received_24h')) ?></div><div class="note">Receipt time, not source event time</div></div>
+    <div class="card"><div class="label">Active real incidents</div><div class="number"><?= socEscape(socNumber($workload,'active')) ?></div><div class="note"><a href="incidents.php?kind=observed&amp;lifecycle=active">Open active queue →</a></div></div>
+    <div class="card"><div class="label">Unassigned active cases</div><div class="number"><?= socEscape(socNumber($workload,'unassigned')) ?></div><div class="note"><a href="incidents.php?kind=observed&amp;lifecycle=active&amp;owner=unassigned">Review assignment →</a></div></div>
   </div>
-  <div class="callout"><strong>Data provenance:</strong> The legacy <code>logs</code> table mixes local telemetry and external blocklist indicators. A feed listing does not prove an attack against your environment. Source separation is planned.</div>
+  <div class="callout"><strong>Data provenance:</strong> Event metrics include preserved, non-simulated sensor submissions only. Legacy logs without submission evidence and simulated data are excluded. A reported event or external feed listing does not establish a confirmed attack. <a href="events.php?kind=simulated">Simulation evidence</a> · <a href="dashboard.php">Legacy records</a></div>
 
   <div class="columns">
     <section class="panel" aria-labelledby="recent-title">
-      <div class="panel-head"><h2 id="recent-title">Latest records</h2><a class="action" href="dashboard.php">Explore SIEM →</a></div>
+      <div class="panel-head"><h2 id="recent-title">Latest accepted sensor events</h2><a class="action" href="events.php?kind=observed">Explore evidence →</a></div>
       <div class="table-wrap"><table>
-        <thead><tr><th>Time</th><th>Severity</th><th>Source IP</th><th>Details</th></tr></thead>
+        <thead><tr><th>Received (UTC)</th><th>Severity</th><th>Claimed source / IP</th><th>Details</th></tr></thead>
         <tbody>
         <?php foreach ($recent as $event): ?>
         <tr>
-          <td><?= socEscape($event['timestamp']) ?></td>
+          <td><a href="events.php?kind=observed&amp;log_id=<?= (int)$event['log_id'] ?>"><?= socEscape($event['received_at']) ?></a></td>
           <td><span class="tag"><?= socEscape($event['severity']) ?></span></td>
-          <td><code><?= socEscape($event['source_ip']) ?></code></td>
-          <td class="message"><?= socEscape($event['message']) ?></td>
+          <td><?= socEscape($event['source']) ?><br><code><?= socEscape($event['source_ip'] ?? 'Not supplied') ?></code></td>
+          <td class="message"><?= socEscape($event['message']) ?><?php if ($event['message_truncated']): ?>… <a href="events.php?kind=observed&amp;log_id=<?= (int)$event['log_id'] ?>">Full evidence</a><?php endif; ?></td>
         </tr>
         <?php endforeach; ?>
-        <?php if (!$recent): ?><tr><td colspan="4" class="empty">No records yet. Check feed ingestion or connect a sensor.</td></tr><?php endif; ?>
+        <?php if (!$recent): ?><tr><td colspan="4" class="empty"><?= $evidence === null ? 'Sensor evidence is unavailable.' : 'No accepted non-simulated events yet. Submit an event from an authenticated sensor.' ?></td></tr><?php endif; ?>
         </tbody>
       </table></div>
+      <p>Newest 12 by receipt time. Messages are limited to 500 characters. Source names are supplied by the sender; inspect evidence for authenticated attribution.</p>
+      <div class="divider"></div>
+      <h2>Sensor-event severity</h2>
+      <p>All preserved non-simulated submissions · <?= socEscape(socNumber($evidence,'source_ips')) ?> distinct source IPs</p>
+      <?php if ($evidence === null): ?><p>Severity data unavailable.</p>
+      <?php elseif ($evidence['total'] > 0): ?>
+        <div class="legend"><?php foreach ($severities as $entry): ?><span><i class="dot" style="background:<?= socEscape($severityColors[$entry['severity']] ?? '#a4b5c5') ?>"></i><?= socEscape($entry['severity']) ?> <?= socEscape($entry['n']) ?></span><?php endforeach; ?></div>
+        <div class="track" role="img" aria-label="Preserved sensor events by severity"><?php foreach ($severities as $entry): ?><span style="width:<?= socEscape(number_format((int)$entry['n'] / $evidence['total'] * 100, 2, '.', '')) ?>%;background:<?= socEscape($severityColors[$entry['severity']] ?? '#a4b5c5') ?>"></span><?php endforeach; ?></div>
+      <?php else: ?><p>No sensor events to chart.</p><?php endif; ?>
     </section>
     <div>
       <section class="panel" aria-labelledby="feed-title">
@@ -191,33 +186,34 @@ code{font-size:12px;color:#abd2e1}
         <?php endforeach; ?>
         <p>Status reflects recorded collection results, not confirmation of local attacks.</p>
         <div class="divider"></div>
-        <h2>Severity distribution</h2>
-        <?php if ($metrics['records'] > 0): ?>
-          <div class="legend">
-            <?php foreach ($severities as $entry): ?>
-              <span><i class="dot" style="background:<?= socEscape($severityColors[$entry['severity']] ?? '#a4b5c5') ?>"></i><?= socEscape($entry['severity']) ?> <?= socEscape($entry['n']) ?></span>
-            <?php endforeach; ?>
-          </div>
-          <div class="track" role="img" aria-label="Proportion of records by severity">
-            <?php foreach ($severities as $entry): ?>
-              <span style="width:<?= socEscape(number_format((int)$entry['n'] / $metrics['records'] * 100, 2, '.', '')) ?>%;background:<?= socEscape($severityColors[$entry['severity']] ?? '#a4b5c5') ?>"></span>
-            <?php endforeach; ?>
-          </div>
-        <?php else: ?><p>No records to chart.</p><?php endif; ?>
+        <h2>External intelligence inventory</h2>
+        <?php if ($intelligence === null): ?><p>Inventory unavailable; check migration 007 and database health.</p>
+        <?php else: ?>
+          <div class="fact"><b>Provider listings</b><span><?= socEscape(socNumber($intelligence,'listings')) ?></span></div>
+          <div class="fact"><b>Providers represented</b><span><?= socEscape(socNumber($intelligence,'providers')) ?></span></div>
+          <p>One indicator can have several provider listings. Inventory counts do not measure local attacks or guarantee current validity.</p>
+        <?php endif; ?>
+        <p><a href="threat-intel.php">Explore intelligence →</a></p>
       </section>
       <section class="panel" aria-labelledby="case-title" style="margin-top:16px">
-        <div class="panel-head"><h2 id="case-title">Latest incidents</h2><a href="incidents.php">Open queue →</a></div>
-        <?php if ($incidentCount === null): ?>
-          <p>The SOAR database migrations have not been applied to this database.</p>
+        <div class="panel-head"><h2 id="case-title">Active priority cases</h2><a href="incidents.php">Open queue →</a></div>
+        <?php if ($workload === null): ?>
+          <p>Incident workload is unavailable. Check database health and migrations, including simulation classification (011).</p>
         <?php elseif (!$incidentRows): ?>
-          <p>No incidents yet. Imported feed entries are not automatically evidence of a local incident.</p>
+          <p>No active real incidents. Resolved, closed and simulated cases are excluded.</p>
         <?php else: ?>
           <?php foreach ($incidentRows as $incident): ?>
             <div class="fact">
               <b><a href="incidents.php?id=<?= socEscape((int)$incident['id']) ?>"><?= socEscape($incident['incident_number']) ?></a><br><span style="color:var(--muted);font-weight:400"><?= socEscape($incident['title']) ?></span></b>
-              <span><?= socEscape($incident['status']) ?><br><?= socEscape($incident['severity']) ?></span>
+              <span><?= socEscape($incident['status']) ?><br><?= socEscape($incident['priority']) ?> · <?= socEscape($incident['severity']) ?></span>
             </div>
           <?php endforeach; ?>
+        <?php endif; ?>
+        <?php if ($workload !== null): ?>
+          <div class="divider"></div>
+          <p><a href="incidents.php?kind=observed&amp;lifecycle=active&amp;priority=P1"><?= socEscape($workload['p1']) ?> active P1 cases</a></p>
+          <p><a href="incidents.php?kind=observed&amp;lifecycle=active&amp;stale_days=7&amp;sort=least_updated"><?= socEscape($workload['unchanged_7d']) ?> active cases unchanged for 7+ days</a></p>
+          <p>Up to six cases, priority first then oldest created. Case-update age excludes some note and workflow activity; it is not an SLA.</p>
         <?php endif; ?>
       </section>
     </div>

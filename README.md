@@ -19,6 +19,8 @@ ThreatPulse is a PHP and MariaDB-based Blue Team project for collecting and visu
 
 ### SIEM capabilities
 
+- **SOC overview:** `soc.php` separates preserved sensor evidence, active real-case workload, and external intelligence inventory, with explicit unavailable states and investigation links. See [metric definitions and provenance](docs/soc-overview.md).
+
 - **Feed health and history:** `feeds.php` shows durable collection outcomes, counts, failures and incomplete imports, with administrator refresh settings. See [migration 010 and scheduling](docs/feed-collection.md).
 - **Configurable detections:** `detections.php` exposes authentication-failure and source-IP intelligence findings, evidence links, simulation isolation, and audited administrator settings. Apply migration 009; see [detection rules](docs/detection-rules.md).
 - **Event evidence:** `events.php` searches newly accepted submissions and exposes preserved payloads, source attribution, timestamps, metadata, and incident links. See [evidence upgrades and limitations](docs/event-evidence.md).
@@ -78,6 +80,7 @@ Requirements: Docker Engine/Desktop with the Compose plugin.
 
 3. Open **http://localhost:8080/** and sign in using your configured local development account. Useful pages:
 
+   - SOC overview: `/soc.php`
    - Event evidence: `/events.php`
    - Feed health and collection history: `/feeds.php`
    - Detection findings and rule settings: `/detections.php`
