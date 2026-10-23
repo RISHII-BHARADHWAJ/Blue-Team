@@ -127,6 +127,11 @@ jobs:
         run: |
           docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/integration_soc_overview.php
           sh tests/check_soc_overview_http.sh
+      - name: Verify analyst event escalation, retries and HTTP permissions
+        run: |
+          docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/integration_event_escalation.php
+          docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/concurrent_event_escalation.php
+          sh tests/check_event_escalation_http.sh
       - name: Show container logs on failure
         if: failure()
         run: docker compose logs --no-color --tail=200
