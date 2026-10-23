@@ -66,7 +66,10 @@ try {
     overviewCheck($partial['evidence']===null && $partial['errors']===['evidence'] && $partial['incidents']!==null && $partial['intelligence']!==null,
         'unavailable evidence is null while independent sections remain usable');
     $pdo->exec('DROP TEMPORARY TABLE event_evidence');
-    foreach(['event_evidence','incidents','threat_feed_indicators'] as $table) $pdo->exec("CREATE TEMPORARY TABLE $table LIKE $table");
+    // MariaDB rejects CREATE TEMPORARY TABLE x LIKE x; define only the read projection.
+    $pdo->exec('CREATE TEMPORARY TABLE event_evidence (id BIGINT,log_id INT,is_simulated TINYINT,received_at DATETIME,event_timestamp DATETIME,source VARCHAR(100),source_type VARCHAR(50))');
+    $pdo->exec('CREATE TEMPORARY TABLE incidents (id BIGINT,incident_number VARCHAR(32),title VARCHAR(255),severity VARCHAR(20),status VARCHAR(20),priority VARCHAR(2),assigned_to INT,is_simulated TINYINT,created_at DATETIME,updated_at DATETIME)');
+    $pdo->exec('CREATE TEMPORARY TABLE threat_feed_indicators (provider VARCHAR(64),fetched_at DATETIME)');
     $empty=$service->build();
     overviewCheck(!$empty['errors'] && $empty['evidence']['total']===0 && $empty['evidence']['received_24h']===0 && $empty['evidence']['recent']===[] && $empty['incidents']['active']===0 && $empty['intelligence']['listings']===0,
         'successful empty sections are real zero results');
