@@ -267,40 +267,14 @@ class IncidentRepository {
         $limit = max(1, min(200, $limit));
         $offset = max(0, $offset);
 
-        $kind = $filters['kind'] ?? 'observed';
-        $where = $kind === 'all' ? ['1=1'] : ['is_simulated = ' . ($kind === 'simulated' ? '1' : '0')];
-        $params = [];
-
-        if (!empty($filters['status'])) {
-            $where[] = 'i.status = ?';
-            $params[] = $filters['status'];
-        }
-        if (!empty($filters['severity'])) {
-            $where[] = 'i.severity = ?';
-            $params[] = $filters['severity'];
-        }
-        if (!empty($filters['priority'])) {
-            $where[] = 'i.priority = ?';
-            $params[] = $filters['priority'];
-        }
-        if (!empty($filters['assigned_to'])) {
-            $where[] = 'i.assigned_to = ?';
-            $params[] = (int)$filters['assigned_to'];
-        }
-        if (!empty($filters['category'])) {
-            $where[] = 'i.attack_category = ?';
-            $params[] = $filters['category'];
-        }
-        if (!empty($filters['created_after'])) {
-            $where[] = 'i.created_at >= ?';
-            $params[] = $filters['created_after'];
-        }
-        if (!empty($filters['created_before'])) {
-            $where[] = 'i.created_at <= ?';
-            $params[] = $filters['created_before'];
-        }
-
-        $whereSql = implode(' AND ', $where);
+        [$whereSql, $params] = $this->incidentFilterSql($filters);
+        // Only allowlisted expressions can enter ORDER BY.
+        $order = match ($filters['sort'] ?? 'priority') {
+            'newest' => 'i.created_at DESC, i.id DESC',
+            'oldest' => 'i.created_at ASC, i.id ASC',
+            'least_updated' => 'i.updated_at ASC, i.id ASC',
+            default => "FIELD(i.priority, 'P1', 'P2', 'P3', 'P4'), i.created_at DESC, i.id DESC",
+        };
 
         $sql = "
             SELECT i.*, 
@@ -313,9 +287,7 @@ class IncidentRepository {
             LEFT JOIN incident_alerts ia ON i.id = ia.incident_id
             WHERE $whereSql
             GROUP BY i.id
-            ORDER BY 
-                FIELD(i.priority, 'P1', 'P2', 'P3', 'P4'),
-                i.created_at DESC
+            ORDER BY $order
             LIMIT ? OFFSET ?
         ";
 
@@ -338,32 +310,48 @@ class IncidentRepository {
             return 0;
         }
 
-        $kind = $filters['kind'] ?? 'observed';
-        $where = $kind === 'all' ? ['1=1'] : ['is_simulated = ' . ($kind === 'simulated' ? '1' : '0')];
-        $params = [];
-
-        if (!empty($filters['status'])) {
-            $where[] = 'status = ?';
-            $params[] = $filters['status'];
-        }
-        if (!empty($filters['severity'])) {
-            $where[] = 'severity = ?';
-            $params[] = $filters['severity'];
-        }
-        if (!empty($filters['priority'])) {
-            $where[] = 'priority = ?';
-            $params[] = $filters['priority'];
-        }
-
-        if (!empty($filters['assigned_to'])) {
-            $where[] = 'assigned_to = ?';
-            $params[] = (int)$filters['assigned_to'];
-        }
-
-        $whereSql = implode(' AND ', $where);
-        $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM incidents WHERE $whereSql");
+        [$whereSql, $params] = $this->incidentFilterSql($filters);
+        $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM incidents i WHERE $whereSql");
         $stmt->execute($params);
         return (int)$stmt->fetchColumn();
+    }
+
+    /** Shared predicates keep list pagination and counts aligned. */
+    private function incidentFilterSql(array $filters): array {
+        $kind = $filters['kind'] ?? 'observed';
+        $where = $kind === 'all' ? ['1=1'] : ['i.is_simulated = ' . ($kind === 'simulated' ? '1' : '0')];
+        $params = [];
+        foreach (['status'=>'status', 'severity'=>'severity', 'priority'=>'priority', 'category'=>'attack_category'] as $key=>$column) {
+            if (!empty($filters[$key])) {
+                $where[] = "i.$column = ?";
+                $params[] = $filters[$key];
+            }
+        }
+        if (!empty($filters['assigned_to'])) {
+            $where[] = 'i.assigned_to = ?';
+            $params[] = (int)$filters['assigned_to'];
+        }
+        if (!empty($filters['unassigned'])) $where[] = 'i.assigned_to IS NULL';
+        if (($filters['lifecycle'] ?? '') === 'active') $where[] = "i.status IN ('NEW','OPEN','INVESTIGATING','CONTAINED')";
+        if (($filters['lifecycle'] ?? '') === 'finished') $where[] = "i.status IN ('RESOLVED','CLOSED')";
+        foreach (['created_after'=>'>=', 'created_before'=>'<='] as $key=>$operator) {
+            if (!empty($filters[$key])) {
+                $where[] = "i.created_at $operator ?";
+                $params[] = $filters[$key];
+            }
+        }
+        if (isset($filters['q']) && $filters['q'] !== '') {
+            // Escape LIKE metacharacters: user text is a literal substring.
+            $term = '%' . strtr($filters['q'], ['!'=>'!!', '%'=>'!%', '_'=>'!_']) . '%';
+            $where[] = "(i.incident_number LIKE ? ESCAPE '!' OR i.title LIKE ? ESCAPE '!')";
+            array_push($params, $term, $term);
+        }
+        $days = (int)($filters['stale_days'] ?? 0);
+        if (in_array($days, [1,3,7,30], true)) {
+            $where[] = 'i.updated_at <= DATE_SUB(NOW(), INTERVAL ? DAY)';
+            $params[] = $days;
+        }
+        return [implode(' AND ', $where), $params];
     }
 
     /**

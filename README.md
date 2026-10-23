@@ -41,7 +41,7 @@ ThreatPulse is a PHP and MariaDB-based Blue Team project for collecting and visu
 - **Simulated incident walkthrough:** `demo.php` connects labeled ingestion, detection, investigation and enforced dry-run playbook previews. See [training workflow and migration 011](docs/simulated-incident-lifecycle.md).
 
 - **Alert ingestion:** `POST /api/v1/alerts.php` validates and normalizes telemetry, applies deduplication, and connects accepted alerts with stored SIEM logs and incident correlation. An accepted alert does **not** automatically initiate containment.
-- **Incident management:** `incidents.php` displays a searchable incident queue, linked SIEM events, and investigation timelines. Authorized analysts can progress eligible case statuses and assign cases to eligible analysts.
+- **Incident management:** `incidents.php` offers title/number search, assignment and case-state filters, case-update age, deterministic sorting, linked SIEM events, and investigation timelines. See [queue controls and time semantics](docs/incident-queue.md). Authorized analysts can progress eligible case statuses and assign cases to eligible analysts.
 - **IOC enrichment and risk scoring:** dedicated services and REST endpoints support indicator context and incident prioritization.
 - **Playbook engine:** deterministic, allowlisted investigation steps support `DRY_RUN`, execution records, evidence/notes, and approval gates. It does **not** implement live firewall blocking, endpoint isolation, or account disabling.
 - **Approval control plane:** `control_plane/index.php` presents review and response workflow details with authorization checks and auditability.
