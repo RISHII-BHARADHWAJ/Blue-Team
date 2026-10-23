@@ -132,6 +132,11 @@ jobs:
           docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/integration_event_escalation.php
           docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/concurrent_event_escalation.php
           sh tests/check_event_escalation_http.sh
+      - name: Verify assignment inbox handoff, conflicts and HTTP permissions
+        run: |
+          docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/integration_assignment_handoff.php
+          docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/concurrent_assignment_handoff.php
+          sh tests/check_assignment_handoff_http.sh
       - name: Show container logs on failure
         if: failure()
         run: docker compose logs --no-color --tail=200

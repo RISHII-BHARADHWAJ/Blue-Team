@@ -235,8 +235,8 @@ foreach ($queueChoices as $key=>[$label,$choices]): ?>
 <?php if ($canAssign && $assignableUsers): ?>
 <div class="triage">
 <h2>Case assignment</h2>
-<p>Assign responsibility to an analyst or administrator with incident-triage privileges.</p>
-<form id="assignment-form" data-incident-id="<?= incidentEscape($detail['id']) ?>">
+<p>Assign responsibility to an eligible analyst. A changed assignment sends one in-app inbox notification to the new owner; assigning the current owner again makes no changes.</p>
+<form id="assignment-form" data-incident-id="<?= incidentEscape($detail['id']) ?>" data-assigned-to="<?= incidentEscape($detail['assigned_to'] ?? '') ?>">
 <input type="hidden" name="csrf_token" value="<?= incidentEscape($csrfToken) ?>">
 <div class="field"><label for="assigned-analyst">Assign to</label><select id="assigned-analyst" name="analyst_id" required>
 <?php foreach ($assignableUsers as $account): ?>
@@ -367,7 +367,8 @@ foreach ($queueChoices as $key=>[$label,$choices]): ?>
                     body: JSON.stringify({
                         id: Number(assignment.dataset.incidentId),
                         action: 'assign',
-                        analyst_id: analystId
+                        analyst_id: analystId,
+                        expected_assigned_to: assignment.dataset.assignedTo === '' ? null : Number(assignment.dataset.assignedTo)
                     })
                 });
                 const result = await response.json();

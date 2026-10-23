@@ -125,7 +125,19 @@ if ($method === 'POST') {
                     exit;
                 }
 
-                $updated = $manager->assignIncident($incidentId, $analystId, $auth['actor']);
+                // Optional compare-and-set guard; omission preserves existing API clients.
+                $expectedAssignee = false;
+                if (array_key_exists('expected_assigned_to', $body)) {
+                    $rawExpected = $body['expected_assigned_to'];
+                    $expectedAssignee = $rawExpected === null || $rawExpected === '' ? null :
+                        filter_var($rawExpected, FILTER_VALIDATE_INT, ['options'=>['min_range'=>1]]);
+                    if ($expectedAssignee === false || is_bool($rawExpected)) {
+                        http_response_code(422);
+                        echo json_encode(['success'=>false,'error'=>'invalid_expected_assignee','message'=>'expected_assigned_to must be a positive user ID or null for an unassigned case.']);
+                        exit;
+                    }
+                }
+                $updated = $manager->assignIncident($incidentId, $analystId, $auth['actor'], $expectedAssignee);
                 echo json_encode(['success' => true, 'action' => 'assigned', 'data' => $updated], JSON_UNESCAPED_SLASHES);
                 exit;
 
@@ -147,6 +159,10 @@ if ($method === 'POST') {
                 exit;
         }
 
+    } catch (IncidentAssignmentConflict $e) {
+        http_response_code(409);
+        echo json_encode(['success'=>false,'error'=>'assignment_conflict','message'=>$e->getMessage()], JSON_UNESCAPED_SLASHES);
+        exit;
     } catch (InvalidStateTransitionException $e) {
         http_response_code(422);
         echo json_encode(['success' => false, 'error' => 'invalid_state_transition', 'message' => $e->getMessage()], JSON_UNESCAPED_SLASHES);
