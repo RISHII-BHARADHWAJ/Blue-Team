@@ -207,6 +207,7 @@ foreach ($queueChoices as $key=>[$label,$choices]): ?>
 <?php if ($demoId): ?><p><a href="demo.php?id=<?= (int)$demoId ?>">Continue the simulated walkthrough</a></p><?php endif; ?>
 <div class="info-grid">
 <div><strong>Status</strong><?= incidentEscape($detail['status']) ?></div>
+<?php if ($auth['auth_method'] === 'session' && !empty($auth['user_id']) && SoarAuth::hasPermission($auth['tier'],'view_audit')): ?><div><strong>Recorded actions</strong><a href="audit.php?case_id=<?= (int)$detail['id'] ?>">View direct case audit references</a></div><?php endif; ?>
 <div><strong>Case handoff</strong><a href="incident-report.php?id=<?= (int)$detail['id'] ?>">Print or download an incident report</a></div>
 <div><strong>Case indicators</strong><a href="incident-iocs.php?id=<?= (int)$detail['id'] ?>">Inspect indicators and saved intelligence</a></div>
 <div><strong>SOAR workflows</strong><a href="incident-playbooks.php?id=<?= (int)$detail['id'] ?>">Inspect playbooks and run history</a></div>

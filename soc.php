@@ -127,6 +127,7 @@ code{font-size:12px;color:#abd2e1}
       <a href="feeds.php">Feed health</a><a href="incidents.php">Incidents</a>
       <a href="control_plane/index.php">SOAR approvals</a>
       <a href="notifications.php">My inbox</a>
+      <?php if ($auth['auth_method'] === 'session' && !empty($auth['user_id']) && SoarAuth::hasPermission($auth['tier'],'view_audit')): ?><a href="audit.php">Audit history</a><?php endif; ?>
     </nav>
   </div>
   <div class="sidebar-foot">Development environment<br>Read-only SOC overview</div>
