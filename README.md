@@ -31,6 +31,8 @@ ThreatPulse is a PHP and MariaDB-based Blue Team project for collecting and visu
 
 ### SOAR capabilities
 
+- **Analyst event escalation:** review preserved real evidence and open a case with an attributed investigation reason. Repeated workspace submissions reuse the existing case. See [event-to-case workflow](docs/event-escalation.md).
+
 - **Personal analyst inbox:** `notifications.php` provides unread/all/read views, related-case links and explicit single/batch acknowledgement for named users. See [notification ownership and workflow](docs/analyst-notification-inbox.md).
 
 - **Incident handoff report:** `incident-report.php` combines case state, evidence references, notes and workflow records into a printable summary and JSON snapshot with explicit limits. See [report scope and downloads](docs/incident-handoff-report.md).
