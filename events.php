@@ -15,9 +15,11 @@ header_remove('X-Powered-By');
 function eventEscape(mixed $value): string { return htmlspecialchars((string)($value ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); }
 function eventUrl(array $params): string { return 'events.php?' . http_build_query($params); }
 $filters = [];
-foreach (['q', 'source', 'source_ip', 'severity', 'kind', 'from', 'to'] as $key) {
+foreach (['q', 'source_ip', 'severity', 'kind', 'from', 'to'] as $key) {
     $filters[$key] = is_string($_GET[$key] ?? null) ? substr(trim($_GET[$key]), 0, 200) : '';
 }
+// Preserve full exact source identities in drill-down links, including Unicode.
+foreach (['source', 'submitted_by'] as $key) $filters[$key] = $_GET[$key] ?? '';
 $page = filter_var($_GET['page'] ?? 1, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?: 1;
 $logId = filter_var($_GET['log_id'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?: null;
 $repo = new EventEvidenceRepository($pdo);
@@ -40,7 +42,7 @@ try {
 <title>ThreatPulse | Event evidence</title><link rel="stylesheet" href="assets/css/workspace.css"></head><body>
 <a class="skip" href="#main">Skip to event evidence</a>
 <div class="workspace"><aside class="sidebar"><a class="brand" href="soc.php">ThreatPulse</a>
-<nav aria-label="SOC navigation"><a href="soc.php">Overview</a><a href="events.php" aria-current="page">Event evidence</a><a href="detections.php">Detections</a><a href="threat-intel.php">Threat intelligence</a><a href="feeds.php">Feed health</a><a href="incidents.php">Incidents</a><a href="control_plane/index.php">SOAR approvals</a><a href="dashboard.php">Legacy SIEM</a></nav>
+<nav aria-label="SOC navigation"><a href="soc.php">Overview</a><a href="events.php" aria-current="page">Event evidence</a><a href="sources.php">Source activity</a><a href="detections.php">Detections</a><a href="threat-intel.php">Threat intelligence</a><a href="feeds.php">Feed health</a><a href="incidents.php">Incidents</a><a href="control_plane/index.php">SOAR approvals</a><a href="dashboard.php">Legacy SIEM</a></nav>
 <p>Development environment<br>Evidence from authenticated submissions</p></aside><main id="main">
 <span class="eyebrow">Investigate / source evidence</span><h1>Event evidence</h1>
 <p>Search accepted sensor submissions and inspect their original evidence. A submitted alert is a source claim, not independent confirmation of an attack.</p>
@@ -50,7 +52,8 @@ try {
 <div class="notice">Only submissions stored after the evidence upgrade appear here. External feed indicators remain in <a href="detections.php">Detections</a><a href="threat-intel.php">Threat intelligence</a>; older records remain in <a href="dashboard.php">Legacy SIEM</a> with unverified provenance.</div>
 <section class="panel" aria-label="Event filters"><form class="filters" method="get" action="events.php">
 <div class="field wide"><label for="q">Message or source event ID</label><input id="q" name="q" maxlength="200" value="<?= eventEscape($filters['q']) ?>" placeholder="Search submitted evidence"></div>
-<div class="field"><label for="source">Source name (exact)</label><input id="source" name="source" maxlength="100" value="<?= eventEscape($filters['source']) ?>"></div>
+<div class="field"><label for="source">Source name (exact)</label><input id="source" name="source" maxlength="100" value="<?= eventEscape(is_string($filters['source']) ? $filters['source'] : '') ?>"></div>
+<div class="field"><label for="submitted-by">Authenticated submitter (exact)</label><input id="submitted-by" name="submitted_by" maxlength="255" value="<?= eventEscape(is_string($filters['submitted_by']) ? $filters['submitted_by'] : '') ?>"></div>
 <div class="field"><label for="source-ip">Source IP (exact)</label><input id="source-ip" name="source_ip" maxlength="45" value="<?= eventEscape($filters['source_ip']) ?>"></div>
 <div class="field"><label for="severity">Source severity</label><select id="severity" name="severity"><option value="">All severities</option><?php foreach (['CRITICAL','HIGH','MEDIUM','LOW','INFO'] as $value): ?><option <?= $filters['severity'] === $value ? 'selected' : '' ?>><?= eventEscape($value) ?></option><?php endforeach; ?></select></div>
 <div class="field"><label for="kind">Evidence type</label><select id="kind" name="kind"><?php foreach ([''=>'All submissions','observed'=>'Sensor reported','simulated'=>'Simulated test data'] as $value=>$label): ?><option value="<?= eventEscape($value) ?>" <?= $filters['kind'] === $value ? 'selected' : '' ?>><?= eventEscape($label) ?></option><?php endforeach; ?></select></div>
@@ -62,7 +65,7 @@ try {
 <div class="table-wrap"><table><thead><tr><th>Event / received (UTC)</th><th>Source</th><th>Severity / type</th><th>Source IP</th><th>Evidence</th></tr></thead><tbody>
 <?php foreach ($result['rows'] as $row): ?><tr>
 <td><?= eventEscape($row['event_timestamp']) ?><br><span class="muted">Received <?= eventEscape($row['received_at']) ?></span><?php if ($row['timestamp_origin'] === 'receipt_fallback'): ?><br><span class="badge">Time inferred from receipt</span><?php endif; ?></td>
-<td><?= eventEscape($row['source']) ?><br><span class="muted"><?= eventEscape($row['source_type']) ?></span></td>
+<td><?= eventEscape($row['source']) ?><br><span class="muted"><?= eventEscape($row['source_type']) ?></span><br>Submitted by <?= eventEscape($row['submitted_by']) ?></td>
 <td><span class="badge <?= eventEscape($row['severity']) ?>"><?= eventEscape($row['severity'] === 'WARNING' ? 'MEDIUM' : $row['severity']) ?></span><br><span class="badge <?= $row['is_simulated'] ? 'simulated' : '' ?>"><?= $row['is_simulated'] ? 'SIMULATED' : 'Sensor reported' ?></span></td>
 <td><code><?= eventEscape($row['source_ip'] ?? 'Not supplied') ?></code></td>
 <td class="message"><a href="<?= eventEscape(eventUrl(array_merge($filters, ['page'=>$result['page'], 'log_id'=>$row['log_id']]))) ?>#evidence">Inspect log #<?= eventEscape($row['log_id']) ?></a><br><?= eventEscape(substr($row['message'], 0, 200)) ?></td></tr><?php endforeach; ?>

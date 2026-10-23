@@ -38,7 +38,12 @@ final class EventEvidenceRepository
     public function search(array $input, int $page = 1, int $limit = 25): array
     {
         $where = []; $params = [];
-        foreach (['source' => 'e.source', 'severity' => 'l.severity', 'source_ip' => 'l.source_ip'] as $key => $column) {
+        foreach (['source'=>400, 'submitted_by'=>1020] as $key=>$maxBytes) {
+            if (isset($input[$key]) && (!is_string($input[$key]) || strlen($input[$key]) > $maxBytes || !preg_match('//u', $input[$key]))) {
+                throw new InvalidArgumentException('Source and submitter filters must be valid UTF-8 text within their field limits.');
+            }
+        }
+        foreach (['source' => 'BINARY e.source', 'submitted_by' => 'BINARY e.submitted_by', 'severity' => 'l.severity', 'source_ip' => 'l.source_ip'] as $key => $column) {
             if (isset($input[$key]) && is_string($input[$key]) && $input[$key] !== '') {
                 $where[] = "$column = ?";
                 $params[] = $input[$key] === 'MEDIUM' && $key === 'severity' ? 'WARNING' : $input[$key];
@@ -70,7 +75,7 @@ final class EventEvidenceRepository
         $limit = max(1, min(100, $limit));
         $pages = max(1, (int)ceil($total / $limit));
         $page = max(1, min($pages, $page));
-        $stmt = $this->pdo->prepare('SELECT e.id, e.log_id, e.source, e.source_type, e.source_event_id,
+        $stmt = $this->pdo->prepare('SELECT e.id, e.log_id, e.source, e.source_type, e.source_event_id, e.submitted_by,
             e.is_simulated, e.event_timestamp, e.received_at, e.timestamp_origin,
             l.source_ip, l.severity, l.category, l.message' . $sql . ' ORDER BY e.received_at DESC, e.id DESC LIMIT ? OFFSET ?');
         foreach ($params as $i => $value) $stmt->bindValue($i + 1, $value, is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
