@@ -268,6 +268,7 @@ foreach ($queueChoices as $key=>[$label,$choices]): ?>
 </section>
 <h2>Description</h2><pre><?= incidentEscape($detail['description']) ?></pre>
 <h2>Linked SIEM alerts (<?= count($detail['alerts']) ?>)</h2>
+<?php if (!$detail['is_simulated']): ?><p><a href="incident-evidence.php?id=<?= (int)$detail['id'] ?>">Find and link preserved event evidence</a></p><?php endif; ?>
 <?php foreach ($detail['alerts'] as $alert): ?>
 <div class="event">
     <strong><?= incidentEscape($alert['category']) ?> · <?= incidentEscape($alert['severity']) ?></strong>
