@@ -10,6 +10,7 @@ require_once __DIR__ . '/includes/soar/SoarAuth.php';
 require_once __DIR__ . '/includes/soar/IncidentManager.php';
 require_once __DIR__ . '/includes/soar/IncidentQueueQuery.php';
 require_once __DIR__ . '/includes/soar/CaseNoteService.php';
+require_once __DIR__ . '/includes/soar/IncidentSeverityService.php';
 require_once __DIR__ . '/includes/soar/ThreatIntelMatcher.php';
 
 $auth = SoarAuth::getContext($pdo);
@@ -26,6 +27,7 @@ require_once __DIR__ . '/includes/security.php';
 $canTriage = SoarAuth::hasPermission($auth['tier'], 'change_status_normal');
 $canAssign = SoarAuth::hasPermission($auth['tier'], 'assign_incidents');
 $canClose = SoarAuth::hasPermission($auth['tier'], 'close_incidents');
+$canSeverity = $auth['auth_method'] === 'session' && !empty($auth['user_id']) && SoarAuth::hasPermission($auth['tier'], 'change_severity');
 $canNote = $auth['auth_method'] === 'session' && !empty($auth['user_id']) && SoarAuth::hasPermission($auth['tier'], 'add_notes');
 $csrfToken = ($canTriage || $canNote) ? generateCSRFToken() : '';
 
@@ -233,6 +235,21 @@ foreach ($queueChoices as $key=>[$label,$choices]): ?>
 <?php elseif (!$canTriage): ?>
 <p class="muted">Read-only access: Tier 2 or higher is required to progress an incident.</p>
 <?php endif; ?>
+<?php if ($canSeverity && $detail['status'] !== 'CLOSED'): ?>
+<section class="triage" id="severity-triage" aria-labelledby="severity-heading">
+<h2 id="severity-heading">Severity assessment</h2>
+<p>A changed severity sets its mapped priority: Critical → P1, High → P2, Medium → P3, Low/Info → P4. The saved risk score stays unchanged; a later risk recalculation may change priority again. Your reason is saved as an attributed case note. Submitting the current severity leaves priority and history unchanged.</p>
+<form id="severity-form" data-incident-id="<?= (int)$detail['id'] ?>" data-severity="<?= incidentEscape($detail['severity']) ?>" data-priority="<?= incidentEscape($detail['priority']) ?>">
+<input type="hidden" name="csrf_token" value="<?= incidentEscape($csrfToken) ?>">
+<div class="field"><label for="new-severity">New severity and mapped priority</label><select id="new-severity" name="severity" required>
+<?php foreach (IncidentSeverityService::PRIORITIES as $value=>$mappedPriority): ?><option value="<?= $value ?>" <?= $detail['severity']===$value?'selected':'' ?>><?= $value ?> → <?= $mappedPriority ?></option><?php endforeach; ?>
+</select></div>
+<div class="field" style="flex:1"><label for="severity-reason">Assessment reason · maximum 2,000 UTF-8 bytes</label><textarea id="severity-reason" name="reason" rows="3" maxlength="2000" required></textarea></div>
+<button type="submit">Save severity assessment</button>
+</form>
+<div id="severity-feedback" class="triage-feedback" role="status" aria-live="polite"></div>
+</section>
+<?php endif; ?>
 <?php if ($canAssign && $assignableUsers): ?>
 <div class="triage">
 <h2>Case assignment</h2>
@@ -398,5 +415,6 @@ foreach ($queueChoices as $key=>[$label,$choices]): ?>
 })();
 </script>
 <script src="assets/js/case-notes.js" defer></script>
+<script src="assets/js/incident-severity.js" defer></script>
 </body>
 </html>
