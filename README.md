@@ -29,6 +29,8 @@ ThreatPulse is a PHP and MariaDB-based Blue Team project for collecting and visu
 
 ### SOAR capabilities
 
+- **Incident handoff report:** `incident-report.php` combines case state, evidence references, notes and workflow records into a printable summary and JSON snapshot with explicit limits. See [report scope and downloads](docs/incident-handoff-report.md).
+
 - **Incident IOC workspace:** `incident-iocs.php` supports local discovery from saved evidence, type filtering, and saved provider results with explicit freshness and failure states. See [indicator investigation](docs/incident-ioc-workspace.md).
 
 - **Incident playbook workspace:** `incident-playbooks.php` offers step inspection, saved dry-run previews and case-scoped run history. Apply migration 012; see [playbook previews and retries](docs/incident-playbook-workspace.md).
@@ -79,6 +81,7 @@ Requirements: Docker Engine/Desktop with the Compose plugin.
    - Detection findings and rule settings: `/detections.php`
    - SIEM dashboard: `/dashboard.php`
    - Incident queue: `/incidents.php`
+   - Printable handoff/JSON report: follow the Case handoff link inside a case
    - Indicator discovery/saved intelligence: follow the Case indicators link inside a case
    - Risk explanation/history: follow the risk link inside a case
    - Playbook previews/run history: follow the SOAR workflows link inside a case

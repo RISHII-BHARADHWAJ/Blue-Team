@@ -1,0 +1,60 @@
+<?php
+declare(strict_types=1);
+if(PHP_SAPI!=='cli'||getenv('SOAR_INTEGRATION_TEST')!=='1'||getenv('DB_HOST')!=='db')exit(2);
+require_once __DIR__.'/../includes/db.php';
+require_once __DIR__.'/../includes/soar/IncidentReportService.php';
+require_once __DIR__.'/../includes/soar/IncidentManager.php';
+require_once __DIR__.'/../includes/soar/CaseNoteService.php';
+require_once __DIR__.'/../includes/soar/SiemSoarAlertPipeline.php';
+require_once __DIR__.'/../includes/soar/IocRepository.php';
+require_once __DIR__.'/../includes/soar/playbooks/PlaybookRepository.php';
+function reportCheck(bool $ok,string $message):void{if(!$ok)throw new RuntimeException('FAIL: '.$message);echo "PASS: $message\n";}
+$pdo->beginTransaction();
+try{
+    $name='report-ci-'.bin2hex(random_bytes(6));
+    $pdo->prepare('INSERT INTO users (username,password,role) VALUES (?,?,?)')->execute([$name,'not-a-login-hash','user']);$uid=(int)$pdo->lastInsertId();
+    $manager=new IncidentManager($pdo);$repo=new IncidentRepository($pdo);$service=new IncidentReportService($pdo);
+    $case=$manager->createIncident(['title'=>$name,'severity'=>'HIGH']);$id=(int)$case['id'];
+    $other=$manager->createIncident(['title'=>'OTHER_CASE_SECRET']);$otherId=(int)$other['id'];
+    (new CaseNoteService($pdo))->add($otherId,$uid,'OTHER_NOTE_SECRET');
+    $empty=$service->build($id);
+    reportCheck($empty['latest_risk_assessment']===null && !$empty['partial'] && $pdo->inTransaction(),'empty report preserves caller transaction and does not invent risk');
+    $event=(new SiemSoarAlertPipeline($pdo))->ingest(['source'=>$name,'source_event_id'=>'report','source_ip'=>'9.9.9.9','severity'=>'HIGH','category'=>'XSS','message'=>'Observed report fixture','metadata'=>['secret'=>'RAW_EVENT_SECRET']],$name);
+    $repo->attachAlert($id,(int)$event['log_id']);
+    (new CaseNoteService($pdo))->add($id,$uid,'Analyst finding <script>probe()</script>');
+    $iocRepo=new IocRepository($pdo);$ioc=$iocRepo->upsertIoc(['ioc_type'=>'DOMAIN','ioc_value'=>$name.'.test']);$iocRepo->attachToIncident($id,$ioc);
+    $iocRepo->saveEnrichmentResult($ioc,'ci','SUCCESS',['token'=>'PROVIDER_SECRET'],['reputation'=>95,'confidence'=>90],date('Y-m-d H:i:s',time()+3600));
+    $pdo->prepare('INSERT INTO evidence (incident_id,evidence_type,title,data_hash,content_text,file_path,collected_by) VALUES (?,?,?,?,?,?,?)')->execute([$id,'LOG_SNIPPET','Artifact reference',hash('sha256','artifact'),'CONTENT_SECRET','/PRIVATE_PATH_SECRET',$uid]);
+    $pbRepo=new PlaybookRepository($pdo);$pb=$pbRepo->createPlaybook(['playbook_name'=>$name,'display_name'=>'Current catalog name','category'=>'INVESTIGATION'],$uid);
+    $run=$pbRepo->createRun($pb,$id,'ANALYST',$uid,$name,['mode'=>'DRY_RUN','dry_run'=>true,'token'=>'CONTEXT_SECRET','definition_snapshot'=>['playbook'=>['display_name'=>'Saved preview name']]],1);
+    $pbRepo->updateRunStatus($run,'COMPLETED');
+    $legacy=$pbRepo->createRun($pb,$id,'ANALYST',$uid,$name.'-legacy',[],1);
+    $approval=$pbRepo->createApprovalRequest(['playbook_run_id'=>$run,'incident_id'=>$id,'action_name'=>'REQUEST_APPROVAL','action_description'=>'DESCRIPTION_SECRET','action_payload'=>['token'=>'APPROVAL_SECRET'],'expires_at'=>'2000-01-01 00:00:00']);
+    (new IncidentTimeline($pdo))->addEvent($id,'EVIDENCE_ATTACHED','ANALYST',$name,'Visible timeline summary',['token'=>'TIMELINE_SECRET']);
+    $pdo->prepare('INSERT INTO response_actions (action_uuid,incident_id,action_type,target_entity,status,output_log) VALUES (?,?,?,?,?,?)')->execute([$name,$id,'TEST_RECORD','fixture','FAILED','OUTPUT_SECRET']);
+    $stmt=$pdo->prepare('INSERT INTO risk_assessments (incident_id,score,priority,confidence,factor_breakdown,policy_version,calculated_at,calculated_by) VALUES (?,?,?,?,?,?,?,?)');
+    $stmt->execute([$id,90,'P1','HIGH','[]','test-v1','2020-01-01 00:00:00',$name]);
+    $stmt->execute([$id,25,'P4','LOW','[]','test-v2','2020-01-01 00:00:00',$name]);$latestRisk=(int)$pdo->lastInsertId();
+    $before=$repo->find($id);$auditCount=(int)$pdo->query('SELECT COUNT(*) FROM audit_log')->fetchColumn();
+    $report=$service->build($id);$json=IncidentReportService::json($report);
+    reportCheck(json_decode($json,true,512,JSON_THROW_ON_ERROR)===$report,'JSON download round-trips the generated snapshot');
+    foreach(['OTHER_CASE_SECRET','OTHER_NOTE_SECRET','RAW_EVENT_SECRET','PROVIDER_SECRET','CONTENT_SECRET','PRIVATE_PATH_SECRET','CONTEXT_SECRET','DESCRIPTION_SECRET','APPROVAL_SECRET','TIMELINE_SECRET','OUTPUT_SECRET'] as $secret)reportCheck(!str_contains($json,$secret),'report omits '.$secret);
+    reportCheck($report['sections']['alerts']['total']===1 && $report['sections']['alerts']['rows'][0]['evidence_id']!==null && strlen($report['sections']['alerts']['rows'][0]['payload_sha256'])===64,'event evidence provenance and stored hash retained');
+    reportCheck($report['sections']['notes']['rows'][0]['author']===$name && $report['sections']['indicators']['total']===1,'notes and indicator context retained');
+    $runs=array_column($report['sections']['playbook_runs']['rows'],null,'id');
+    reportCheck($runs[$run]['mode']==='DRY_RUN' && $runs[$run]['status']==='COMPLETED' && $runs[$run]['playbook_name']==='Saved preview name' && $runs[$legacy]['mode']==='UNKNOWN','preview mode, saved name and unknown legacy mode remain explicit');
+    reportCheck((int)$report['latest_risk_assessment']['id']===$latestRisk && $report['incident']['priority']===$before['priority'],'newest saved risk wins timestamp tie without changing current case priority');
+    $approvalRow=$report['sections']['approvals']['rows'][0];
+    reportCheck($approvalRow['stored_status']==='PENDING' && $approvalRow['effective_status']==='EXPIRED_BY_TIME' && $pbRepo->findApprovalById($approval)['status']==='PENDING','expired pending approval is labeled without mutation');
+    reportCheck($repo->find($id)===$before && (int)$pdo->query('SELECT COUNT(*) FROM audit_log')->fetchColumn()===$auditCount,'report generation leaves case and audit records unchanged');
+    $stmt=$pdo->prepare('INSERT INTO case_notes (incident_id,author_id,note_text,is_pinned) VALUES (?,?,?,?)');
+    for($i=0;$i<101;$i++)$stmt->execute([$id,$uid,$i===100?str_repeat('z',10001):'Additional note '.$i,$i===100?1:0]);
+    $partial=$service->build($id);$notes=$partial['sections']['notes'];
+    reportCheck($partial['partial'] && $notes['total']===102 && $notes['included']===100 && $notes['truncated'] && $notes['text_truncated_count']===1,'row and text truncation disclosed independently');
+    reportCheck($notes['rows'][0]['text_truncated'] && strlen($notes['rows'][0]['note_text'])===10000,'pinned long note is visibly truncated at declared limit');
+    $sim=$manager->createIncident(['title'=>'Training report','is_simulated'=>true]);
+    reportCheck($service->build((int)$sim['id'])['simulation_label']==='SIMULATED TEST DATA','simulation label persists in exported report');
+    $missing=false;try{$service->build(2147483647);}catch(OutOfBoundsException $e){$missing=true;}
+    reportCheck($missing && $pdo->inTransaction(),'missing case fails without closing caller transaction');
+    $pdo->rollBack();echo "Incident report integration passed; fixtures rolled back.\n";
+}catch(Throwable $e){if($pdo->inTransaction())$pdo->rollBack();fwrite(STDERR,$e->getMessage()."\n");exit(1);}
