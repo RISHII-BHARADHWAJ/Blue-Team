@@ -188,6 +188,7 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;margin:6px 0}.error
 <?php if ($demoId): ?><p><a href="demo.php?id=<?= (int)$demoId ?>">Continue the simulated walkthrough</a></p><?php endif; ?>
 <div class="info-grid">
 <div><strong>Status</strong><?= incidentEscape($detail['status']) ?></div>
+<div><strong>Case indicators</strong><a href="incident-iocs.php?id=<?= (int)$detail['id'] ?>">Inspect indicators and saved intelligence</a></div>
 <div><strong>SOAR workflows</strong><a href="incident-playbooks.php?id=<?= (int)$detail['id'] ?>">Inspect playbooks and run history</a></div>
 <div><strong>Risk assessment</strong><a href="incident-risk.php?id=<?= (int)$detail['id'] ?>">View score explanation and history</a></div>
 <div><strong>Severity / Priority</strong><?= incidentEscape($detail['severity']) ?> / <?= incidentEscape($detail['priority']) ?></div>

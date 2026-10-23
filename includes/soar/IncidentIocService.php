@@ -63,7 +63,7 @@ class IncidentIocService {
             $alertIocs = $this->extractor->extractFromAlert($alertRow, false);
 
             foreach ($alertIocs as $iocItem) {
-                $role = $this->determineRole($iocItem, $alertRow);
+                $role = self::determineRole($iocItem, $alertRow);
                 $key = $iocItem['type'] . ':' . $iocItem['value'];
 
                 if (!isset($discovered[$key])) {
@@ -143,7 +143,7 @@ class IncidentIocService {
     /**
      * Contextually determine the functional role of an IOC in an incident.
      */
-    private function determineRole(array $iocItem, array $alertRow): string {
+    public static function determineRole(array $iocItem, array $alertRow): string {
         $type = $iocItem['type'];
         $source = $iocItem['source'];
         $msg = strtolower($alertRow['message'] ?? '');
