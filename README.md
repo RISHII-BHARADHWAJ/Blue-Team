@@ -33,6 +33,8 @@ ThreatPulse is a PHP and MariaDB-based Blue Team project for collecting and visu
 
 ### SOAR capabilities
 
+- **Collaborative case triage:** status submissions from the case page reject stale states, treat completed retries as no-ops, and save status, timeline and audit changes atomically. See [status conflict and retry behavior](docs/status-triage.md).
+
 - **Case evidence picker:** search preserved real events, review them and link relevant evidence to an active case with an attributed rationale. See [case evidence association](docs/case-evidence-picker.md).
 
 - **Assignment handoff:** owner changes create an in-app notification, with atomic persistence, harmless retries, and stale-owner checks from the case page. See [assignment and inbox behavior](docs/assignment-handoff.md).
