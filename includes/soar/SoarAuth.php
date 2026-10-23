@@ -65,6 +65,7 @@ class SoarAuth {
 
             // SOAR approval gate: only LEAD and ADMIN may approve gated actions
             'approve_actions'      => [self::LEAD, self::ADMIN],
+            'view_audit'           => [self::LEAD, self::ADMIN],
 
             // Admin-only capabilities
             'admin_operations'     => [self::ADMIN],
