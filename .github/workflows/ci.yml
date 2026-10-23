@@ -115,6 +115,10 @@ jobs:
           docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/integration_incident_report.php
           docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/concurrent_incident_report.php
           sh tests/check_incident_report_http.sh
+      - name: Verify personal inbox ownership, acknowledgements and HTTP access
+        run: |
+          docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/integration_notification_inbox.php
+          sh tests/check_notification_inbox_http.sh
       - name: Show container logs on failure
         if: failure()
         run: docker compose logs --no-color --tail=200

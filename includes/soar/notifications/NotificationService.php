@@ -77,67 +77,114 @@ class NotificationService {
         }
     }
 
-    /**
-     * Retrieve notifications for an authenticated user with IDOR protection.
-     * Analysts can only view their own notifications unless they are ADMIN.
-     */
+    /** The recipient column predates user_id and is authoritative for legacy rows too. */
+    public function resolveUserId(array $authContext): int {
+        $id = filter_var($authContext['user_id'] ?? null, FILTER_VALIDATE_INT, ['options'=>['min_range'=>1]]);
+        if (($authContext['auth_method'] ?? '') !== 'session' || !$id) {
+            throw new DomainException('Sign in with a named user account to access a personal inbox.');
+        }
+        if ($this->pdo) {
+            $stmt = $this->pdo->prepare('SELECT role FROM users WHERE id = ?');
+            $stmt->execute([$id]); $role = $stmt->fetchColumn();
+            if ($role === false || !SoarAuth::hasPermission(SoarAuth::resolveTier($role), 'view_incidents')) {
+                throw new DomainException('The signed-in user account is unavailable.');
+            }
+        }
+        return $id;
+    }
+
+    /** Compatibility method for the control-plane dropdown, restricted to the session owner. */
     public function getUserNotifications(int $userId, array $authContext, bool $unreadOnly = false, int $limit = 50): array {
-        // IDOR Authorization check
-        $authUserId = (int)($authContext['user_id'] ?? 0);
-        $authTier   = $authContext['tier'] ?? SoarAuth::TIER_1;
-
-        if ($authUserId !== $userId && $authTier !== SoarAuth::ADMIN) {
-            throw new RuntimeException("Unauthorized: Cannot access notifications belonging to another analyst.");
-        }
-
-        if (!$this->pdo) {
-            return [];
-        }
-
-        $sql = "SELECT id, user_id, type, title, message, incident_id, approval_id, playbook_run_id, is_read, read_at, created_at 
-                FROM notifications 
-                WHERE (user_id = ? OR recipient_id = ?)";
-        if ($unreadOnly) {
-            $sql .= " AND is_read = 0";
-        }
-        $sql .= " ORDER BY created_at DESC, id DESC LIMIT " . max(1, min(100, $limit));
-
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$userId, $userId]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if ($this->resolveUserId($authContext) !== $userId) throw new DomainException('Personal inboxes cannot be accessed on behalf of another user.');
+        return $this->inbox($authContext, $unreadOnly ? 'unread' : 'all', 1, $limit)['notifications'];
     }
 
-    /**
-     * Mark a notification as read with ownership verification.
-     */
+    public function inbox(array $authContext, string $filter = 'unread', int $page = 1, int $limit = 25): array {
+        $userId = $this->resolveUserId($authContext);
+        if (!in_array($filter, ['all','unread','read'], true)) throw new InvalidArgumentException('Choose all, unread or read notifications.');
+        $limit = max(1, min(100, $limit));
+        $where = 'n.recipient_id = ?';
+        if ($filter !== 'all') $where .= $filter === 'read' ? ' AND n.is_read = 1' : ' AND n.is_read = 0';
+        $rows=[]; $total=0; $unread=0;
+        if ($this->pdo) {
+            $stmt = $this->pdo->prepare('SELECT COUNT(*) FROM notifications n WHERE '.$where);
+            $stmt->execute([$userId]); $total=(int)$stmt->fetchColumn();
+            $unread=$this->getUnreadCount($userId);
+        }
+        $pages=max(1,(int)ceil($total/$limit)); $page=max(1,min($page,$pages));
+        if ($this->pdo) {
+            $stmt=$this->pdo->prepare("SELECT n.id, n.recipient_id AS user_id,
+                CASE WHEN n.type='APPROVAL_REQUIRED' AND n.notification_type<>'APPROVAL_REQUIRED' THEN n.notification_type ELSE n.type END AS type,
+                n.title, n.message, n.is_read, n.read_at, n.created_at,
+                i.id AS incident_id, i.incident_number, i.is_simulated,
+                r.id AS playbook_run_id, a.id AS approval_id
+                FROM notifications n LEFT JOIN incidents i ON i.id=n.incident_id
+                LEFT JOIN playbook_runs r ON r.id=n.playbook_run_id AND r.incident_id=i.id
+                LEFT JOIN approval_requests a ON a.id=n.approval_id AND a.incident_id=i.id
+                    AND EXISTS (SELECT 1 FROM playbook_runs ar WHERE ar.id=a.playbook_run_id AND ar.incident_id=i.id)
+                WHERE ".$where.' ORDER BY n.created_at DESC,n.id DESC LIMIT ? OFFSET ?');
+            $stmt->bindValue(1,$userId,PDO::PARAM_INT); $stmt->bindValue(2,$limit,PDO::PARAM_INT);
+            $stmt->bindValue(3,($page-1)*$limit,PDO::PARAM_INT); $stmt->execute(); $rows=$stmt->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($rows as &$row) {
+                $row['title']=$this->redactSecrets($row['title']);
+                $row['message']=$this->redactSecrets($row['message']);
+            }
+            unset($row);
+        }
+        return ['user_id'=>$userId,'notifications'=>$rows,'unread_count'=>$unread,'filter'=>$filter,
+            'pagination'=>['total'=>$total,'page'=>$page,'pages'=>$pages,'per_page'=>$limit]];
+    }
+
+    /** Idempotent acknowledgement: retain the original read timestamp on retries. */
     public function markAsRead(int $notificationId, int $userId): bool {
-        if (!$this->pdo) {
-            return true;
-        }
-
-        $stmt = $this->pdo->prepare("
-            UPDATE notifications 
-            SET is_read = 1, read_at = NOW() 
-            WHERE id = ? AND (user_id = ? OR recipient_id = ?)
-        ");
-        $stmt->execute([$notificationId, $userId, $userId]);
-        return $stmt->rowCount() > 0;
+        if ($notificationId < 1 || $userId < 1) return false;
+        if (!$this->pdo) return true;
+        $stmt=$this->pdo->prepare('UPDATE notifications SET is_read=1, read_at=COALESCE(read_at,NOW())
+            WHERE id=? AND recipient_id=? AND is_read=0');
+        $stmt->execute([$notificationId,$userId]);
+        if ($stmt->rowCount()>0) return true;
+        $stmt=$this->pdo->prepare('SELECT 1 FROM notifications WHERE id=? AND recipient_id=?');
+        $stmt->execute([$notificationId,$userId]); return (bool)$stmt->fetchColumn();
     }
 
-    /**
-     * Get unread notification count for a user.
-     */
-    public function getUnreadCount(int $userId): int {
-        if (!$this->pdo) {
-            return 0;
+    /** Only submitted IDs are acknowledged; later arrivals are never swept into a bulk action. */
+    public function markReadBatch(array $notificationIds, array $authContext): int {
+        if (!$notificationIds || count($notificationIds)>25) throw new InvalidArgumentException('Select between 1 and 25 notifications.');
+        $ids=[];
+        foreach ($notificationIds as $id) {
+            $valid=filter_var($id,FILTER_VALIDATE_INT,['options'=>['min_range'=>1]]);
+            if (!$valid) throw new InvalidArgumentException('Notification IDs must be positive integers.');
+            $ids[$valid]=$valid;
         }
+        sort($ids,SORT_NUMERIC);
+        $userId=$this->resolveUserId($authContext);
+        if (!$this->pdo) return count($ids);
+        $own=!$this->pdo->inTransaction(); $sp='inbox_'.bin2hex(random_bytes(8));
+        if ($own) $this->pdo->beginTransaction(); else $this->pdo->exec("SAVEPOINT $sp");
+        try {
+            $placeholders=implode(',',array_fill(0,count($ids),'?'));
+            $stmt=$this->pdo->prepare('SELECT id,is_read FROM notifications WHERE recipient_id=? AND id IN ('.$placeholders.') ORDER BY id FOR UPDATE');
+            $stmt->execute(array_merge([$userId],$ids)); $rows=$stmt->fetchAll(PDO::FETCH_ASSOC);
+            if (count($rows)!==count($ids)) throw new OutOfBoundsException('One or more notifications are unavailable in your inbox. Nothing was changed.');
+            $changed=0;
+            foreach ($rows as $row) {
+                if (!$row['is_read']) { $this->markAsRead((int)$row['id'],$userId); $changed++; }
+            }
+            if ($own) $this->pdo->commit(); else $this->pdo->exec("RELEASE SAVEPOINT $sp");
+            return $changed;
+        } catch (Throwable $e) {
+            if ($this->pdo->inTransaction()) {
+                if ($own) $this->pdo->rollBack();
+                else { $this->pdo->exec("ROLLBACK TO SAVEPOINT $sp"); $this->pdo->exec("RELEASE SAVEPOINT $sp"); }
+            }
+            throw $e;
+        }
+    }
 
-        $stmt = $this->pdo->prepare("
-            SELECT COUNT(*) FROM notifications 
-            WHERE (user_id = ? OR recipient_id = ?) AND is_read = 0
-        ");
-        $stmt->execute([$userId, $userId]);
-        return (int)$stmt->fetchColumn();
+    public function getUnreadCount(int $userId): int {
+        if (!$this->pdo || $userId<1) return 0;
+        $stmt=$this->pdo->prepare('SELECT COUNT(*) FROM notifications WHERE recipient_id=? AND is_read=0');
+        $stmt->execute([$userId]); return (int)$stmt->fetchColumn();
     }
 
     /**

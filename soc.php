@@ -140,6 +140,7 @@ code{font-size:12px;color:#abd2e1}
       <a href="detections.php">Detections</a><a href="threat-intel.php">Threat intelligence</a>
       <a href="feeds.php">Feed health</a><a href="incidents.php">Incidents</a>
       <a href="control_plane/index.php">SOAR approvals</a>
+      <a href="notifications.php">My inbox</a>
     </nav>
   </div>
   <div class="sidebar-foot">Development environment<br>Read-only SOC overview</div>
