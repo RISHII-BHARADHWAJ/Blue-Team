@@ -15,6 +15,7 @@ if (empty($_SESSION['analyst']) && empty($_SESSION['username']) && empty($_SESSI
     exit;
 }
 
+header('Cache-Control: no-store');
 header('X-Frame-Options: DENY');
 header('X-Content-Type-Options: nosniff');
 header('Referrer-Policy: strict-origin-when-cross-origin');
@@ -519,15 +520,15 @@ $canApprove = SoarAuth::hasPermission($userTier, 'approve_actions');
     <!-- Metrics Row -->
     <section class="metrics-grid">
         <div class="m-card warn">
-            <div class="m-label">PENDING APPROVALS</div>
+            <div class="m-label">MATCHING PENDING APPROVALS</div>
             <div class="m-value" style="color:var(--neon-amber);" id="metricPending">0</div>
         </div>
         <div class="m-card p1">
-            <div class="m-label">P1 / P2 CRITICAL QUEUED</div>
+            <div class="m-label">MATCHING P1 / P2 PENDING</div>
             <div class="m-value" style="color:var(--neon-red);" id="metricCritical">0</div>
         </div>
         <div class="m-card warn">
-            <div class="m-label">EXPIRING IN &lt; 4 HOURS</div>
+            <div class="m-label">MATCHING EXPIRING IN &lt; 4 HOURS</div>
             <div class="m-value" style="color:var(--neon-amber);" id="metricExpiring">0</div>
         </div>
         <div class="m-card green">
@@ -540,7 +541,7 @@ $canApprove = SoarAuth::hasPermission($userTier, 'approve_actions');
     <main class="container">
         <div class="control-bar">
             <div class="filter-controls">
-                <select id="statusFilter" class="filter-select">
+                <select aria-label="Approval status" id="statusFilter" class="filter-select">
                     <option value="">Status: ALL</option>
                     <option value="PENDING" selected>Status: PENDING</option>
                     <option value="APPROVED">Status: APPROVED</option>
@@ -549,7 +550,7 @@ $canApprove = SoarAuth::hasPermission($userTier, 'approve_actions');
                     <option value="CANCELLED">Status: CANCELLED</option>
                 </select>
 
-                <select id="priorityFilter" class="filter-select">
+                <select aria-label="Case priority" id="priorityFilter" class="filter-select">
                     <option value="">Priority: ALL</option>
                     <option value="P1">Priority: P1 (Critical)</option>
                     <option value="P2">Priority: P2 (High)</option>
@@ -557,7 +558,9 @@ $canApprove = SoarAuth::hasPermission($userTier, 'approve_actions');
                     <option value="P4">Priority: P4 (Low)</option>
                 </select>
 
-                <input type="text" id="searchInput" class="filter-input" placeholder="Filter by action or incident..." style="width:240px;">
+                <select id="kindFilter" class="filter-select" aria-label="Case provenance"><option value="observed">Real cases</option><option value="simulated">Simulated cases</option><option value="all">All cases</option></select>
+                <select id="sortFilter" class="filter-select" aria-label="Queue order"><option value="newest">Newest requests</option><option value="oldest">Oldest requests</option><option value="priority">Priority, oldest first</option><option value="expiry">Earliest expiry</option></select>
+                <input type="search" id="searchInput" class="filter-input" aria-label="Search actions or cases" placeholder="Search actions or cases..." maxlength="200" style="width:240px;">
             </div>
 
             <div>
@@ -565,6 +568,8 @@ $canApprove = SoarAuth::hasPermission($userTier, 'approve_actions');
             </div>
         </div>
 
+        <p id="queueSummary" role="status" aria-live="polite" style="margin:12px 0;">Loading queue…</p>
+        <p style="color:var(--text-secondary);margin:12px 0;">Counts cover all matching requests. Expiration uses database server time; browsing this queue never decides a request. Simulation is labeled separately.</p>
         <div class="table-card">
             <table class="data-table">
                 <thead>
@@ -588,6 +593,9 @@ $canApprove = SoarAuth::hasPermission($userTier, 'approve_actions');
                 </tbody>
             </table>
         </div>
+        <nav aria-label="Approval pages" style="display:flex;gap:16px;align-items:center;margin:16px 0;">
+            <button class="btn" id="queuePrevious" disabled>Previous</button><span id="queuePage">Page —</span><button class="btn" id="queueNext" disabled>Next</button>
+        </nav>
     </main>
 
     <!-- Approval Detail Modal -->
@@ -685,6 +693,11 @@ $canApprove = SoarAuth::hasPermission($userTier, 'approve_actions');
         const CAN_APPROVE = document.getElementById('canApprovePerm').value === '1';
 
         let approvalsData = [];
+        let queuePage = 1;
+        let queuePages = 1;
+        let queueRequest = 0;
+        let queueController = null;
+        let searchTimer = null;
         let activeApprovalId = null;
         let pollTimer = null;
         let isPolling = true;
@@ -695,25 +708,43 @@ $canApprove = SoarAuth::hasPermission($userTier, 'approve_actions');
             return (tierRanks[actual] || 0) >= (tierRanks[required] || 0);
         }
 
-        // Fetch Queue
+        // Search and counts apply to the full matching queue, not just the visible page.
         async function fetchQueue() {
-            const status = document.getElementById('statusFilter').value;
-            const priority = document.getElementById('priorityFilter').value;
-            let url = '../api/v1/approvals.php?limit=100';
-            if (status) url += '&status=' + encodeURIComponent(status);
-            if (priority) url += '&priority=' + encodeURIComponent(priority);
-
+            const request = ++queueRequest;
+            if (queueController) queueController.abort();
+            queueController = new AbortController();
+            const params = new URLSearchParams({
+                status: document.getElementById('statusFilter').value,
+                priority: document.getElementById('priorityFilter').value,
+                kind: document.getElementById('kindFilter').value,
+                sort: document.getElementById('sortFilter').value,
+                q: document.getElementById('searchInput').value,
+                page: String(queuePage)
+            });
+            document.getElementById('queueSummary').textContent = 'Loading matching requests…';
+            document.getElementById('queuePrevious').disabled = true;
+            document.getElementById('queueNext').disabled = true;
             try {
-                const res = await fetch(url);
-                if (!res.ok) throw new Error('API returned status ' + res.status);
+                const res = await fetch('../api/v1/approval_queue.php?' + params, {signal: queueController.signal});
                 const json = await res.json();
-                if (json.success) {
-                    approvalsData = json.data || [];
-                    renderQueue();
-                    updateMetrics();
-                }
+                if (!res.ok || !json.success) throw new Error(json.message || 'Queue request failed.');
+                if (request !== queueRequest) return;
+                approvalsData = json.data;
+                queuePage = json.pagination.page;
+                queuePages = json.pagination.pages;
+                renderQueue();
+                updateMetrics(json.metrics);
+                document.getElementById('queueSummary').textContent = `${json.pagination.total} matching requests · ${approvalsData.length} shown · as of ${json.as_of} (server time)`;
+                document.getElementById('queuePage').textContent = `Page ${queuePage} of ${queuePages}`;
+                document.getElementById('queuePrevious').disabled = queuePage <= 1;
+                document.getElementById('queueNext').disabled = queuePage >= queuePages;
             } catch (err) {
-                console.error('Fetch queue error:', err);
+                if (request !== queueRequest || err.name === 'AbortError') return;
+                approvalsData = [];
+                document.getElementById('queueTbody').innerHTML = '<tr><td colspan="8" style="padding:30px;">Approval queue unavailable. Refresh to retry.</td></tr>';
+                document.getElementById('queueSummary').textContent = err.message;
+                document.getElementById('queuePage').textContent = 'Page unavailable';
+                updateMetrics({pending:'—',critical:'—',expiring:'—'});
             }
         }
 
@@ -773,14 +804,7 @@ $canApprove = SoarAuth::hasPermission($userTier, 'approve_actions');
         // Render Queue
         function renderQueue() {
             const tbody = document.getElementById('queueTbody');
-            const search = document.getElementById('searchInput').value.toLowerCase().trim();
-
-            const filtered = approvalsData.filter(item => {
-                if (!search) return true;
-                const incidentMatch = (item.incident_number || '').toLowerCase().includes(search) || (item.incident_title || '').toLowerCase().includes(search);
-                const actionMatch = (item.action_name || '').toLowerCase().includes(search) || (item.action_description || '').toLowerCase().includes(search);
-                return incidentMatch || actionMatch;
-            });
+            const filtered = approvalsData;
 
             if (!filtered.length) {
                 tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:30px; color:var(--text-muted);">No approvals match filter criteria.</td></tr>`;
@@ -795,7 +819,7 @@ $canApprove = SoarAuth::hasPermission($userTier, 'approve_actions');
                     <tr class="${isP1 ? 'p1-highlight' : ''}">
                         <td>
                             <strong style="color:#fff;">${escapeHtml(a.incident_number || 'INC-#' + a.incident_id)}</strong>
-                            <div style="color:var(--text-secondary); font-size:0.75rem;">${escapeHtml(a.incident_title || '')}</div>
+                            <div style="color:var(--text-secondary); font-size:0.75rem;">${escapeHtml(a.incident_title || '')}</div>${a.is_simulated ? '<strong style="color:var(--neon-amber);">SIMULATED</strong>' : ''}
                         </td>
                         <td>
                             <span class="badge badge-${escapeHtml(a.incident_priority || 'P3')}">${escapeHtml(a.incident_priority || 'P3')}</span>
@@ -803,7 +827,7 @@ $canApprove = SoarAuth::hasPermission($userTier, 'approve_actions');
                         </td>
                         <td>
                             <div style="font-weight:600; color:var(--neon-cyan);">${escapeHtml(a.action_name || 'UNKNOWN')}</div>
-                            <div style="color:var(--text-muted); font-size:0.75rem;">${escapeHtml(a.action_description || '')}</div>
+                            <div style="color:var(--text-muted); font-size:0.75rem;">${escapeHtml(a.action_description || '')}${a.description_truncated ? '… (preview)' : ''}</div>
                         </td>
                         <td>
                             <span class="tier-tag tier-${escapeHtml(a.required_tier || 'LEAD')}">${escapeHtml(a.required_tier || 'LEAD')}</span>
@@ -812,7 +836,7 @@ $canApprove = SoarAuth::hasPermission($userTier, 'approve_actions');
                             ${escapeHtml(a.requested_at || '')}
                         </td>
                         <td style="font-family:var(--font-mono); font-size:0.75rem;">
-                            ${formatExpiry(a.expires_at, a.status)}
+                            ${formatExpiry(a.expires_at, a.status, a.expires_in_seconds)}
                         </td>
                         <td>
                             <span class="badge badge-${escapeHtml(a.status)}">${escapeHtml(a.status)}</span>
@@ -820,7 +844,7 @@ $canApprove = SoarAuth::hasPermission($userTier, 'approve_actions');
                         <td style="text-align:right;">
                             <button class="btn" onclick="openDetail(${a.id})">Review</button>
                             ${userCanApproveThis ? `
-                                <button class="btn btn-approve" onclick="openApproveModal(${a.id}, '${escapeHtml(a.action_name)}', '${escapeHtml(a.incident_number || '')}', ${a.playbook_run_id})">Approve</button>
+                                <button class="btn btn-approve" onclick="openQueueApprove(${a.id})">Approve</button>
                                 <button class="btn btn-reject" onclick="openRejectModal(${a.id})">Reject</button>
                             ` : ''}
                         </td>
@@ -829,29 +853,24 @@ $canApprove = SoarAuth::hasPermission($userTier, 'approve_actions');
             }).join('');
         }
 
-        function formatExpiry(expiresAt, status) {
+        function openQueueApprove(id) {
+            const row = approvalsData.find(item => item.id === id);
+            if (row) openApproveModal(id, row.action_name, row.incident_number || '', row.playbook_run_id);
+        }
+
+        function formatExpiry(expiresAt, status, seconds = null) {
             if (status !== 'PENDING') return '<span style="color:var(--text-muted);">-</span>';
-            const diffMs = new Date(expiresAt) - new Date();
+            const diffMs = seconds === null ? new Date(expiresAt) - new Date() : seconds * 1000;
             if (diffMs <= 0) return '<span style="color:var(--neon-red); font-weight:700;">EXPIRED</span>';
             const hours = Math.floor(diffMs / 3600000);
             const mins = Math.floor((diffMs % 3600000) / 60000);
             return `<span style="color:${hours < 2 ? 'var(--neon-red)' : 'var(--neon-amber)'};">${hours}h ${mins}m</span>`;
         }
 
-        function updateMetrics() {
-            let pending = 0, crit = 0, exp = 0;
-            const now = new Date();
-            approvalsData.forEach(a => {
-                if (a.status === 'PENDING') {
-                    pending++;
-                    if (a.incident_priority === 'P1' || a.incident_priority === 'P2') crit++;
-                    const diffHours = (new Date(a.expires_at) - now) / 3600000;
-                    if (diffHours > 0 && diffHours < 4) exp++;
-                }
-            });
-            document.getElementById('metricPending').textContent = pending;
-            document.getElementById('metricCritical').textContent = crit;
-            document.getElementById('metricExpiring').textContent = exp;
+        function updateMetrics(metrics) {
+            document.getElementById('metricPending').textContent = metrics.pending;
+            document.getElementById('metricCritical').textContent = metrics.critical;
+            document.getElementById('metricExpiring').textContent = metrics.expiring;
         }
 
         // Open Detail Modal
@@ -1222,9 +1241,16 @@ $canApprove = SoarAuth::hasPermission($userTier, 'approve_actions');
         }
 
         // Setup Events & Polling
-        document.getElementById('statusFilter').addEventListener('change', fetchQueue);
-        document.getElementById('priorityFilter').addEventListener('change', fetchQueue);
-        document.getElementById('searchInput').addEventListener('input', renderQueue);
+        function resetQueue() { clearTimeout(searchTimer); queuePage = 1; fetchQueue(); }
+        for (const id of ['statusFilter','priorityFilter','kindFilter','sortFilter']) document.getElementById(id).addEventListener('change', resetQueue);
+        document.getElementById('searchInput').addEventListener('input', () => {
+            clearTimeout(searchTimer);
+            ++queueRequest;
+            if (queueController) queueController.abort();
+            searchTimer = setTimeout(resetQueue, 300);
+        });
+        document.getElementById('queuePrevious').addEventListener('click', () => { if (queuePage > 1) { --queuePage; fetchQueue(); } });
+        document.getElementById('queueNext').addEventListener('click', () => { if (queuePage < queuePages) { ++queuePage; fetchQueue(); } });
         document.getElementById('refreshBtn').addEventListener('click', () => { fetchQueue(); fetchNotifications(); });
 
         document.getElementById('bellBtn').addEventListener('click', (e) => {
