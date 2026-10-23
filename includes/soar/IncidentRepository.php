@@ -220,21 +220,24 @@ class IncidentRepository {
     /**
      * Fetch all associated SIEM alerts for an incident.
      */
-    public function getAttachedAlerts(int $incidentId): array {
-        if (!$this->pdo) {
-            return [];
-        }
-
-        $stmt = $this->pdo->prepare("
-            SELECT ia.id AS junction_id, ia.correlation_rule, ia.added_at AS attached_at,
-                   l.id AS log_id, l.source_ip, l.severity, l.category, l.message, l.timestamp AS event_timestamp
-            FROM incident_alerts ia
-            JOIN logs l ON ia.log_id = l.id
-            WHERE ia.incident_id = ?
-            ORDER BY l.timestamp DESC
-        ");
+    public function getAttachedAlerts(int $incidentId, ?int $limit = null): array {
+        if (!$this->pdo) return [];
+        // The opt-in case preview bounds both row count and message size. Legacy callers retain full text.
+        $message = $limit === null ? 'l.message' : 'LEFT(l.message,500) AS message, CHAR_LENGTH(l.message)>500 AS message_truncated';
+        $suffix = $limit === null ? '' : ' LIMIT '.max(1,min(100,$limit));
+        $stmt = $this->pdo->prepare("SELECT ia.id AS junction_id, ia.correlation_rule, ia.added_at AS attached_at,
+            l.id AS log_id, l.source_ip, l.severity, l.category, $message, l.timestamp AS event_timestamp
+            FROM incident_alerts ia JOIN logs l ON ia.log_id=l.id WHERE ia.incident_id=?
+            ORDER BY l.timestamp DESC, ia.id DESC".$suffix);
         $stmt->execute([$incidentId]);
         return $stmt->fetchAll();
+    }
+
+    public function countAttachedAlerts(int $incidentId): int {
+        if (!$this->pdo) return 0;
+        $stmt = $this->pdo->prepare('SELECT COUNT(*) FROM incident_alerts WHERE incident_id=?');
+        $stmt->execute([$incidentId]);
+        return (int)$stmt->fetchColumn();
     }
 
     /**

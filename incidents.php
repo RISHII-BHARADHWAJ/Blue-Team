@@ -71,7 +71,7 @@ try {
     $page = min($page, max(1, (int)ceil($total / 25)));
     $rows = $manager->listIncidents($filters, 25, ($page - 1) * 25);
     if ($selectedId !== false) {
-        $detail = $manager->getIncident((int)$selectedId, 20);
+        $detail = $manager->getIncident((int)$selectedId, 20, 20);
         if (!empty($detail['is_simulated'])) {
             $demoStmt = $pdo->prepare('SELECT id FROM demo_sessions WHERE incident_id = ? LIMIT 1');
             $demoStmt->execute([$selectedId]); $demoId = $demoStmt->fetchColumn();
@@ -267,13 +267,14 @@ foreach ($queueChoices as $key=>[$label,$choices]): ?>
 </span></div><?php endif; ?>
 </section>
 <h2>Description</h2><pre><?= incidentEscape($detail['description']) ?></pre>
-<h2>Linked SIEM alerts (<?= count($detail['alerts']) ?>)</h2>
+<h2>Linked SIEM alerts (<?= (int)$detail['alerts_total'] ?>)</h2>
+<p class="muted">Up to 20 latest log entries, with 500-character message previews. <a href="incident-linked-evidence.php?id=<?= (int)$detail['id'] ?>">Search all linked evidence</a></p>
 <?php if (!$detail['is_simulated']): ?><p><a href="incident-evidence.php?id=<?= (int)$detail['id'] ?>">Find and link preserved event evidence</a></p><?php endif; ?>
 <?php foreach ($detail['alerts'] as $alert): ?>
 <div class="event">
     <strong><?= incidentEscape($alert['category']) ?> · <?= incidentEscape($alert['severity']) ?></strong>
     <small><?= incidentEscape($alert['event_timestamp']) ?> · Source <?= incidentEscape($alert['source_ip']) ?> · <a href="events.php?log_id=<?= incidentEscape($alert['log_id']) ?>#evidence">Log #<?= incidentEscape($alert['log_id']) ?> · inspect evidence</a></small>
-    <pre><?= incidentEscape($alert['message']) ?></pre>
+    <pre><?= incidentEscape($alert['message']) ?><?= !empty($alert['message_truncated']) ? '… [preview truncated]' : '' ?></pre>
     <?php $intelListings = $intelMatchesByIp[$alert['source_ip'] ?? ''] ?? []; ?>
     <?php if ($intelListings): ?>
     <div style="border-top:1px solid #25506a;padding-top:10px;margin-top:10px">
