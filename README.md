@@ -31,6 +31,8 @@ ThreatPulse is a PHP and MariaDB-based Blue Team project for collecting and visu
 
 ### SOAR capabilities
 
+- **Case evidence picker:** search preserved real events, review them and link relevant evidence to an active case with an attributed rationale. See [case evidence association](docs/case-evidence-picker.md).
+
 - **Assignment handoff:** owner changes create an in-app notification, with atomic persistence, harmless retries, and stale-owner checks from the case page. See [assignment and inbox behavior](docs/assignment-handoff.md).
 
 - **Analyst event escalation:** review preserved real evidence and open a case with an attributed investigation reason. Repeated workspace submissions reuse the existing case. See [event-to-case workflow](docs/event-escalation.md).
