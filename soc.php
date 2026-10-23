@@ -121,6 +121,7 @@ code{font-size:12px;color:#abd2e1}
     <nav class="nav" aria-label="Main navigation">
       <a href="soc.php" aria-current="page">Overview</a>
       <a href="events.php">Event evidence</a>
+      <a href="sources.php">Source activity</a>
       <a href="dashboard.php">Legacy SIEM</a>
       <a href="detections.php">Detections</a><a href="threat-intel.php">Threat intelligence</a>
       <a href="feeds.php">Feed health</a><a href="incidents.php">Incidents</a>
