@@ -33,6 +33,8 @@ ThreatPulse is a PHP and MariaDB-based Blue Team project for collecting and visu
 
 ### SOAR capabilities
 
+- **Searchable approval queue:** the control plane searches all requests with paginated results, full-result counts, priority/expiry ordering, and explicit simulation views. See [queue semantics and expiration](docs/approval-queue.md).
+
 - **Lead/admin audit history:** `audit.php` searches recorded action metadata with outcome/date filters and recognized case references, enforcing current database roles. See [audit visibility and limits](docs/audit-history.md).
 
 - **Linked case evidence:** search existing case associations by message/source event ID, source IP, severity and provenance, with separate event/link ordering. Main case pages show bounded previews. See [linked evidence browsing](docs/linked-case-evidence.md).

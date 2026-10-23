@@ -163,6 +163,11 @@ jobs:
         run: |
           docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/integration_audit_history.php
           sh tests/check_audit_history_http.sh
+      - name: Verify complete approval queue search, counts and HTTP access
+        run: |
+          docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/integration_approval_queue.php
+          sh tests/check_approval_queue_http.sh
+          node tests/approval_queue_ui_test.js
       - name: Show container logs on failure
         if: failure()
         run: docker compose logs --no-color --tail=200
