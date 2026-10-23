@@ -142,6 +142,10 @@ jobs:
           docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/integration_case_evidence.php
           docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/concurrent_case_evidence.php
           sh tests/check_case_evidence_http.sh
+      - name: Verify incident timeline search, pagination and HTTP access
+        run: |
+          docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/integration_incident_timeline.php
+          sh tests/check_incident_timeline_http.sh
       - name: Show container logs on failure
         if: failure()
         run: docker compose logs --no-color --tail=200

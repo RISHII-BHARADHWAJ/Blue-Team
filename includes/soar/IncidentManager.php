@@ -504,16 +504,18 @@ class IncidentManager {
     }
 
     /**
-     * Retrieve complete incident record with attached alerts and timeline.
+     * Retrieve an incident with alerts and timeline; an optional limit selects a recent summary preview.
      */
-    public function getIncident(int $incidentId): ?array {
+    public function getIncident(int $incidentId, ?int $timelineLimit = null): ?array {
         $incident = $this->repository->find($incidentId);
         if (!$incident) {
             return null;
         }
 
         $incident['alerts'] = $this->repository->getAttachedAlerts($incidentId);
-        $incident['timeline'] = $this->timeline->getEvents($incidentId);
+        $incident['timeline'] = $timelineLimit === null
+            ? $this->timeline->getEvents($incidentId)
+            : $this->timeline->getRecentEvents($incidentId, $timelineLimit);
         $incident['iocs'] = $this->repository->getIncidentIocs($incidentId);
 
         return $incident;

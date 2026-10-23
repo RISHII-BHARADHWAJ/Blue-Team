@@ -155,6 +155,7 @@ The project is still being developed. Before any deployment beyond a controlled 
 - [Alert ingestion and normalization](docs/soar/alert-ingestion.md)
 - [Incident management and correlation](docs/soar/incident-management.md)
 - [Analyst case notes and attribution](docs/case-notes.md)
+- [Searchable investigation history](docs/incident-timeline.md)
 - [IOC enrichment](docs/soar/ioc-enrichment.md)
 - [Risk scoring](docs/soar/risk-scoring.md)
 - [Playbook engine and dry-run behavior](docs/soar/playbook-engine.md)

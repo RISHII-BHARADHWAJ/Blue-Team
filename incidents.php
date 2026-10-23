@@ -71,7 +71,7 @@ try {
     $page = min($page, max(1, (int)ceil($total / 25)));
     $rows = $manager->listIncidents($filters, 25, ($page - 1) * 25);
     if ($selectedId !== false) {
-        $detail = $manager->getIncident((int)$selectedId);
+        $detail = $manager->getIncident((int)$selectedId, 20);
         if (!empty($detail['is_simulated'])) {
             $demoStmt = $pdo->prepare('SELECT id FROM demo_sessions WHERE incident_id = ? LIMIT 1');
             $demoStmt->execute([$selectedId]); $demoId = $demoStmt->fetchColumn();
@@ -292,7 +292,8 @@ foreach ($queueChoices as $key=>[$label,$choices]): ?>
 </div>
 <?php endforeach; ?>
 <?php if (!$detail['alerts']): ?><p class="muted">No linked SIEM logs.</p><?php endif; ?>
-<h2 style="margin-top:20px">Investigation timeline</h2>
+<h2 style="margin-top:20px">Recent investigation timeline</h2>
+<p class="muted">Up to 20 latest entries, newest first (UTC). <a href="incident-timeline.php?id=<?= (int)$detail['id'] ?>">View and filter full history</a></p>
 <?php foreach ($detail['timeline'] as $event): ?><div class="event"><strong><?= incidentEscape($event['event_type']) ?></strong><small><?= incidentEscape($event['created_at']) ?> · <?= incidentEscape($event['actor_name']) ?></small><?= incidentEscape($event['summary']) ?></div><?php endforeach; ?>
 <?php if (!$detail['timeline']): ?><p class="muted">No timeline entries yet.</p><?php endif; ?>
 <?php endif; ?>
