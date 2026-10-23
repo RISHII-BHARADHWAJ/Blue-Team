@@ -18,6 +18,9 @@ require_once __DIR__ . '/IncidentNumberGenerator.php';
 require_once __DIR__ . '/IncidentTimeline.php';
 require_once __DIR__ . '/CorrelationEngine.php';
 require_once __DIR__ . '/SoarAuth.php';
+require_once __DIR__ . '/notifications/NotificationService.php';
+
+final class IncidentAssignmentConflict extends RuntimeException {}
 
 class IncidentManager {
     private ?PDO $pdo;
@@ -303,10 +306,12 @@ class IncidentManager {
     /**
      * Assign an incident to an analyst.
      */
-    public function assignIncident(int $incidentId, int $analystId, string $actor): array {
+    public function assignIncident(int $incidentId, int $analystId, string $actor, int|null|false $expectedAssignee = false): array {
         $inTx = $this->pdo && $this->pdo->inTransaction();
-        if ($this->pdo && !$inTx) {
-            $this->pdo->beginTransaction();
+        $savepoint = 'assignment_' . bin2hex(random_bytes(8));
+        if ($this->pdo) {
+            if (!$inTx) $this->pdo->beginTransaction();
+            else $this->pdo->exec("SAVEPOINT $savepoint");
         }
 
         try {
@@ -326,6 +331,20 @@ class IncidentManager {
                 throw new InvalidArgumentException("Target user is not an eligible incident analyst.");
             }
 
+            $previous = $incident['assigned_to'] === null ? null : (int)$incident['assigned_to'];
+            if ($previous === $analystId) {
+                // Preserve current locked case fields even in a caller's older read snapshot.
+                $result = array_replace($this->getIncident($incidentId) ?? [], $incident);
+                if ($this->pdo) {
+                    if (!$inTx) $this->pdo->commit();
+                    else $this->pdo->exec("RELEASE SAVEPOINT $savepoint");
+                }
+                return $result;
+            }
+            if ($expectedAssignee !== false && $previous !== $expectedAssignee) {
+                throw new IncidentAssignmentConflict('Case assignment changed since this page was loaded. Reload the case before assigning it.');
+            }
+
             $this->repository->update($incidentId, ['assigned_to' => $analystId]);
 
             $this->timeline->addEvent(
@@ -334,23 +353,38 @@ class IncidentManager {
                 IncidentTimeline::ACTOR_ANALYST,
                 $actor,
                 "Incident assigned to {$targetUser['username']}",
-                ['assigned_to_user_id' => $analystId, 'username' => $targetUser['username']]
+                ['previous_assigned_to' => $previous, 'assigned_to_user_id' => $analystId, 'username' => $targetUser['username']]
             );
 
             $this->auditLog($actor, 'assign_incident', $incident['incident_number'], 'success', [
                 'incident_id' => $incidentId,
+                'previous_assigned_to' => $previous,
+                'assigned_to_user_id' => $analystId,
                 'assigned_to' => $targetUser['username']
-            ]);
+            ], true);
 
-            if ($this->pdo && !$inTx) {
-                $this->pdo->commit();
+            $label = !empty($incident['is_simulated']) ? 'SIMULATED: ' : '';
+            $sent = (new NotificationService($this->pdo))->notify($analystId, 'INCIDENT_ASSIGNED',
+                $label . 'Case assigned: ' . $incident['incident_number'],
+                $label . $actor . ' assigned ' . $incident['incident_number'] . ' to you. Open the case to review its evidence and next steps.',
+                ['incident_id'=>$incidentId]);
+            if (!$sent) throw new RuntimeException('Assignment notification could not be saved.');
+
+            $result = $this->getIncident($incidentId);
+            if ($this->pdo) {
+                if (!$inTx) $this->pdo->commit();
+                else $this->pdo->exec("RELEASE SAVEPOINT $savepoint");
             }
 
-            return $this->getIncident($incidentId);
+            return $result;
 
-        } catch (Exception $e) {
-            if ($this->pdo && !$inTx && $this->pdo->inTransaction()) {
-                $this->pdo->rollBack();
+        } catch (Throwable $e) {
+            if ($this->pdo && $this->pdo->inTransaction()) {
+                if (!$inTx) $this->pdo->rollBack();
+                else {
+                    $this->pdo->exec("ROLLBACK TO SAVEPOINT $savepoint");
+                    $this->pdo->exec("RELEASE SAVEPOINT $savepoint");
+                }
             }
             throw $e;
         }
@@ -495,7 +529,7 @@ class IncidentManager {
     /**
      * Record security audit log entry.
      */
-    private function auditLog(string $analyst, string $action, string $target, string $result, array $details): void {
+    private function auditLog(string $analyst, string $action, string $target, string $result, array $details, bool $required = false): void {
         if (!$this->pdo) {
             return;
         }
@@ -517,6 +551,8 @@ class IncidentManager {
                 substr(json_encode($details, JSON_UNESCAPED_SLASHES), 0, 1000),
                 substr($ua, 0, 500)
             ]);
-        } catch (Exception $e) {}
+        } catch (Exception $e) {
+            if ($required) throw $e;
+        }
     }
 }
