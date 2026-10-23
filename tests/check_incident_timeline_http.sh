@@ -54,6 +54,6 @@ printf '%s' "$headers" | grep -qi 'Cache-Control: no-store'
 page=$(curl --fail --silent --show-error --cookie "CYBERTECH_SECURE_SESSION=$session_id" "$base/incidents.php?id=$case_id")
 printf '%s' "$page" | grep -q "incident-timeline.php?id=$case_id"
 printf '%s' "$page" | grep -q 'Up to 20 latest entries, newest first (UTC)'
-[ "$(printf '%s' "$page" | grep -c '<div class="event"><strong>NOTE_ADDED')" = 20 ]
+[ "$(printf '%s' "$page" | grep -o '<div class="event"><strong>NOTE_ADDED' | grep -c .)" = 20 ]
 if printf '%s' "$page" | grep -q 'entry0 &lt;script&gt;';then echo 'Case preview was not bounded';exit 1;fi
 echo 'PASS: timeline reader access, pagination, preserved filters, case isolation, simulation labels, escaping, method guards and bounded case preview'
