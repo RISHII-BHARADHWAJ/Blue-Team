@@ -27,3 +27,5 @@ body.tp-app{margin:0!important;padding:76px 0 0 248px!important;background:var(-
 
 @media(max-width:800px){.tp-app .triage .field{flex:1 1 100%!important;width:100%}.tp-app .triage textarea{min-height:100px}.tp-app .triage form>button{width:100%}}
 .tp-page-atlas .leaflet-tile-pane{filter:none!important}.tp-page-atlas [style*="background:#020B18"],.tp-page-atlas [style*="background:#050F1F"]{background:#f1f5ec!important}.tp-page-terminal .cursor-block{background:#b5d5b1!important;box-shadow:none!important}
+/* Keep the atlas summary alongside the evidence instead of stretching it. */
+@media(min-width:1151px){.tp-page-atlas .main-grid{align-items:start}.tp-page-atlas .main-grid>.panel{min-height:600px}.tp-page-atlas .main-grid>.panel .table-scroll{height:430px}.tp-page-atlas .main-grid>.panel .table-scroll.expanded{height:700px}.tp-page-atlas .right-col{max-height:600px;overflow-y:auto}}
