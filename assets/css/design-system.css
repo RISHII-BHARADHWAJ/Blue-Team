@@ -24,3 +24,6 @@ body.tp-app{margin:0!important;padding:76px 0 0 248px!important;background:var(-
 @media(max-width:1150px){.tp-app .main-grid{grid-template-columns:minmax(0,1fr)!important}}@media(max-width:800px){.tp-app .triage .field{flex-basis:100%;min-width:0}.tp-app .triage button{max-width:100%}.tp-app .panel-title{flex-wrap:wrap;gap:10px}.tp-app .sev-cell{padding:8px 3px}.tp-app .sev-cell-label{font-size:8px;letter-spacing:0}.tp-app .filter-bar form>*{max-width:100%}}
 @media(max-width:800px){.tp-app .tp-rail{visibility:hidden}.tp-app.tp-nav-open .tp-rail{visibility:visible}}
 .tp-app .tp-rail nav{width:100%;align-items:stretch!important}.tp-app .tp-rail nav a{width:100%}
+
+@media(max-width:800px){.tp-app .triage .field{flex:1 1 100%!important;width:100%}.tp-app .triage textarea{min-height:100px}.tp-app .triage form>button{width:100%}}
+.tp-page-atlas .leaflet-tile-pane{filter:none!important}.tp-page-atlas [style*="background:#020B18"],.tp-page-atlas [style*="background:#050F1F"]{background:#f1f5ec!important}.tp-page-terminal .cursor-block{background:#b5d5b1!important;box-shadow:none!important}
