@@ -174,6 +174,12 @@ jobs:
           docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/concurrent_incident_severity.php
           sh tests/check_incident_severity_http.sh
           node tests/incident_severity_ui_test.js
+      - name: Verify manual case intake, concurrent retries and HTTP permissions
+        run: |
+          docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/integration_manual_case.php
+          docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/concurrent_manual_case.php
+          docker compose exec -T db sh -c 'exec mariadb -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' < database/migrations/013_manual_case_requests.sql
+          sh tests/check_manual_case_http.sh
       - name: Show container logs on failure
         if: failure()
         run: docker compose logs --no-color --tail=200

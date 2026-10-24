@@ -40,6 +40,7 @@ services:
       - ./database/migrations/010_feed_collection_history.sql:/docker-entrypoint-initdb.d/11_feed_collection_history.sql:ro
       - ./database/migrations/011_simulated_incidents.sql:/docker-entrypoint-initdb.d/12_simulated_incidents.sql:ro
       - ./database/migrations/012_playbook_previews.sql:/docker-entrypoint-initdb.d/13_playbook_previews.sql:ro
+      - ./database/migrations/013_manual_case_requests.sql:/docker-entrypoint-initdb.d/14_manual_case_requests.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 --silent"]
       interval: 5s
