@@ -10,6 +10,9 @@ with sync_playwright() as p:
  page=context.new_page()
  page.goto(base+'login.php');page.screenshot(path=str(out/'login-desktop.png'),full_page=True)
  assert page.locator('label[for="username"]').is_visible()
+ page.set_viewport_size({'width':390,'height':844});page.screenshot(path=str(out/'login-mobile.png'),full_page=True)
+ assert page.evaluate('document.documentElement.scrollWidth <= window.innerWidth + 2')
+ page.set_viewport_size({'width':1440,'height':1000})
  context.add_cookies([{'name':'CYBERTECH_SECURE_SESSION','value':f['session'],'url':base}])
  routes=['soc.php','events.php','sources.php','dashboard.php','incidents.php','detections.php','threat-intel.php','feeds.php','notifications.php','audit.php','demo.php','incident-new.php','control_plane/index.php','terminal.php']
  routes += [x+'?id='+str(f['case_id']) for x in ['incidents.php','incident-risk.php','incident-iocs.php','incident-playbooks.php','incident-evidence.php','incident-linked-evidence.php','incident-timeline.php','incident-report.php']]
