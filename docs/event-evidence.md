@@ -79,7 +79,7 @@ Simulated payloads retain their original message in evidence; the legacy log mes
 gets a `[SIMULATED]` prefix. Simulated events use a separate deduplication fingerprint,
 return correlation decision `SIMULATION_ONLY`, and cannot be automatically correlated,
 manually escalated, or attached to real incidents. They do not execute playbooks.
-A separately labeled demo incident lifecycle is still pending. Existing dashboard
+A separately labeled demo lifecycle is available through `demo.php`; see [the walkthrough](simulated-incident-lifecycle.md). Existing dashboard
 aggregate counts include stored simulated log rows; use the explorer's simulation
 filter when distinguishing them. Historical unmarked test data is not inferred.
 
@@ -94,6 +94,6 @@ HTML escaping, simulation labels, and bad-date responses in the disposable stack
 These are HTTP checks, not interactive browser testing.
 
 Still pending: independently registered sensors, retention/archival policies,
-a full simulated case lifecycle, unified navigation across all legacy screens,
+unified navigation across all legacy screens,
 and complete browser validation. Raw submitted evidence can include sensitive
 sensor data; collection should avoid credentials and unnecessary personal data.

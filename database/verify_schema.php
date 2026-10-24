@@ -3,11 +3,11 @@
  * ThreatPulse SOAR - Schema Verification Tool
  * 
  * Verifies that:
- * 1. All 15 SOAR tables exist.
+ * 1. Expected SOAR tables exist.
  * 2. Primary keys exist for all tables.
  * 3. Required unique constraints and indexes exist.
  * 4. Foreign key definitions are intact and valid.
- * 5. Migration is idempotent (re-running produces no errors or data corruption).
+ * 5. This introspection does not establish migration idempotency or data preservation.
  * 6. Existing SIEM tables (logs, ip_geo, users, audit_log, activity_logs, rate_limits) remain untouched.
  * 
  * Safety: This script performs non-destructive read-only introspection on information_schema.
@@ -83,8 +83,9 @@ foreach ($expectedSiemTables as $table => $expectedCols) {
     }
 }
 
-// 3. Check All 15 SOAR Tables
+// 3. Check expected SOAR tables
 $expectedSoarTables = [
+    'manual_case_requests' => ['id','user_id','request_key','payload_hash','incident_id','created_at'],
     'playbook_preview_requests' => ['id','user_id','request_key','incident_id','playbook_id','playbook_version','run_id','created_at'],
     'demo_sessions' => ['id','request_key','created_by','incident_id','finding_id','playbook_run_id','created_at'],
     'incidents'          => ['is_simulated', 'id', 'incident_number', 'title', 'description', 'severity', 'status', 'priority', 'risk_score', 'assigned_to', 'lead_analyst', 'attack_category', 'mitre_tactics', 'mitre_techniques', 'contained_at', 'resolved_at', 'closed_at', 'created_at', 'updated_at'],
@@ -188,8 +189,18 @@ foreach ($expectedUniqueConstraints as $table => $cols) {
     }
 }
 
+// Submission retry guarantees require each complete unique index, not columns
+// scattered across unrelated indexes.
+$stmt=$pdo->prepare("SELECT index_name,GROUP_CONCAT(column_name ORDER BY seq_in_index SEPARATOR ',') AS columns_in_order FROM information_schema.statistics WHERE table_schema=? AND table_name='manual_case_requests' AND non_unique=0 GROUP BY index_name");
+$stmt->execute([$db_name]);$indexes=$stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+foreach (['user_id,request_key','incident_id'] as $columns) {
+    if (in_array($columns,$indexes,true)) {logMessage("Manual intake unique index verified: $columns",'SUCCESS');$passed++;}
+    else {logMessage("Manual intake unique index missing: $columns (migration 013)",'FAIL');$failed++;}
+}
+
 // 5. Verify Foreign Keys
 $expectedForeignKeys = [
+    'manual_case_requests' => ['user_id'=>'users','incident_id'=>'incidents'],
     'incident_alerts'   => ['incident_id' => 'incidents', 'log_id' => 'logs'],
     'incident_events'   => ['incident_id' => 'incidents'],
     'incident_timeline' => ['incident_id' => 'incidents'],
