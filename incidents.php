@@ -142,8 +142,9 @@ th,td{padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:top}t
 pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;margin:6px 0}.error{border-color:#ba3f4b;color:#ff9d9d}.triage{background:#09243b;border:1px solid #265b76;border-radius:9px;padding:15px;margin:20px 0}.triage p{margin:0 0 12px;color:var(--muted)}.triage input{border:1px solid #376285;color:var(--text);background:#0d2541;padding:9px 12px;border-radius:6px;min-width:250px;flex:1;font:inherit}.triage button:disabled{opacity:.6;cursor:wait}.triage-feedback{margin-top:10px;color:#ffb8b8}
 @media(max-width:700px){th,td{padding:8px 5px;font-size:12px}main{padding:20px 12px}.panel{padding:13px}}
 </style>
+<?php require_once __DIR__.'/includes/ui/shell.php'; tpHead(''); ?>
 </head>
-<body>
+<body class="tp-app tp-page-cases"><?php tpShell('cases',''); ?>
 <header><a class="brand" href="dashboard.php">THREATPULSE / SOC</a><nav><a href="dashboard.php">SIEM Dashboard</a><a href="incidents.php" aria-current="page">Incidents</a><a href="control_plane/index.php">SOAR Control Plane</a><a href="notifications.php">My inbox</a></nav></header>
 <main>
 <h1>Incident queue</h1>

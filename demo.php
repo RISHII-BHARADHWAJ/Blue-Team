@@ -48,7 +48,8 @@ $requestKey = is_string($_POST['request_key'] ?? null) && preg_match('/^[a-f0-9]
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Simulated investigation · ThreatPulse</title>
 <style>
 :root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#0c1321;color:#e2ebf6;font:16px/1.6 system-ui,sans-serif}main{max-width:1000px;margin:auto;padding:28px 22px 60px}nav{display:flex;gap:24px;flex-wrap:wrap}a{color:#71dbd2}h1{font-size:34px;line-height:1.2}h2{font-size:21px}section{background:#141f30;border:1px solid #30435b;border-radius:14px;padding:24px;margin:20px 0}.label{color:#ffd488;font-weight:700;letter-spacing:.06em}small,.muted{color:#a9b8cc}button{background:#72ded0;color:#092129;border:0;border-radius:7px;padding:12px 18px;font:inherit;font-weight:700;cursor:pointer}button:disabled{opacity:.6}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px}.error{border-color:#efae71}li{margin:10px 0}.step{border-top:1px solid #30435b;padding:16px 0}
-</style></head><body><main>
+</style><?php require_once __DIR__.'/includes/ui/shell.php'; tpHead(''); ?>
+</head><body class="tp-app tp-page-training"><?php tpShell('training',''); ?><main>
 <nav><a href="soc.php">SOC overview</a><a href="incidents.php">Incident queue</a><a href="detections.php">Detections</a></nav>
 <p class="label">SIMULATED TEST DATA</p><h1>Walk through an investigation</h1>
 <p>Generate labeled authentication failures, inspect the rule that detects them, investigate a training case, and preview a SOAR playbook.</p>

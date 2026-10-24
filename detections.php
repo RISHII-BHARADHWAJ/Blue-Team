@@ -39,7 +39,8 @@ catch (Throwable $e) {
 }
 ?>
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ThreatPulse | Detections</title><link rel="stylesheet" href="assets/css/workspace.css"></head><body>
+<title>ThreatPulse | Detections</title><link rel="stylesheet" href="assets/css/workspace.css"><?php require_once __DIR__.'/includes/ui/shell.php'; tpHead(''); ?>
+</head><body class="tp-app tp-page-detections"><?php tpShell('detections',''); ?>
 <a class="skip" href="#main">Skip to detections</a><div class="workspace"><aside class="sidebar">
 <a class="brand" href="soc.php">ThreatPulse</a><nav aria-label="SOC navigation"><a href="soc.php">Overview</a><a href="events.php">Event evidence</a><a href="detections.php" aria-current="page">Detections</a><a href="threat-intel.php">Threat intelligence</a><a href="feeds.php">Feed health</a><a href="incidents.php">Incidents</a><a href="control_plane/index.php">SOAR approvals</a></nav>
 <p>Evidence-backed findings<br>All times are UTC</p></aside><main id="main"><span class="eyebrow">Investigate / detection rules</span><h1>Detections</h1>

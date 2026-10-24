@@ -32,7 +32,8 @@ catch (DomainException $e) { http_response_code(409); $error=$e->getMessage(); }
 catch (Throwable $e) { http_response_code(503); $error='Feed history is unavailable. Check database health and apply migration 010.'; }
 ?>
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ThreatPulse | Feed health</title><link rel="stylesheet" href="assets/css/workspace.css"></head><body>
+<title>ThreatPulse | Feed health</title><link rel="stylesheet" href="assets/css/workspace.css"><?php require_once __DIR__.'/includes/ui/shell.php'; tpHead(''); ?>
+</head><body class="tp-app tp-page-feeds"><?php tpShell('feeds',''); ?>
 <a class="skip" href="#main">Skip to feed health</a><div class="workspace"><aside class="sidebar"><a class="brand" href="soc.php">ThreatPulse</a>
 <nav aria-label="SOC navigation"><a href="soc.php">Overview</a><a href="events.php">Event evidence</a><a href="detections.php">Detections</a><a href="threat-intel.php">Threat intelligence</a><a href="feeds.php" aria-current="page">Feed health</a><a href="incidents.php">Incidents</a><a href="control_plane/index.php">SOAR approvals</a></nav>
 <p>External intelligence collection<br>All times are UTC</p></aside><main id="main"><span class="eyebrow">Operations / collection</span><h1>Feed health</h1>

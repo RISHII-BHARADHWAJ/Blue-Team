@@ -29,8 +29,9 @@ try {
 $activityLabels = ['recent'=>'Received in window', 'quiet'=>'No receipts in window', 'clock'=>'Future receipt recorded'];
 ?>
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ThreatPulse | Source activity</title><link rel="stylesheet" href="assets/css/workspace.css"></head>
-<body><a class="skip" href="#main">Skip to source activity</a><div class="workspace">
+<title>ThreatPulse | Source activity</title><link rel="stylesheet" href="assets/css/workspace.css"><?php require_once __DIR__.'/includes/ui/shell.php'; tpHead(''); ?>
+</head>
+<body class="tp-app tp-page-sources"><?php tpShell('sources',''); ?><a class="skip" href="#main">Skip to source activity</a><div class="workspace">
 <aside class="sidebar"><a class="brand" href="soc.php">ThreatPulse</a><nav aria-label="SOC navigation">
 <a href="soc.php">Overview</a><a href="events.php">Event evidence</a><a href="sources.php" aria-current="page">Source activity</a><a href="feeds.php">Feed health</a><a href="incidents.php">Incidents</a>
 </nav></aside><main id="main"><span class="eyebrow">SIEM / receipt activity</span><h1>Telemetry source activity</h1>

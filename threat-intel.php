@@ -87,8 +87,9 @@ code{color:#b6d8e8;font-size:12px}
 .pages a{padding:8px 14px;border:1px solid var(--line);border-radius:7px}
 @media(max-width:720px){.layout{display:block}aside{padding:15px;gap:14px;border-right:0;border-bottom:1px solid var(--line)}nav{flex-direction:row;overflow:auto}nav a{white-space:nowrap;padding:8px}main{padding:23px 15px}h1{font-size:26px}.cards{grid-template-columns:1fr}}
 </style>
+<?php require_once __DIR__.'/includes/ui/shell.php'; tpHead(''); ?>
 </head>
-<body>
+<body class="tp-app tp-page-intelligence"><?php tpShell('intelligence',''); ?>
 <div class="layout">
 <aside>
   <a class="brand" href="soc.php">ThreatPulse</a>
