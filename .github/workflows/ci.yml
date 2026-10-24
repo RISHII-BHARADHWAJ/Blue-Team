@@ -180,6 +180,8 @@ jobs:
           docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/concurrent_manual_case.php
           docker compose exec -T db sh -c 'exec mariadb -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' < database/migrations/013_manual_case_requests.sql
           sh tests/check_manual_case_http.sh
+      - name: Verify case note search
+        run: docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/integration_note_search.php
       - name: Show container logs on failure
         if: failure()
         run: docker compose logs --no-color --tail=200

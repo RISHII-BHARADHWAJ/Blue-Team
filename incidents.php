@@ -65,6 +65,7 @@ $total = 0;
 $detail = null;
 $assignableUsers = [];
 $caseNotes = ['notes'=>[], 'total'=>0, 'page'=>1, 'pages'=>1];
+try {$notesQuery=CaseNoteService::searchText($_GET['notes_q']??'');} catch(InvalidArgumentException $e) {http_response_code(422);exit(incidentEscape($e->getMessage()));}
 $notesPage = filter_var($_GET['notes_page'] ?? 1, FILTER_VALIDATE_INT, ['options'=>['min_range'=>1]]) ?: 1;
 $intelMatchesByIp = [];
 $demoId = null;
@@ -78,7 +79,7 @@ try {
             $demoStmt = $pdo->prepare('SELECT id FROM demo_sessions WHERE incident_id = ? LIMIT 1');
             $demoStmt->execute([$selectedId]); $demoId = $demoStmt->fetchColumn();
         }
-        if ($detail !== null) $caseNotes = (new CaseNoteService($pdo))->list((int)$selectedId, $notesPage);
+        if ($detail !== null) $caseNotes = (new CaseNoteService($pdo))->list((int)$selectedId, $notesPage, $notesQuery);
         if ($detail !== null) {
             $intelMatchesByIp = (new ThreatIntelMatcher($pdo))->matchSourceIps(
                 array_column($detail['alerts'], 'source_ip')
@@ -268,8 +269,13 @@ foreach ($queueChoices as $key=>[$label,$choices]): ?>
 </div>
 <?php endif; ?>
 <section class="triage" id="case-notes" aria-labelledby="case-notes-title">
-<h2 id="case-notes-title">Case notes (<?= incidentEscape($caseNotes['total']) ?>)</h2>
+<h2 id="case-notes-title">Case notes<?= $notesQuery!==''?' matching search':'' ?> (<?= incidentEscape($caseNotes['total']) ?>)</h2>
 <p>Append investigation findings and handoff context. Notes preserve their author and timeline entry; adding a note does not change case status or execute a response.</p>
+<form method="get" action="incidents.php#case-notes">
+<?php foreach (array_merge($query,['page'=>$page,'id'=>$detail['id']]) as $key=>$value): ?><input type="hidden" name="<?= incidentEscape($key) ?>" value="<?= incidentEscape($value) ?>"><?php endforeach; ?>
+<div class="field"><label for="notes-q">Search full note text or current author name</label><input type="search" id="notes-q" name="notes_q" maxlength="200" value="<?= incidentEscape($notesQuery) ?>"></div><button type="submit">Search notes</button>
+<a href="<?= incidentEscape(incidentUrl(array_merge($query,['page'=>$page,'id'=>$detail['id']]))) ?>#case-notes">Clear note search</a>
+</form>
 <?php if ($canNote): ?>
 <form id="case-note-form" data-incident-id="<?= incidentEscape($detail['id']) ?>">
 <input type="hidden" name="csrf_token" value="<?= incidentEscape($csrfToken) ?>">
@@ -279,10 +285,10 @@ foreach ($queueChoices as $key=>[$label,$choices]): ?>
 <div id="case-note-feedback" class="triage-feedback" role="status" aria-live="polite"></div>
 <?php else: ?><p>Sign in with a named user account to add a note.</p><?php endif; ?>
 <?php foreach ($caseNotes['notes'] as $note): ?><article class="event"><strong><?= incidentEscape($note['author']) ?></strong><small>Note #<?= incidentEscape($note['id']) ?> · <?= incidentEscape($note['created_at']) ?> (server time)</small><pre><?= incidentEscape($note['note_text']) ?></pre></article><?php endforeach; ?>
-<?php if (!$caseNotes['notes']): ?><p class="muted">No case notes yet. Record what you checked, what you found, and the next investigation step.</p><?php endif; ?>
+<?php if (!$caseNotes['notes']): ?><p class="muted"><?= $notesQuery!==''?'No notes match this search. Clear the search to view all case notes.':'No case notes yet. Record what you checked, what you found, and the next investigation step.' ?></p><?php endif; ?>
 <?php if ($caseNotes['pages'] > 1): ?><div class="pager"><span>Notes page <?= incidentEscape($caseNotes['page']) ?> of <?= incidentEscape($caseNotes['pages']) ?></span><span>
-<?php if ($caseNotes['page'] > 1): ?><a href="<?= incidentEscape(incidentUrl(array_merge($query, ['page'=>$page, 'id'=>$detail['id'], 'notes_page'=>$caseNotes['page']-1]))) ?>#case-notes">Newer notes</a><?php endif; ?>
-<?php if ($caseNotes['page'] < $caseNotes['pages']): ?><a href="<?= incidentEscape(incidentUrl(array_merge($query, ['page'=>$page, 'id'=>$detail['id'], 'notes_page'=>$caseNotes['page']+1]))) ?>#case-notes">Older notes</a><?php endif; ?>
+<?php if ($caseNotes['page'] > 1): ?><a href="<?= incidentEscape(incidentUrl(array_merge($query, ['page'=>$page, 'id'=>$detail['id'], 'notes_q'=>$notesQuery, 'notes_page'=>$caseNotes['page']-1]))) ?>#case-notes">Newer notes</a><?php endif; ?>
+<?php if ($caseNotes['page'] < $caseNotes['pages']): ?><a href="<?= incidentEscape(incidentUrl(array_merge($query, ['page'=>$page, 'id'=>$detail['id'], 'notes_q'=>$notesQuery, 'notes_page'=>$caseNotes['page']+1]))) ?>#case-notes">Older notes</a><?php endif; ?>
 </span></div><?php endif; ?>
 </section>
 <h2>Description</h2><pre><?= incidentEscape($detail['description']) ?></pre>

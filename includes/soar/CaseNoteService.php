@@ -8,20 +8,30 @@ final class CaseNoteService
     public const MAX_BYTES = 10000;
     public function __construct(private PDO $pdo) {}
 
-    public function list(int $incidentId, int $page = 1): array
+    public static function searchText(mixed $value): string {
+        if (!is_string($value) || strlen($value)>200 || !preg_match('//u',$value)) throw new InvalidArgumentException('Note search must be valid UTF-8 text of at most 200 bytes.');
+        return trim($value);
+    }
+
+    public function list(int $incidentId, int $page = 1, string $query = ''): array
     {
-        $stmt = $this->pdo->prepare('SELECT COUNT(*) FROM case_notes WHERE incident_id = ?');
-        $stmt->execute([$incidentId]);
-        $total = (int)$stmt->fetchColumn();
-        $pages = max(1, (int)ceil($total / 25));
-        $page = max(1, min($page, $pages));
-        $stmt = $this->pdo->prepare('SELECT n.id, n.note_text, n.author_id, n.created_at, u.username AS author
-            FROM case_notes n JOIN users u ON u.id = n.author_id WHERE n.incident_id = ?
-            ORDER BY n.created_at DESC, n.id DESC LIMIT 25 OFFSET ?');
-        $stmt->bindValue(1, $incidentId, PDO::PARAM_INT);
-        $stmt->bindValue(2, ($page - 1) * 25, PDO::PARAM_INT);
-        $stmt->execute();
-        return ['notes'=>$stmt->fetchAll(PDO::FETCH_ASSOC), 'total'=>$total, 'page'=>$page, 'pages'=>$pages];
+        $query=self::searchText($query);
+        $own=!$this->pdo->inTransaction();
+        try {
+            if ($own) {$this->pdo->exec('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ');$this->pdo->beginTransaction();}
+            $from=' FROM case_notes n JOIN users u ON u.id=n.author_id WHERE n.incident_id=?';$params=[$incidentId];
+            if ($query!=='') {
+                $needle='%'.strtr($query,['!'=>'!!','%'=>'!%','_'=>'!_']).'%';
+                $from.=" AND (n.note_text LIKE ? ESCAPE '!' OR u.username LIKE ? ESCAPE '!')";
+                array_push($params,$needle,$needle);
+            }
+            $stmt=$this->pdo->prepare('SELECT COUNT(*)'.$from);$stmt->execute($params);$total=(int)$stmt->fetchColumn();
+            $pages=max(1,(int)ceil($total/25));$page=max(1,min($page,$pages));$offset=($page-1)*25;
+            $stmt=$this->pdo->prepare('SELECT n.id,n.note_text,n.author_id,n.created_at,u.username AS author'.$from.' ORDER BY n.created_at DESC,n.id DESC LIMIT 25 OFFSET '.$offset);
+            $stmt->execute($params);$notes=$stmt->fetchAll(PDO::FETCH_ASSOC);
+            if ($own) $this->pdo->commit();
+            return ['notes'=>$notes,'total'=>$total,'page'=>$page,'pages'=>$pages];
+        } catch (Throwable $e) {if($own && $this->pdo->inTransaction())$this->pdo->rollBack();throw $e;}
     }
 
     /** $authorId must come from verified session/run context, never a request body. */
