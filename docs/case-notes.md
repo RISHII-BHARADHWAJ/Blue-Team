@@ -54,3 +54,7 @@ privileged database access still apply; this is not an immutable compliance arch
 There are no note attachments, editing, pinning controls, or full-text search in this
 milestone. Browser interaction and the owner's Windows installation need separate
 validation.
+
+## Searching notes
+
+The case page searches full note text and current author usernames, scoped to that case. Search uses database collation; percent, underscore and exclamation marks are literal. Queries accept up to 200 UTF-8 bytes. Matching counts and 25-note pages share a read snapshot. New searches reset note pagination; page links preserve the search and case context. Clearing the search restores all notes. Searching never modifies notes, timestamps or case history. No migration is required.
