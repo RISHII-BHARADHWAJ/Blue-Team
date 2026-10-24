@@ -42,8 +42,9 @@ try {
 ?>
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ThreatPulse | Investigation timeline</title><link rel="stylesheet" href="assets/css/workspace.css"></head>
-<body><a class="skip" href="#main">Skip to investigation timeline</a><div class="workspace">
+<title>ThreatPulse | Investigation timeline</title><link rel="stylesheet" href="assets/css/workspace.css"><?php require_once __DIR__.'/includes/ui/shell.php'; tpHead(''); ?>
+</head>
+<body class="tp-app tp-page-cases"><?php tpShell('cases',''); ?><a class="skip" href="#main">Skip to investigation timeline</a><div class="workspace">
 <aside class="sidebar"><a class="brand" href="soc.php">ThreatPulse</a><nav aria-label="SOC navigation">
 <a href="incidents.php">Incidents</a><a href="events.php">Event evidence</a><a href="notifications.php">My inbox</a>
 </nav></aside><main id="main">

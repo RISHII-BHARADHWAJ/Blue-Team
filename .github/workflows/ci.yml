@@ -219,3 +219,29 @@ jobs:
             [ "$failed" -eq 0 ]
           '
 
+
+  visual-acceptance:
+    name: Desktop and mobile browser acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      FEED_COLLECTION_ENABLED: "0"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start disposable application
+        run: docker compose up -d --build --wait
+      - name: Install browser test runtime
+        run: |
+          python -m pip install playwright==1.51.0
+          python -m playwright install --with-deps chromium
+      - name: Verify redesigned workspaces
+        run: python tests/visual_acceptance.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: visual-acceptance
+          path: visual-artifacts/
+          retention-days: 14
+      - name: Stop disposable services
+        if: always()
+        run: docker compose down --remove-orphans

@@ -5,7 +5,7 @@ include 'includes/config.php';
 RateLimiter::check('login', 50, 300);
 
 if (isset($_SESSION['user_id'])) {
-    header('Location: dashboard.php');
+    header('Location: soc.php');
     exit();
 }
 
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 if (function_exists('logSecurityAudit')) logSecurityAudit($username, 'login', 'login.php', 'success', 'User authenticated');
 
-                header('Location: dashboard.php');
+                header('Location: soc.php');
                 exit();
             } else {
                 // Failure
@@ -80,31 +80,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-include 'includes/header.php';
 ?>
-
-<div class="d-flex align-items-center justify-content-center" style="min-height: 80vh;">
-    <div style="width: 100%; max-width: 400px; text-align: center;">
-        <h2 class="mb-5 fw-bold">Sign in to ThreatPulse</h2>
-
-        <?php if ($error): ?>
-            <div class="alert alert-danger mb-4"><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></div>
-        <?php endif; ?>
-
-        <form method="POST">
-            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8'); ?>">
-            <div class="mb-3 text-start">
-                <input type="text" name="username" class="form-control" placeholder="ID or Email" required
-                    style="background: #1d1d1f; border-color: #424245;">
-            </div>
-            <div class="mb-4 text-start">
-                <input type="password" name="password" class="form-control" placeholder="Password" required
-                    style="background: #1d1d1f; border-color: #424245;">
-            </div>
-
-            <button type="submit" class="btn btn-primary w-100 mb-4" style="border-radius: 12px;">Sign In</button>
-        </form>
-    </div>
-</div>
-
-<?php include 'includes/footer.php'; ?>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sign in · ThreatPulse</title><link rel="stylesheet" href="assets/css/design-system.css"><link rel="stylesheet" href="assets/css/login.css"></head><body class="tp-login">
+<section class="tp-login-story"><a class="login-brand" href="login.php"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 17h7l4-10 6 19 4-9h5"/></svg>ThreatPulse</a><span class="login-edition">SECURITY OPERATIONS / LAB EDITION</span><div class="login-message"><span class="login-kicker">Clarity under pressure.</span><h1>Every signal.<br>A better<br><em>decision.</em></h1><p>From the first event to the final handoff.<br>One workspace for the investigation.</p></div><div class="login-signal" aria-hidden="true"><svg viewBox="0 0 600 150"><path d="M0 75h150l35-45 45 90 55-120 65 150 40-75h210"/></svg></div><div class="login-story-footer">01 / OBSERVE &nbsp;&nbsp; 02 / INVESTIGATE &nbsp;&nbsp; 03 / RESPOND</div></section>
+<main class="tp-login-form"><div class="login-form-inner"><span class="login-kicker">YOUR WORKSPACE AWAITS</span><h2>Welcome back.</h2><p>Sign in to continue your investigation.</p>
+<?php if($error): ?><div class="login-error" role="alert"><?= htmlspecialchars($error,ENT_QUOTES,'UTF-8') ?></div><?php endif; ?>
+<form method="post" action="login.php"><input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'],ENT_QUOTES,'UTF-8') ?>"><label for="username">Username</label><input id="username" name="username" autocomplete="username" required placeholder="Your analyst username"><label for="password">Password</label><input id="password" type="password" name="password" autocomplete="current-password" required placeholder="Enter your password"><button type="submit">Enter workspace <span aria-hidden="true">↗</span></button></form><p class="login-access">Access is managed by your administrator.<br>Use your configured lab account.</p></div><footer>ThreatPulse <span>SIEM + SOAR</span></footer></main></body></html>

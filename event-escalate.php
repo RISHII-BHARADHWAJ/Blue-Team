@@ -36,8 +36,9 @@ catch (InvalidArgumentException $e) { http_response_code(422);$error=$e->getMess
 catch (Throwable $e) { http_response_code(503);error_log('Event escalation failed: '.$e->getMessage());$error='Escalation is unavailable. No partial case was saved by this request. Check database health and retry.'; }
 $csrf=$event!==null?generateCSRFToken():'';
 ?>
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ThreatPulse | Escalate event</title><link rel="stylesheet" href="assets/css/workspace.css"><style>textarea{font:inherit;background:#101b2b;color:var(--text);border:1px solid #41536b;border-radius:6px;padding:10px;width:100%;min-height:150px}textarea:focus-visible{outline:2px solid var(--accent)}.case-form{display:grid;gap:16px;max-width:800px}</style></head>
-<body><div class="workspace"><aside class="sidebar"><a class="brand" href="soc.php">ThreatPulse</a><nav aria-label="SOC navigation"><a href="events.php">Event evidence</a><a href="incidents.php">Incidents</a><a href="demo.php">Simulated walkthrough</a></nav></aside><main>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ThreatPulse | Escalate event</title><link rel="stylesheet" href="assets/css/workspace.css"><style>textarea{font:inherit;background:#101b2b;color:var(--text);border:1px solid #41536b;border-radius:6px;padding:10px;width:100%;min-height:150px}textarea:focus-visible{outline:2px solid var(--accent)}.case-form{display:grid;gap:16px;max-width:800px}</style><?php require_once __DIR__.'/includes/ui/shell.php'; tpHead(''); ?>
+</head>
+<body class="tp-app tp-page-events"><?php tpShell('events',''); ?><div class="workspace"><aside class="sidebar"><a class="brand" href="soc.php">ThreatPulse</a><nav aria-label="SOC navigation"><a href="events.php">Event evidence</a><a href="incidents.php">Incidents</a><a href="demo.php">Simulated walkthrough</a></nav></aside><main>
 <span class="eyebrow">Evidence / analyst escalation</span><h1>Open an investigation case</h1>
 <p>Review the preserved event and record why it needs investigation. Creating a case does not confirm an attack or run a response action.</p>
 <?php if ($error): ?><div class="notice error" role="alert"><?= escalationEscape($error) ?></div><?php endif; ?>

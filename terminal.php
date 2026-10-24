@@ -253,8 +253,9 @@ body::after {
     transition: width 0.1s linear;
 }
 </style>
+<?php require_once __DIR__.'/includes/ui/shell.php'; tpHead(''); ?>
 </head>
-<body>
+<body class="tp-app tp-page-terminal"><?php tpShell('terminal',''); ?>
 
 <!-- WINDOW BAR -->
 <div class="window-bar">

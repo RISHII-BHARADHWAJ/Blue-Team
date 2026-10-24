@@ -473,8 +473,9 @@ $canApprove = SoarAuth::hasPermission($userTier, 'approve_actions');
         .notif-row:hover { background: rgba(0, 180, 216, 0.05); }
         .notif-row.unread { border-left: 3px solid var(--neon-cyan); }
     </style>
+<?php require_once __DIR__.'/../includes/ui/shell.php'; tpHead('../'); ?>
 </head>
-<body>
+<body class="tp-app tp-page-approvals"><?php tpShell('approvals','../'); ?>
 
     <!-- Header -->
     <header class="header">

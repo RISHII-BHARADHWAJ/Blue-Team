@@ -55,7 +55,7 @@ $severityColors = [
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="color-scheme" content="dark">
+<meta name="color-scheme" content="light">
 <title>ThreatPulse | SOC Overview</title>
 <style>
 :root{color-scheme:dark;--bg:#090f19;--panel:#101b2b;--panel2:#152237;--line:#283a50;--text:#edf4fc;--muted:#9eafc3;--accent:#52cbb2}
@@ -111,8 +111,9 @@ code{font-size:12px;color:#abd2e1}
 @media(max-width:1060px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.columns{grid-template-columns:1fr}}
 @media(max-width:700px){.shell{display:block}aside{gap:10px;padding:12px;border-right:0;border-bottom:1px solid var(--line)}.brand{font-size:17px}.nav-title,.sidebar-foot{display:none}.nav{flex-direction:row;overflow:auto}.nav a{white-space:nowrap;padding:7px 10px}main{padding:24px 14px}.top{flex-direction:column;gap:9px}.user{text-align:left}h1{font-size:26px}}
 </style>
+<?php require_once __DIR__.'/includes/ui/shell.php'; tpHead(''); ?>
 </head>
-<body>
+<body class="tp-app tp-page-overview"><?php tpShell('overview',''); ?>
 <div class="shell">
 <aside>
   <a href="soc.php" class="brand"><span class="logo">T</span> ThreatPulse</a>
@@ -133,12 +134,12 @@ code{font-size:12px;color:#abd2e1}
   <div class="sidebar-foot">Development environment<br>Read-only SOC overview</div>
 </aside>
 <main>
-  <div class="top">
+  <div class="top tp-overview-banner">
     <div><span class="eyebrow">Security operations / overview</span>
-      <h1>Security workspace</h1>
+      <h1>A clearer view.<br>Faster decisions.</h1>
       <p>Investigate accepted sensor evidence and real cases. External intelligence is shown separately.</p>
     </div>
-    <div class="user">Signed in as <?= socEscape($auth['actor']) ?><br><span class="pill"><?= socEscape($auth['tier']) ?></span></div>
+    <div class="tp-hero-mark" aria-hidden="true"><svg viewBox="0 0 120 80" fill="none"><circle cx="60" cy="40" r="34" stroke="currentColor" opacity=".25"/><circle cx="60" cy="40" r="23" stroke="currentColor" opacity=".5"/><path d="M4 40h32l12-21 17 42 12-21h39" stroke="currentColor" stroke-width="2"/><circle cx="60" cy="40" r="3" fill="currentColor"/></svg></div><div class="user">Signed in as <?= socEscape($auth['actor']) ?><br><span class="pill"><?= socEscape($auth['tier']) ?></span></div>
   </div>
 
   <p>Overview as of <?= socEscape($overview['as_of_utc'] ?? 'unavailable') ?> UTC · <a href="soc.php">Refresh overview</a></p>

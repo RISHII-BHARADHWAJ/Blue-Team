@@ -19,8 +19,9 @@ catch (OutOfBoundsException $e) { http_response_code(404); $error = $e->getMessa
 catch (Throwable $e) { http_response_code(503); error_log('Audit history unavailable: '.$e->getMessage()); $error = 'Audit history is unavailable. Check database health and retry.'; }
 ?>
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ThreatPulse | Audit history</title><link rel="stylesheet" href="assets/css/workspace.css"></head>
-<body><a class="skip" href="#main">Skip to audit history</a><div class="workspace"><aside class="sidebar"><a class="brand" href="soc.php">ThreatPulse</a>
+<title>ThreatPulse | Audit history</title><link rel="stylesheet" href="assets/css/workspace.css"><?php require_once __DIR__.'/includes/ui/shell.php'; tpHead(''); ?>
+</head>
+<body class="tp-app tp-page-audit"><?php tpShell('audit',''); ?><a class="skip" href="#main">Skip to audit history</a><div class="workspace"><aside class="sidebar"><a class="brand" href="soc.php">ThreatPulse</a>
 <nav aria-label="SOC navigation"><a href="soc.php">Overview</a><a href="incidents.php">Incidents</a><a href="control_plane/index.php">SOAR approvals</a><a href="audit.php" aria-current="page">Audit history</a></nav></aside>
 <main id="main"><span class="eyebrow">Oversight / recorded actions</span><h1>Audit history</h1>
 <?php if ($error): ?><div class="notice error" role="alert"><?= auditEscape($error) ?></div><?php endif; ?>

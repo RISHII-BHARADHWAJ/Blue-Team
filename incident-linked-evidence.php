@@ -23,8 +23,9 @@ catch (Throwable $e) {
 }
 ?>
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ThreatPulse | Linked case evidence</title><link rel="stylesheet" href="assets/css/workspace.css"></head>
-<body><a class="skip" href="#main">Skip to linked evidence</a><div class="workspace"><aside class="sidebar"><a class="brand" href="soc.php">ThreatPulse</a>
+<title>ThreatPulse | Linked case evidence</title><link rel="stylesheet" href="assets/css/workspace.css"><?php require_once __DIR__.'/includes/ui/shell.php'; tpHead(''); ?>
+</head>
+<body class="tp-app tp-page-cases"><?php tpShell('cases',''); ?><a class="skip" href="#main">Skip to linked evidence</a><div class="workspace"><aside class="sidebar"><a class="brand" href="soc.php">ThreatPulse</a>
 <nav aria-label="SOC navigation"><a href="incidents.php">Incidents</a><a href="events.php">Event evidence</a><a href="sources.php">Source activity</a></nav></aside>
 <main id="main"><span class="eyebrow">Investigation / case evidence</span><h1>Linked case evidence</h1>
 <?php if ($id): ?><p><a href="incidents.php?id=<?= $id ?>#details">Back to case</a> · <a href="incident-timeline.php?id=<?= $id ?>">Investigation timeline</a></p><?php endif; ?>

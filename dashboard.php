@@ -348,8 +348,9 @@ body::before {
     background: rgba(0,180,216,0.1) !important;
 }
 </style>
+<?php require_once __DIR__.'/includes/ui/shell.php'; tpHead(''); ?>
 </head>
-<body>
+<body class="tp-app tp-page-atlas"><?php tpShell('atlas',''); ?>
 
 <header class="header">
     <div style="display:flex; align-items:center;">
@@ -375,13 +376,14 @@ body::before {
     </div>
 </header>
 
+<div style="padding:30px 32px 0"><span class="eyebrow">Observe / legacy records</span><h1>Telemetry atlas</h1><p class="tp-context-note">Legacy log exploration · may include historical feed and simulated entries. Use Event evidence for preserved sensor submissions.</p></div>
 <div class="metrics-grid">
     <div class="metric-card">
         <div class="metric-label">ALERTS</div>
         <div class="metric-number text-red pulse-num" data-target="<?= $alertCount ?>">0</div>
     </div>
     <div class="metric-card" style="display:flex; flex-direction:column; align-items:center; position:relative; padding-top:10px;">
-        <div class="metric-label">THREAT LEVEL (0-15)</div>
+        <div class="metric-label">LEGACY SCORE (0-15)</div>
         <canvas id="gaugeCanvas" width="220" height="130"></canvas>
         <div class="gauge-value" id="gaugeNumber"
              style="text-align:center; margin-top:-35px;
@@ -391,7 +393,7 @@ body::before {
         </div>
     </div>
     <div class="metric-card">
-        <div class="metric-label">UNIQUE ATTACKERS</div>
+        <div class="metric-label">UNIQUE SOURCE IPs</div>
         <div class="metric-number text-red pulse-num" data-target="<?= $attackerCount ?>">0</div>
     </div>
     <div class="metric-card">
@@ -754,10 +756,9 @@ body::before {
                 maxBounds: [[-90, -180], [90, 180]]
             });
 
-            // CartoDB Dark Matter base map
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; CartoDB',
-                subdomains: 'abcd',
+            // Neutral base map with visible provider attribution
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                 maxZoom: 19
             }).addTo(map);
 

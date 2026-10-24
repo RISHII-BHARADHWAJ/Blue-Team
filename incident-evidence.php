@@ -40,8 +40,9 @@ if($method==='POST' && http_response_code()===422 && $id && $logId){
 $notice=$_SESSION['case_evidence_notice']??null;unset($_SESSION['case_evidence_notice']);
 $csrf=$canAttach?generateCSRFToken():'';
 ?>
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ThreatPulse | Link case evidence</title><link rel="stylesheet" href="assets/css/workspace.css"><style>textarea{font:inherit;background:#101b2b;color:var(--text);border:1px solid #41536b;border-radius:6px;padding:10px;width:100%;min-height:140px}textarea:focus-visible{outline:2px solid var(--accent)}.attach-form{display:grid;gap:14px;max-width:800px}</style></head>
-<body><div class="workspace"><aside class="sidebar"><a class="brand" href="soc.php">ThreatPulse</a><nav aria-label="SOC navigation"><a href="incidents.php">Incidents</a><a href="events.php">Event evidence</a><a href="notifications.php">My inbox</a></nav></aside><main>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ThreatPulse | Link case evidence</title><link rel="stylesheet" href="assets/css/workspace.css"><style>textarea{font:inherit;background:#101b2b;color:var(--text);border:1px solid #41536b;border-radius:6px;padding:10px;width:100%;min-height:140px}textarea:focus-visible{outline:2px solid var(--accent)}.attach-form{display:grid;gap:14px;max-width:800px}</style><?php require_once __DIR__.'/includes/ui/shell.php'; tpHead(''); ?>
+</head>
+<body class="tp-app tp-page-cases"><?php tpShell('cases',''); ?><div class="workspace"><aside class="sidebar"><a class="brand" href="soc.php">ThreatPulse</a><nav aria-label="SOC navigation"><a href="incidents.php">Incidents</a><a href="events.php">Event evidence</a><a href="notifications.php">My inbox</a></nav></aside><main>
 <span class="eyebrow">Investigation / evidence association</span><h1>Link preserved event evidence</h1>
 <?php if($id): ?><p><a href="incidents.php?id=<?= $id ?>#details">Back to case</a> · <a href="incident-linked-evidence.php?id=<?= $id ?>">Browse linked evidence</a> · <a href="<?= evidenceEscape(evidenceUrl(['id'=>$id])) ?>">Reload evidence picker</a></p><?php endif; ?>
 <?php if($error): ?><div class="notice error" role="alert"><?= evidenceEscape($error) ?></div><?php endif; ?>

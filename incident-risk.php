@@ -25,7 +25,8 @@ $labels = ['alert_severity'=>'Severity classification', 'alert_volume'=>'Attache
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Incident risk · ThreatPulse</title>
 <style>
 :root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#091321;color:#e4edf7;font:15px/1.6 system-ui,sans-serif}main{max-width:1160px;margin:auto;padding:28px 22px 60px}nav,.metrics,.actions{display:flex;gap:22px;flex-wrap:wrap;align-items:center}a{color:#74ded1}h1{font-size:32px;line-height:1.2}h2{font-size:20px}section{background:#111f31;border:1px solid #2b415b;border-radius:12px;margin:22px 0;padding:22px}.muted,small{color:#a9bdd1}.metrics>div{flex:1;min-width:145px;padding:12px 0}.value{font-size:32px;font-weight:700;display:block}.notice{color:#ffcf83}button{background:#72ded0;color:#092129;border:0;border-radius:7px;padding:12px 18px;font:inherit;font-weight:700;cursor:pointer}button:disabled{opacity:.6}table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:14px 10px;border-bottom:1px solid #294057}th{color:#adbed3;font-size:13px}td:nth-child(3){min-width:85px}.scroll{overflow:auto}progress{width:90px;height:8px;accent-color:#72ded0;display:block}td small{display:block}td{overflow-wrap:anywhere}.error{color:#ffb09c}#feedback{min-height:28px}tr.selected{background:#193449}.pager{display:flex;justify-content:space-between;gap:18px;padding-top:16px}
-</style></head><body><main>
+</style><?php require_once __DIR__.'/includes/ui/shell.php'; tpHead(''); ?>
+</head><body class="tp-app tp-page-cases"><?php tpShell('cases',''); ?><main>
 <nav><a href="soc.php">SOC overview</a><a href="incidents.php">Incident queue</a></nav>
 <h1>Explain the case priority</h1>
 <?php if ($error): ?><section class="error" role="alert"><?= riskEscape($error) ?></section><?php endif; ?>
