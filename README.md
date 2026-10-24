@@ -33,6 +33,8 @@ ThreatPulse is a PHP and MariaDB-based Blue Team project for collecting and visu
 
 ### SOAR capabilities
 
+- **Manual case intake:** named Tier 2+ analysts can report a case without inventing sensor evidence, with an attributed initial report and durable retry protection. Apply migration 013; see [manual intake and upgrades](docs/manual-case-intake.md).
+
 - **Lead/admin severity assessment:** update case severity and mapped priority with a required reason, current-role checks, stale-value conflicts, and atomic case-note/timeline/audit history. See [severity assessment and retry semantics](docs/severity-assessment.md).
 
 - **Searchable approval queue:** the control plane searches all requests with paginated results, full-result counts, priority/expiry ordering, and explicit simulation views. See [queue semantics and expiration](docs/approval-queue.md).
@@ -105,6 +107,7 @@ Requirements: Docker Engine/Desktop with the Compose plugin.
    - Detection findings and rule settings: `/detections.php`
    - SIEM dashboard: `/dashboard.php`
    - Incident queue: `/incidents.php`
+   - Report a case: `/incident-new.php` (named Tier 2+ analysts)
    - Printable handoff/JSON report: follow the Case handoff link inside a case
    - Indicator discovery/saved intelligence: follow the Case indicators link inside a case
    - Risk explanation/history: follow the risk link inside a case
@@ -119,7 +122,7 @@ Requirements: Docker Engine/Desktop with the Compose plugin.
    docker compose down
    ```
 
-**Database initialization:** For a **new** MariaDB volume, Compose loads `database.sql`, `database/bootstrap/01_siem_tables.sql`, and SOAR migrations `001` through `006`, then migrations `007` (threat intelligence), `008` (event evidence), `009` (detection rules), `010` (feed collection history), `011` (simulated incidents), and `012` (saved playbook previews), in order. MariaDB initialization scripts **do not run again** for an existing volume. Back up existing data and use a reviewed migration process when upgrading. **Do not delete an existing volume to force migrations.**
+**Database initialization:** For a **new** MariaDB volume, Compose loads `database.sql`, `database/bootstrap/01_siem_tables.sql`, and SOAR migrations `001` through `006`, then migrations `007` (threat intelligence), `008` (event evidence), `009` (detection rules), `010` (feed collection history), `011` (simulated incidents), `012` (saved playbook previews), and `013` (manual case submission identity), in order. MariaDB initialization scripts **do not run again** for an existing volume. Back up existing data and use a reviewed migration process when upgrading. **Do not delete an existing volume to force migrations.**
 
 **Credentials:** The repository contains development-oriented database and seeded-account settings. Treat them as unsafe defaults: replace passwords/secrets and secure or disable seeded demo accounts before connecting this project to a real network. Do not expose this local stack directly to the internet.
 
@@ -129,7 +132,7 @@ For local development without Compose:
 
 1. Set up PHP, Apache and MySQL/MariaDB, then copy the project into your web root.
 2. Create a database named `cybertech_db`.
-3. Import `database.sql`, then `database/bootstrap/01_siem_tables.sql`, followed by `database/migrations/001_create_soar_schema.sql` through `012_playbook_previews.sql` **in numeric order** for a new database.
+3. Import `database.sql`, then `database/bootstrap/01_siem_tables.sql`, followed by `database/migrations/001_create_soar_schema.sql` through `013_manual_case_requests.sql` **in numeric order** for a new database.
 4. Configure the application's database connection (`includes/db.php` and environment/configuration used by the scripts) for your local database. Use non-demo credentials.
 5. Open the application through your local web server. Configure scheduled ingestion only after checking feed/network requirements and logging:
 
@@ -146,7 +149,7 @@ After migration `007`, Feodo Tracker indicators are stored in `threat_feed_indic
 
 For an existing local database volume, back up the database first, then apply `database/migrations/007_threat_feed_indicators.sql` using your normal MariaDB migration workflow. Compose only auto-initializes **new** volumes. Do not delete an existing volume to force this migration.
 
-For migration 008 on an existing installation, follow the [non-destructive evidence upgrade instructions](docs/event-evidence.md#upgrade-an-existing-installation) then the [migration 009 detection upgrade](docs/detection-rules.md#upgrade-existing-volumes) before submitting new alerts. Apply [migration 010](docs/feed-collection.md#upgrade-existing-installations) before running the updated feed collectors. Apply [migration 011](docs/simulated-incident-lifecycle.md#existing-database-upgrade) before using simulated incidents or the risk workspace. Apply [migration 012](docs/incident-playbook-workspace.md#upgrade-existing-installations) before using saved playbook previews.
+For migration 008 on an existing installation, follow the [non-destructive evidence upgrade instructions](docs/event-evidence.md#upgrade-an-existing-installation) then the [migration 009 detection upgrade](docs/detection-rules.md#upgrade-existing-volumes) before submitting new alerts. Apply [migration 010](docs/feed-collection.md#upgrade-existing-installations) before running the updated feed collectors. Apply [migration 011](docs/simulated-incident-lifecycle.md#existing-database-upgrade) before using simulated incidents or the risk workspace. Apply [migration 012](docs/incident-playbook-workspace.md#upgrade-existing-installations) before using saved playbook previews. Apply [migration 013](docs/manual-case-intake.md#upgrade-existing-installations) before using manual case intake.
 
 ## SIEM alert and threat-intelligence correlation
 

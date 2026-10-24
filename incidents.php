@@ -146,7 +146,7 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;margin:6px 0}.error
 <header><a class="brand" href="dashboard.php">THREATPULSE / SOC</a><nav><a href="dashboard.php">SIEM Dashboard</a><a href="incidents.php" aria-current="page">Incidents</a><a href="control_plane/index.php">SOAR Control Plane</a><a href="notifications.php">My inbox</a></nav></header>
 <main>
 <h1>Incident queue</h1>
-<p><a href="demo.php">Simulated incident walkthrough</a></p>
+<p><a href="demo.php">Simulated incident walkthrough</a><?php if ($auth['auth_method']==='session' && !empty($auth['user_id']) && SoarAuth::hasPermission($auth['tier'],'create_incidents')): ?> · <a href="incident-new.php">Report a case</a><?php endif; ?></p>
 <p class="lead">Review correlated detections, attached SIEM alerts, and the investigation timeline. Status progression uses the permission-checked incident API. Host containment actions are never initiated here.</p>
 <?php if ($error !== null): ?><section class="panel error" role="alert"><?= incidentEscape($error) ?></section><?php endif; ?>
 <section class="panel">
@@ -205,6 +205,7 @@ foreach ($queueChoices as $key=>[$label,$choices]): ?>
 <section class="panel" id="details">
 <h2><?= $detail ? incidentEscape($detail['incident_number']) . ' · ' . incidentEscape($detail['title']) : 'Incident not found' ?></h2>
 <?php if ($detail): ?>
+<?php $intakeNotice=$_SESSION['manual_case_notice']??null;if(is_array($intakeNotice)&&(int)($intakeNotice['id']??0)===(int)$detail['id']): unset($_SESSION['manual_case_notice']); ?><p role="status"><?= incidentEscape($intakeNotice['text']) ?></p><?php endif; ?>
 <?php if (!empty($detail['is_simulated'])): ?><p class="error"><strong>SIMULATED TEST DATA</strong> — investigation practice only. All playbooks are forced to dry-run. Live enrichment is disabled.</p><?php endif; ?>
 <?php if ($demoId): ?><p><a href="demo.php?id=<?= (int)$demoId ?>">Continue the simulated walkthrough</a></p><?php endif; ?>
 <div class="info-grid">
