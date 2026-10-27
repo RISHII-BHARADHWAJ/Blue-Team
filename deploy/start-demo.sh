@@ -4,6 +4,7 @@ set -euo pipefail
 cd /var/www/html
 export DB_HOST=localhost DB_NAME=threatpulse_public_demo DB_USER=demo_app
 export SESSION_COOKIE_SECURE=1 FEED_COLLECTION_ENABLED=0
+printf 'pdo_mysql.default_socket=/run/mysqld/mysqld.sock\nmysqli.default_socket=/run/mysqld/mysqld.sock\n' > /usr/local/etc/php/conf.d/demo-database.ini
 php deploy/public-demo-accounts.php --preflight
 install -d -m 0755 -o mysql -g mysql /run/mysqld
 if [ ! -d /var/lib/mysql/mysql ]; then

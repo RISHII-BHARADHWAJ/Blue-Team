@@ -13,6 +13,7 @@ docker run -d --name "$name" --memory=512m --cpus=1 -p 127.0.0.1:8081:10000 \
   threatpulse-public-demo-ci >/dev/null
 attempt=0
 until curl --fail --silent http://127.0.0.1:8081/health.php >/dev/null; do
+  if [ "$(docker inspect -f '{{.State.Running}}' "$name")" != true ]; then docker logs "$name"; exit 1; fi
   attempt=$((attempt + 1))
   if [ "$attempt" -ge 90 ]; then docker logs "$name"; exit 1; fi
   sleep 2
@@ -34,6 +35,7 @@ docker exec -u www-data "$name" test ! -w /var/www/html/login.php
 docker restart "$name" >/dev/null
 attempt=0
 until curl --fail --silent http://127.0.0.1:8081/health.php >/dev/null; do
+  if [ "$(docker inspect -f '{{.State.Running}}' "$name")" != true ]; then docker logs "$name"; exit 1; fi
   attempt=$((attempt + 1)); if [ "$attempt" -ge 90 ]; then docker logs "$name"; exit 1; fi
   sleep 2
 done
