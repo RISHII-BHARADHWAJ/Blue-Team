@@ -1,6 +1,6 @@
 """Real browser acceptance against disposable Compose, with screenshot artifacts."""
 import json, pathlib, subprocess
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, expect
 out=pathlib.Path('visual-artifacts');out.mkdir(exist_ok=True)
 f=json.loads(subprocess.check_output(['docker','compose','exec','-T','-u','www-data','-e','SOAR_INTEGRATION_TEST=1','web','php','tests/ui_fixture.php'],text=True))
 base='http://localhost:8080/'
@@ -39,6 +39,19 @@ with sync_playwright() as p:
  page.locator('.tp-rail').get_by_role('link',name='Cases',exact=True).click();assert 'incidents.php' in page.url
  page.goto(base+'incident-new.php');page.locator('#case-title').fill('Browser acceptance report');page.locator('#case-report').fill('Synthetic browser check in the disposable CI environment.');page.get_by_role('button',name='Create case and save report').click();page.wait_for_url('**/incidents.php?**')
  assert page.locator('#details').get_by_text('Browser acceptance report',exact=False).count()>0
+ # Real repeated demo batches, then stop and prove no extra request is scheduled.
+ page.goto(base+'demo.php');page.locator('#stream-interval').select_option('10')
+ page.locator('#stream-start').click()
+ expect(page.locator('#stream-results li')).to_have_count(2,timeout=25000)
+ page.locator('#stream-stop').click()
+ page.wait_for_timeout(11500)
+ assert page.locator('#stream-results li').count()==2
+ assert page.locator('#stream-start').is_enabled()
+ page.screenshot(path=str(out/'demo-stream-mobile.png'),full_page=True)
+ demo_link=page.locator('#stream-results a').first.get_attribute('href')
+ page.goto(base+demo_link)
+ assert page.get_by_text('SIMULATED TEST DATA',exact=True).is_visible()
+ assert page.get_by_role('link',name='Open simulated incident').is_visible()
  page.goto(base+'incident-report.php?id='+str(f['case_id']));page.emulate_media(media='print');page.pdf(path=str(out/'case-report.pdf'),format='A4',print_background=True)
  (out/'results.json').write_text(json.dumps({'routes':routes,'failures':failures},indent=2))
  browser.close()

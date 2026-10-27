@@ -32,3 +32,20 @@ Fresh Compose databases apply 011 automatically. The migration adds the classifi
 ## Verification
 
 CI runs database-backed `tests/integration_demo.php` and `tests/check_demo_http.sh`. Coverage includes rule preservation, retry identity, real/simulated evidence separation, generic ingestion behavior, lifecycle notes/status, forced dry-run for all six current allowlisted actions, no live side effects, revoked roles, HTTP CSRF and persisted preview rendering. These tests use disposable Compose fixtures. They do not validate Windows collectors, external providers, or interactive browser appearance.
+
+## Continuous presentation stream
+
+In Training lab, a named Tier 2+ analyst can start the simulated stream at 10, 30,
+or 60 seconds between batches. Each batch reuses the authenticated, CSRF-protected
+demo creation workflow: the configured authentication threshold produces a group
+of simulated events, a finding, and one simulated case. No response or preview is
+executed automatically. This is a repeating authentication scenario, not varied
+real attack traffic.
+
+Keep the Training lab tab open and use the links to view saved simulated evidence
+and cases in another tab. Stop prevents future batches; an in-flight batch may
+finish. Leaving the page stops scheduling. Each start stops after 15 minutes,
+and background browser throttling can slow the stream. Data is persistent; stopping
+does not delete it. The latest 20 batch links are shown, with the total count for
+this page visit. Errors stop generation; restarting retries an uncertain request
+with the same idempotency key. No schema migration or cron change is required.
