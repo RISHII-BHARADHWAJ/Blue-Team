@@ -5,7 +5,6 @@ RUN apt-get update && apt-get install -y \
     default-mysql-server \
     default-mysql-client \
     cron \
-    supervisor \
     curl \
     && docker-php-ext-install mysqli pdo pdo_mysql \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -21,7 +20,6 @@ COPY . /var/www/html/
 
 # Copy startup and cron scripts
 COPY deploy/start.sh /start.sh
-COPY deploy/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY deploy/crontab /etc/cron.d/threatpulse
 
 # Permissions
