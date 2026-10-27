@@ -1,0 +1,16 @@
+# Runtime logs and local environment settings
+*.log
+.env
+.env.*
+!.env.example
+
+# Generated browser acceptance output and Python caches
+/visual-artifacts/
+__pycache__/
+*.py[cod]
+
+# Local editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
