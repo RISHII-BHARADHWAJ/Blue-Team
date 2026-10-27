@@ -12,7 +12,8 @@ post_status(){ curl --silent --output /dev/null --write-out '%{http_code}' --coo
 post(){ curl --fail --silent --show-error --cookie "CYBERTECH_SECURE_SESSION=$session_id" -H 'Content-Type: application/json' -H "X-CSRF-Token: $token" --data "$1" "$base/api/v1/incident_severity.php"; }
 get(){ curl --fail --silent --show-error --cookie "CYBERTECH_SECURE_SESSION=$session_id" "$base/$1"; }
 body="{\"incident_id\":$id,\"severity\":\"HIGH\",\"expected_severity\":\"MEDIUM\",\"expected_priority\":\"P3\",\"reason\":\"<script>severityProbe()</script>\"}"
-for uid in "$analyst" "$reader" 0 2147483647;do set_session admin "$uid";[ "$(post_status "$body")" = 403 ];done
+for uid in "$analyst" "$reader";do set_session admin "$uid";[ "$(post_status "$body")" = 403 ];done
+for uid in 0 2147483647;do set_session admin "$uid";[ "$(post_status "$body")" = 401 ];done
 set_session lead "$lead"
 page=$(get "incidents.php?id=$id");printf '%s' "$page" | grep -q 'id="severity-form"'
 [ "$(curl --silent --output /dev/null --write-out '%{http_code}' --cookie "CYBERTECH_SECURE_SESSION=$session_id" -H 'Content-Type: application/json' --data "$body" "$base/api/v1/incident_severity.php")" = 403 ]

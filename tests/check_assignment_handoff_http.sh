@@ -11,7 +11,9 @@ $case=(new IncidentManager($pdo))->createIncident(["title"=>$name]);echo $case["
 ')
 set -- $ids
 case_id="$1";user_a="$2";user_b="$3"
+# The real database role is authoritative; change the disposable actor too.
 set_session(){ docker compose exec -T -u www-data web php -r '
+require "includes/db.php"; $pdo->prepare("UPDATE users SET role=? WHERE id=?")->execute([$argv[2],(int)$argv[3]]);
 session_name("CYBERTECH_SECURE_SESSION");session_id($argv[1]);session_start();$_SESSION["analyst"]="api_automation";$_SESSION["role"]=$argv[2];$_SESSION["user_id"]=(int)$argv[3];$_SESSION["csrf_token"]=$argv[4];session_write_close();
 ' "$session_id" "$1" "$2" "$csrf_token"; }
 post(){ curl --silent --show-error --output /dev/null --write-out '%{http_code}' --cookie "CYBERTECH_SECURE_SESSION=$session_id" -H "X-CSRF-Token: $csrf_token" --data "id=$case_id&action=assign&$1" "$base/api/v1/incidents_detail.php"; }
