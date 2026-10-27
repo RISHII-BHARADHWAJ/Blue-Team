@@ -12,3 +12,14 @@ Options -Indexes
 
 RewriteEngine On
 RewriteRule ^(?:includes|database|deploy|docs|tests)(?:/|$) - [F,L,NC]
+
+# Never serve Git metadata, dotfiles, editor backups, or alternate PHP source.
+RewriteRule (^|/)\. - [F,L]
+<FilesMatch "(?i)(?:\.(?:swp|swo|orig|dist|save|inc|phtml|php[0-9]+)|~)$">
+    Require all denied
+</FilesMatch>
+LimitRequestBody 1048576
+
+<FilesMatch "^(?:_audit_cmd|generate|merge_logs)\.php$">
+    Require all denied
+</FilesMatch>

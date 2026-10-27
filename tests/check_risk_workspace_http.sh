@@ -17,8 +17,10 @@ ids=$(docker compose exec -T web php -r '
 ')
 set -- $ids
 user_id="$1";incident_id="$2";other_id="$3"
+# The real database role is authoritative; change the disposable actor too.
 set_role(){
  docker compose exec -T -u www-data web php -r '
+ require "includes/db.php"; $pdo->prepare("UPDATE users SET role=? WHERE id=?")->execute([$argv[3],(int)$argv[2]]);
  session_name("CYBERTECH_SECURE_SESSION");session_id($argv[1]);session_start();$_SESSION["analyst"]="session-alias";$_SESSION["user_id"]=(int)$argv[2];$_SESSION["role"]=$argv[3];$_SESSION["csrf_token"]=$argv[4];session_write_close();
  ' "$session_id" "$user_id" "$1" "$csrf_token"
 }

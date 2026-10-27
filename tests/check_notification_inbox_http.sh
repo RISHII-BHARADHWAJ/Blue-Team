@@ -48,7 +48,7 @@ status=$(curl --silent --output /dev/null --write-out '%{http_code}' --cookie "C
 [ "$status" = 403 ] || { echo 'Nameless session fell back to account 1';exit 1; }
 set_session 2147483647
 status=$(curl --silent --output /dev/null --write-out '%{http_code}' --cookie "CYBERTECH_SECURE_SESSION=$session_id" "$base/notifications.php")
-[ "$status" = 403 ] || exit 1
+[ "$status" = 302 ] || exit 1
 # Exercise a valid bearer credential in a fresh PHP request context: personal inbox still requires a named session.
 docker compose exec -T web php -r '
  putenv("THREATPULSE_API_KEY=ci_inbox_bearer_123456789");$_SERVER["HTTP_AUTHORIZATION"]="Bearer ci_inbox_bearer_123456789";$_SERVER["REQUEST_METHOD"]="GET";

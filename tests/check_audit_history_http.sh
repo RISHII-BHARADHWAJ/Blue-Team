@@ -21,9 +21,13 @@ session_name("CYBERTECH_SECURE_SESSION");session_id($argv[1]);session_start();$_
 ' "$session_id" "$1" "$2"; }
 status(){ curl --globoff --silent --output /dev/null --write-out '%{http_code}' --cookie "CYBERTECH_SECURE_SESSION=$session_id" "$base/$1"; }
 get(){ curl --fail --silent --show-error --cookie "CYBERTECH_SECURE_SESSION=$session_id" "$base/$1"; }
-for id in "$reader" "$analyst" 0 2147483647;do
+for id in "$reader" "$analyst";do
   set_session admin "$id"
   [ "$(status "audit.php?q=$name")" = 403 ]
+done
+for id in 0 2147483647;do
+  set_session admin "$id"
+  [ "$(status "audit.php?q=$name")" = 302 ]
 done
 set_session user "$admin"
 [ "$(status "audit.php?q=$name")" = 200 ]

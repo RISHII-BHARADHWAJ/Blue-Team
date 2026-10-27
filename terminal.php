@@ -1,7 +1,9 @@
 <?php
-session_name('CYBERTECH_SECURE_SESSION');
-session_start();
-if (empty($_SESSION['analyst'])) {
+require_once __DIR__ . '/includes/session.php';
+tpStartSession();
+require_once __DIR__ . '/includes/db.php';
+require_once __DIR__ . '/includes/soar/SoarAuth.php';
+if (SoarAuth::getContext($pdo)['auth_method'] === 'anonymous') {
     header('Location: login.php'); exit;
 }
 
@@ -10,11 +12,8 @@ header('X-Content-Type-Options: nosniff');
 header_remove('X-Powered-By');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $csrf_ok = hash_equals(
-        $_SESSION['csrf_token'] ?? '',
-        $_POST['csrf_token'] ?? ''
-    );
-    if ($csrf_ok && !empty($_POST['token'])) {
+    $csrf_ok = is_string($_POST['csrf_token'] ?? null) && !empty($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $_POST['csrf_token']);
+    if ($csrf_ok && is_string($_POST['token'] ?? null) && $_POST['token'] !== '') {
         $token_data = $_SESSION['terminal_tokens'][$_POST['token']] ?? null;
         if ($token_data && time() <= $token_data['expires']) {
             $_SESSION['terminal_ip'] = $token_data['ip'];
@@ -426,7 +425,7 @@ function runCommand(raw) {
 
     const d = document.createElement('div');
     d.className = 'line line-cmd';
-    d.innerHTML = '<span class="prompt">analyst@soc:~$</span> ' + raw;
+    d.textContent = 'analyst@soc:~$ ' + raw;
     output.appendChild(d);
     blank();
 
@@ -755,7 +754,7 @@ input.addEventListener('keydown', function(e) {
         e.preventDefault();
         const d = document.createElement('div');
         d.className = 'line line-cmd';
-        d.innerHTML = '<span class="prompt">analyst@soc:~$</span> ' + this.value + '<span class="line-error">^C</span>';
+        d.textContent = 'analyst@soc:~$ ' + this.value + '^C';
         output.appendChild(d);
         blank();
         this.value = '';

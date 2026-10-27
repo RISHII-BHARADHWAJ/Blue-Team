@@ -1,7 +1,9 @@
 <?php
-session_name('CYBERTECH_SECURE_SESSION');
-session_start(['cookie_httponly'=>true,'cookie_samesite'=>'Strict','use_strict_mode'=>true]);
-if (empty($_SESSION['analyst'])) {
+require_once __DIR__ . '/includes/session.php';
+tpStartSession();
+require_once __DIR__ . '/includes/db.php';
+require_once __DIR__ . '/includes/soar/SoarAuth.php';
+if (SoarAuth::getContext($pdo)['auth_method'] === 'anonymous') {
     header('Location: login.php');
     exit;
 }
@@ -13,7 +15,7 @@ header_remove('X-Powered-By');
 if (empty($_SESSION['csrf_token'])) $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['filter_submit'])) {
-    if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf'] ?? '')) { http_response_code(403); exit; }
+    if ((!is_string($_POST['csrf'] ?? null) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf']))) { http_response_code(403); exit; }
     $allowed_time = ['all','today','week','month'];
     $allowed_sort = ['time_desc','time_asc','severity_desc','severity_asc'];
     $allowed_cat  = ['','SSH','SQLi','XSS','RCE','SSTI','LFI','Other'];
@@ -744,8 +746,13 @@ body::before {
         <div id="map" style="width: 100%; height: 100%; z-index: 1;"></div>
         
         <script>
+            function escapeTelemetry(value) {
+                const node = document.createElement('span');
+                node.textContent = String(value ?? '');
+                return node.innerHTML;
+            }
         document.addEventListener('DOMContentLoaded', function() {
-            const mapDots = <?= json_encode($mapDots, JSON_NUMERIC_CHECK) ?>;
+            const mapDots = <?= json_encode($mapDots, JSON_NUMERIC_CHECK | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
             const maxAlerts = <?= $mapMaxAlerts ?: 1 ?>;
 
             const map = L.map('map', {
@@ -786,10 +793,10 @@ body::before {
                 // Tooltip
                 let tooltipHtml = `
                     <div style="font-family:'Share Tech Mono', monospace; font-size:13px; color:#E0EEFF; min-width:120px; line-height:1.4;">
-                        <span style="color:${color}; font-weight:bold; font-size:14px;">${dot.source_ip}</span><br/>
-                        ${dot.city ? dot.city+', ' : ''}${dot.country_name || dot.country_code}<br/>
+                        <span style="color:${color}; font-weight:bold; font-size:14px;">${escapeTelemetry(dot.source_ip)}</span><br/>
+                        ${escapeTelemetry(dot.city ? dot.city+', ' : '')}${escapeTelemetry(dot.country_name || dot.country_code)}<br/>
                         <div style="margin-top:4px; border-top:1px solid rgba(255,255,255,0.1); padding-top:4px;">
-                            <span style="color:#7BA3CC">ALERTS:</span> ${dot.alert_count}
+                            <span style="color:#7BA3CC">ALERTS:</span> ${Number(dot.alert_count) || 0}
                         </div>
                     </div>
                 `;
@@ -869,7 +876,6 @@ body::before {
         ?>
         <div class="country-pill"
              data-code="<?= $cc ?>"
-             onclick="filterMapCountry('<?= $cc ?>')"
              style="display:flex;align-items:center;
                     gap:6px;background:#0A1628;
                     border:1px solid rgba(13,110,253,0.2);
@@ -1038,13 +1044,13 @@ function showMapTooltip(e, ip, city, country, alerts) {
     tip.style.display = 'block';
     tip.innerHTML = `
         <div style="color:#00B4D8;font-weight:700;
-                    margin-bottom:4px;">${ip}</div>
+                    margin-bottom:4px;">${escapeTelemetry(ip)}</div>
         <div style="color:#7BA3CC;font-size:0.72rem;
                     margin-bottom:4px;">
-            ${city ? city + ', ' : ''}${country}
+            ${escapeTelemetry(city ? city + ', ' : '')}${escapeTelemetry(country)}
         </div>
         <div style="color:#FF3B3B;font-weight:700;">
-            ${alerts.toLocaleString()} alerts
+            ${(Number(alerts) || 0).toLocaleString()} alerts
         </div>
         <div style="color:#4A7A9B;font-size:0.68rem;
                     margin-top:6px;">
@@ -1056,6 +1062,8 @@ function hideMapTooltip() {
     const tip = document.getElementById('mapTooltip');
     if (tip) tip.style.display = 'none';
 }
+
+document.querySelectorAll('.country-pill').forEach(p => p.addEventListener('click', () => filterMapCountry(p.dataset.code)));
 
 // Filter dashboard by country
 let activeMapCountry = null;
@@ -1177,18 +1185,18 @@ function resetMapFilter() {
         toast.innerHTML = `
             <div style="color:#00B4D8;font-weight:700;
                         margin-bottom:6px;">
-                +${count} new alert${count>1?'s':''}
+                +${Number(count) || 0} new alert${count>1?'s':''}
             </div>
-            ${topEntry ? \`
+            ${topEntry ? `
             <div style="color:${col};font-size:0.72rem;">
-                ${topEntry.severity} · ${topEntry.category}
+                ${escapeTelemetry(topEntry.severity)} · ${escapeTelemetry(topEntry.category)}
             </div>
             <div style="color:#7BA3CC;font-size:0.7rem;
                         margin-top:4px;overflow:hidden;
                         text-overflow:ellipsis;
                         white-space:nowrap;max-width:280px;">
-                ${topEntry.message?.slice(0,60)}...
-            </div>\` : ''}
+                ${escapeTelemetry(String(topEntry.message ?? "").slice(0,60))}...
+            </div>` : ''}
             <div style="color:#4A7A9B;font-size:0.68rem;
                         margin-top:8px;">
                 Click to refresh dashboard
@@ -1254,9 +1262,9 @@ function resetMapFilter() {
         setLiveStatus('fetching');
 
         try {
-            const url = \`live_status.php?since=\${
+            const url = `live_status.php?since=${
                 encodeURIComponent(lastChecked)
-            }\`;
+            }`;
             const resp = await fetch(url, {
                 credentials: 'same-origin',
                 cache: 'no-store',

@@ -10,7 +10,8 @@ set_session(){ docker compose exec -T -u www-data web php -r 'session_name("CYBE
 status(){ curl --silent --output /dev/null --write-out '%{http_code}' --cookie "CYBERTECH_SECURE_SESSION=$session_id" "$base/$1"; }
 get(){ curl --fail --silent --show-error --cookie "CYBERTECH_SECURE_SESSION=$session_id" "$base/$1"; }
 post_status(){ curl --silent --output /dev/null --write-out '%{http_code}' --cookie "CYBERTECH_SECURE_SESSION=$session_id" -H "X-CSRF-Token: $csrf_token" --data "$1" "$base/incident-new.php"; }
-for uid in "$reader" 0 2147483647;do set_session admin "$uid";[ "$(status 'incident-new.php')" = 403 ];done
+for uid in "$reader";do set_session admin "$uid";[ "$(status 'incident-new.php')" = 403 ];done
+for uid in 0 2147483647;do set_session admin "$uid";[ "$(status 'incident-new.php')" = 302 ];done
 # Current database role can grant access despite a stale lower session role.
 set_session user "$analyst"
 page=$(get 'incident-new.php')

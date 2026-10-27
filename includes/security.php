@@ -1,7 +1,6 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once __DIR__ . '/session.php';
+tpStartSession();
 
 function generateCSRFToken() {
     if (empty($_SESSION['csrf_token'])) {
@@ -11,7 +10,7 @@ function generateCSRFToken() {
 }
 
 function verifyCSRFToken($token) {
-    if (!isset($_SESSION['csrf_token']) || empty($token)) {
+    if (!isset($_SESSION['csrf_token']) || !is_string($token) || $token === '') {
         return false;
     }
     return hash_equals($_SESSION['csrf_token'], $token);

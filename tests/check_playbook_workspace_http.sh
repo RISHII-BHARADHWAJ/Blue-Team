@@ -49,5 +49,5 @@ docker compose exec -T web php -r '
  require "includes/db.php";foreach(["approval_requests","case_notes","notifications","evidence","response_actions"] as $t){$s=$pdo->prepare("SELECT COUNT(*) FROM $t WHERE incident_id=?");$s->execute([(int)$argv[1]]);if((int)$s->fetchColumn()!==0)exit(1);}
 ' "$incident_id"
 set_user 2147483647
-[ "$(post_status "$payload")" = 403 ] || { echo 'Unverified database user previewed';exit 1; }
+[ "$(post_status "$payload")" = 302 ] || { echo 'Unverified database user previewed';exit 1; }
 echo 'PASS: playbook HTTP login, named Tier 1 preview, CSRF, forced mode, version checks, retry identity, scoped history, labels and escaped rendering'

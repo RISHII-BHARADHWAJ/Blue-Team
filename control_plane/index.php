@@ -7,8 +7,8 @@
  * executing atomic approvals/rejections, and monitoring playbook execution timelines.
  */
 
-session_name('CYBERTECH_SECURE_SESSION');
-@session_start(['cookie_httponly' => true, 'cookie_samesite' => 'Strict', 'use_strict_mode' => true]);
+require_once __DIR__ . '/../includes/session.php';
+tpStartSession();
 
 if (empty($_SESSION['analyst']) && empty($_SESSION['username']) && empty($_SESSION['user_id'])) {
     header('Location: ../login.php');

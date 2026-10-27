@@ -71,10 +71,8 @@ require_once __DIR__ . '/../../includes/db.php';
 require_once __DIR__ . '/../../includes/soar/SiemSoarAlertPipeline.php';
 require_once __DIR__ . '/../../includes/soar/SoarCsrf.php';
 
-session_name('CYBERTECH_SECURE_SESSION');
-if (session_status() === PHP_SESSION_NONE) {
-    @session_start(['cookie_httponly' => true, 'cookie_samesite' => 'Strict', 'use_strict_mode' => true]);
-}
+require_once __DIR__ . '/../../includes/soar/SoarAuth.php';
+$sessionContext = SoarAuth::getContext($pdo);
 
 // 5. Authentication Verification
 $actor = null;
@@ -82,7 +80,7 @@ $isAuthenticated = false;
 $authenticationMethod = null;
 
 // Check A: Session Authentication
-if (!empty($_SESSION['analyst']) || !empty($_SESSION['user_id'])) {
+if ($sessionContext['auth_method'] === 'session') {
     $actor = $_SESSION['analyst'] ?? ('user_' . $_SESSION['user_id']);
     $isAuthenticated = true;
     $authenticationMethod = 'session';

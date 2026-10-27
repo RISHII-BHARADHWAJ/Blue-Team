@@ -6,7 +6,8 @@ RUN apt-get update && apt-get install -y \
     default-mysql-client \
     cron \
     curl \
-    && docker-php-ext-install mysqli pdo pdo_mysql \
+    libcurl4-openssl-dev \
+    && docker-php-ext-install mysqli pdo pdo_mysql curl \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Enable Apache modules
@@ -19,6 +20,7 @@ WORKDIR /var/www/html
 COPY . /var/www/html/
 
 # Copy startup and cron scripts
+COPY deploy/php-security.ini /usr/local/etc/php/conf.d/security.ini
 COPY deploy/start.sh /start.sh
 COPY deploy/crontab /etc/cron.d/threatpulse
 

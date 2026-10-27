@@ -17,8 +17,10 @@ user_id=$(docker compose exec -T web php -r '
  $name="<script>feedProbe()</script>".bin2hex(random_bytes(4));
  $pdo->prepare("INSERT INTO users (username,password,role) VALUES (?, ?, ?)")->execute([$name,"not-a-login-hash","admin"]);echo $pdo->lastInsertId();
 ')
+# The real database role is authoritative; change the disposable actor too.
 set_role() {
  docker compose exec -T -u www-data web php -r '
+ require "includes/db.php"; $pdo->prepare("UPDATE users SET role=? WHERE id=?")->execute([$argv[3],(int)$argv[2]]);
  session_name("CYBERTECH_SECURE_SESSION");session_id($argv[1]);session_start();
  $_SESSION["analyst"]="ci-feeds";$_SESSION["user_id"]=(int)$argv[2];$_SESSION["role"]=$argv[3];$_SESSION["csrf_token"]=$argv[4];session_write_close();
  ' "$session_id" "$user_id" "$1" "$csrf_token"

@@ -85,7 +85,7 @@ if ($method === 'GET') {
         ], JSON_UNESCAPED_SLASHES);
     } catch (Throwable $e) {
         http_response_code(500);
-        echo json_encode(['success' => false, 'error' => 'server_error', 'message' => $e->getMessage()]);
+        echo json_encode(['success' => false, 'error' => 'server_error', 'message' => 'Could not retrieve approvals.']);
     }
     exit;
 }
