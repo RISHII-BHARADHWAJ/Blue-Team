@@ -1,22 +1,28 @@
-# render.yaml — Infrastructure-as-Code for Render deployment
-# https://render.com/docs/blueprint-spec
-
+# Free, disposable public demo. All saved data can disappear on restart/redeploy.
 services:
   - type: web
-    name: threatpulse-soc
+    name: threatpulse-soc-demo
     runtime: docker
     dockerfilePath: ./Dockerfile
     plan: free
     envVars:
+      - key: APP_ENV
+        value: public-demo
       - key: DB_HOST
         value: localhost
       - key: DB_USER
-        value: redteam_user
+        value: demo_app
+      - key: DB_NAME
+        value: threatpulse_public_demo
       - key: DB_PASS
         generateValue: true
-      - key: DB_NAME
-        value: cybertech_db
+      - key: PUBLIC_DEMO_ADMIN_PASSWORD
+        generateValue: true
+      - key: SESSION_COOKIE_SECURE
+        value: "1"
+      - key: FEED_COLLECTION_ENABLED
+        value: "0"
       - key: PORT
         value: "10000"
-    healthCheckPath: /login.php
-    autoDeploy: true
+    healthCheckPath: /health.php
+    autoDeployTrigger: "off"

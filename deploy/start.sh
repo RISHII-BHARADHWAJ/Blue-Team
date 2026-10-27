@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 
+if [ "${APP_ENV:-local}" = "public-demo" ]; then
+    exec bash /var/www/html/deploy/start-demo.sh
+fi
+
 echo "[*] ThreatPulse — Initializing deployment..."
 
 # Compose uses an external MariaDB service. Only start embedded MariaDB when
