@@ -26,3 +26,15 @@ regressions. They do not replace checking an actual deployment with its configur
 roles, data volumes, and external services. The atlas still depends on external
 Leaflet assets and map tiles; evidence and case workflows do not depend on those
 services. No database migration is introduced by this redesign.
+
+## Light and dark mode
+
+The header and login page provide an accessible theme switch. The first visit
+follows the system color scheme; an explicit choice is saved in browser local
+storage and shared across tabs on the same origin. If storage is unavailable,
+the switch still works for the current page. Theme initialization runs in the
+head before paint. Print uses the light layout regardless of screen theme.
+
+`assets/js/theme.js` owns preference handling; `assets/css/themes.css` owns theme
+overrides. Browser acceptance checks persistence, system dark preference, switching
+back to light, and every authenticated route in dark mode at both tested widths.
