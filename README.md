@@ -1,6 +1,6 @@
 # ThreatPulse — Blue Team SIEM + SOAR
 
-> **Status: active development / security lab project.** ThreatPulse combines **Security Information and Event Management (SIEM)** with **Security Orchestration, Automation and Response (SOAR)**. The investigation, correlation and approval workflows are being built incrementally; this is **not a production-ready SOC or automated containment platform**.
+> **Status: feature-complete local lab/demo; release acceptance remains open.** ThreatPulse combines **Security Information and Event Management (SIEM)** with **Security Orchestration, Automation and Response (SOAR)**. The planned investigation workflows, redesigned interface, continuous simulation and light/dark themes are implemented. Docker Compose is the supported local setup. Production SOC deployment and live endpoint containment are outside this project’s completed feature scope.
 
 ThreatPulse is a PHP and MariaDB-based Blue Team project for collecting and visualizing security events, turning suspicious activity into incidents, enriching evidence, and guiding analysts through auditable response workflows.
 
@@ -26,7 +26,7 @@ ThreatPulse is a PHP and MariaDB-based Blue Team project for collecting and visu
 - **Feed health and history:** `feeds.php` shows durable collection outcomes, counts, failures and incomplete imports, with administrator refresh settings. See [migration 010 and scheduling](docs/feed-collection.md).
 - **Configurable detections:** `detections.php` exposes authentication-failure and source-IP intelligence findings, evidence links, simulation isolation, and audited administrator settings. Apply migration 009; see [detection rules](docs/detection-rules.md).
 - **Event evidence:** `events.php` searches newly accepted submissions and exposes preserved payloads, source attribution, timestamps, metadata, and incident links. See [evidence upgrades and limitations](docs/event-evidence.md).
-- **SOC dashboard:** `dashboard.php` visualizes attack activity, categories, source locations and trends.
+- **Telemetry atlas:** `dashboard.php` explores legacy logs, categories and source geography. Historical feed imports and simulated records may appear here; use the SOC overview and Event evidence for preserved sensor activity.
 - **Threat-intelligence ingestion:** `api_fetch.php` and `feodo_realtime.php` collect data from configured external feeds.
 - **Geographic context:** geolocation-backed views help analysts explore source IPs.
 - **Investigative terminal:** `terminal.php` provides a **simulated** investigative interface; it is not a privileged shell on managed endpoints.
@@ -71,6 +71,25 @@ ThreatPulse is a PHP and MariaDB-based Blue Team project for collecting and visu
 
 See the [SOAR documentation](docs/soar/database.md) for database design and the detailed guides below.
 
+## Interface and demonstration
+
+- **Unified workspace:** a shared navigation rail, redesigned login, responsive tables/forms, case workspaces, approvals, reports and terminal. Login opens the operations overview. See [UI design and verification](docs/UI_DESIGN.md).
+- **Light/dark mode:** use the top-right **Dark / Light** switch on the login page or workspace header. Initially follows the system theme, then saves your explicit choice in this browser and synchronizes it across tabs. Printed reports remain light.
+- **Continuous simulated stream:** in **Training lab**, a named Tier 2+ analyst can select **10, 30 or 60 seconds** and click **Start simulated stream**. Each batch generates authentication-failure events using the current enabled rule threshold, a detection and one explicitly simulated case. It repeats this scenario; it does not generate varied real attacks.
+- Keep the Training lab tab open. Use its links to inspect simulated evidence/cases in another tab and refresh those views to see new records. **Stop stream** prevents future batches; an in-flight batch may finish. Generation stops on errors, page departure or after 15 minutes. Background tab throttling may slow it. Saved records remain after stopping.
+
+### Suggested project demonstration
+
+1. Sign in and switch between light and dark mode.
+2. Open **Training lab**, select a batch interval and start the stream.
+3. Open a generated investigation; inspect its simulated evidence and detection.
+4. Assign the case, add analyst notes, review risk and progress its permitted status.
+5. Run an explicit **safe playbook preview** and inspect saved DRY_RUN results. The stream itself does not execute playbooks or response actions.
+6. Open the case handoff report and demonstrate print/PDF and JSON export.
+7. Stop the stream and show the separate **Intelligence** inventory and **Feed health** history.
+
+Simulation is excluded from default real-case metrics. Continuous real alerts require an authenticated sensor/log source; external IP blocklists do not manufacture observed attacks. See [training workflow](docs/simulated-incident-lifecycle.md).
+
 ## Architecture
 
 | Layer | Main components |
@@ -83,19 +102,20 @@ See the [SOAR documentation](docs/soar/database.md) for database design and the 
 
 ## Run locally with Docker
 
-Requirements: Docker Engine/Desktop with the Compose plugin.
+Requirements: Git and Docker Engine/Desktop with the Compose plugin, using Linux containers. Commands below use the stable Compose project name `blue-team-main`; keep it consistent when updating or moving folders. If you already use another project name, keep that existing name to retain its database volume.
 
 1. Clone the project:
 
    ```bash
-   git clone https://github.com/RISHII-BHARADHWAJ/Blue-Team.git
-   cd Blue-Team
+   git -c core.autocrlf=false clone https://github.com/RISHII-BHARADHWAJ/Blue-Team.git Blue-Team-git
+   cd Blue-Team-git
+   git config core.autocrlf false
    ```
 
 2. Start the local development stack:
 
    ```bash
-   docker compose up -d --build
+   docker compose -p blue-team-main up -d --build
    ```
 
 3. Open **http://localhost:8080/** and sign in using your configured local development account. Useful pages:
@@ -119,26 +139,59 @@ Requirements: Docker Engine/Desktop with the Compose plugin.
 4. Stop the stack without deleting the database:
 
    ```bash
-   docker compose down
+   docker compose -p blue-team-main down
    ```
 
 **Database initialization:** For a **new** MariaDB volume, Compose loads `database.sql`, `database/bootstrap/01_siem_tables.sql`, and SOAR migrations `001` through `006`, then migrations `007` (threat intelligence), `008` (event evidence), `009` (detection rules), `010` (feed collection history), `011` (simulated incidents), `012` (saved playbook previews), and `013` (manual case submission identity), in order. MariaDB initialization scripts **do not run again** for an existing volume. Back up existing data and use a reviewed migration process when upgrading. **Do not delete an existing volume to force migrations.**
 
 **Credentials:** The repository contains development-oriented database and seeded-account settings. Treat them as unsafe defaults: replace passwords/secrets and secure or disable seeded demo accounts before connecting this project to a real network. Do not expose this local stack directly to the internet.
 
-## Manual setup (Apache / XAMPP / MariaDB)
+## Updating and checking an existing installation
+
+Run from your Git clone, preserving local configuration:
+
+```powershell
+git switch main
+git pull --ff-only origin main
+docker compose -p blue-team-main up -d --build
+docker compose -p blue-team-main ps
+docker compose -p blue-team-main exec -T web php database/verify_schema.php
+```
+
+Refresh the browser with **Ctrl+Shift+R**. The redesign, continuous stream and theme switch introduce no new migrations, but earlier backend features require the schema through **013**. Rebuilding containers does not migrate an existing database. A healthy database container only establishes server availability, not the presence of application tables. If the verifier reports missing structures, back up the database and follow the migration guides below in numeric order. Keep the existing volume; do not re-import the base schema over your data.
+
+A downloaded ZIP is not a Git clone: `git pull` will report “not a git repository.” Clone as above, preserve any local `.env`, stop the old stack and use its same Compose project name when starting the clone. Merely downloading a new ZIP or merging a PR does not update your running files.
+
+### Windows startup troubleshooting
+
+If the web container exits with `exec: /start.sh: not found` after cloning on Windows, check for CRLF line endings in Linux scripts. From the clone, normalize them and rebuild:
+
+```powershell
+git config core.autocrlf false
+foreach ($file in @("deploy/start.sh", "deploy/run-ingestion.sh", "deploy/crontab")) {
+    $path = Join-Path (Get-Location) $file
+    $text = [System.IO.File]::ReadAllText($path).Replace("`r`n", "`n")
+    [System.IO.File]::WriteAllText($path, $text, [System.Text.UTF8Encoding]::new($false))
+}
+docker compose -p blue-team-main up -d --build --force-recreate web
+docker compose -p blue-team-main logs --tail=30 web
+```
+
+Open **http://localhost:8080**, including port 8080. A “Started” message does not prove the process stayed running; inspect `docker compose -p blue-team-main ps` and the web logs if the browser refuses the connection. These steps preserve the database volume.
+
+## Alternative manual setup (not the primary project workflow)
 
 For local development without Compose:
 
-1. Set up PHP, Apache and MySQL/MariaDB, then copy the project into your web root.
+1. Set up PHP 8.2, Apache and MariaDB 10.5, then copy the project into your web root.
 2. Create a database named `cybertech_db`.
 3. Import `database.sql`, then `database/bootstrap/01_siem_tables.sql`, followed by `database/migrations/001_create_soar_schema.sql` through `013_manual_case_requests.sql` **in numeric order** for a new database.
 4. Configure the application's database connection (`includes/db.php` and environment/configuration used by the scripts) for your local database. Use non-demo credentials.
 5. Open the application through your local web server. Configure scheduled ingestion only after checking feed/network requirements and logging:
 
    ```cron
-   */5 * * * * php /path/to/project/feodo_realtime.php >> /var/log/feodo_realtime.log 2>&1
-   */30 * * * * php /path/to/project/api_fetch.php >> /var/log/threat_fetch.log 2>&1
+   * * * * * php /path/to/project/feodo_realtime.php --scheduled >> /var/log/feodo_realtime.log 2>&1
+   * * * * * php /path/to/project/api_fetch.php --scheduled >> /var/log/threat_fetch.log 2>&1
    ```
 
 These schedules are examples, not a requirement for exploring the built-in SOAR workflows.
@@ -151,6 +204,24 @@ For an existing local database volume, back up the database first, then apply `d
 
 For migration 008 on an existing installation, follow the [non-destructive evidence upgrade instructions](docs/event-evidence.md#upgrade-an-existing-installation) then the [migration 009 detection upgrade](docs/detection-rules.md#upgrade-existing-volumes) before submitting new alerts. Apply [migration 010](docs/feed-collection.md#upgrade-existing-installations) before running the updated feed collectors. Apply [migration 011](docs/simulated-incident-lifecycle.md#existing-database-upgrade) before using simulated incidents or the risk workspace. Apply [migration 012](docs/incident-playbook-workspace.md#upgrade-existing-installations) before using saved playbook previews. Apply [migration 013](docs/manual-case-intake.md#upgrade-existing-installations) before using manual case intake.
 
+### Automatic collection and interpreting counts
+
+Docker starts the collector scheduler. It checks every minute; Feodo defaults to a 300-second interval and the other three providers to 1,800 seconds. Administrators can enable sources and change intervals in **Feed health**. Collection continues while the web container runs, unless `FEED_COLLECTION_ENABLED=0` pauses it.
+
+Manual diagnostics (not required on every refresh):
+
+```powershell
+docker compose -p blue-team-main exec -T web php feodo_realtime.php
+docker compose -p blue-team-main exec -T web php api_fetch.php
+```
+
+- `SUCCESS`: the valid response was committed completely.
+- `inserted: 0`: accepted indicators were already present; this is not a failure.
+- `PARTIAL`: some rows were omitted; inspect the invalid count and cap flag in Feed health. Limits are 300 distinct Feodo IPs and 2,000 per plaintext provider per run.
+- A provider may return a small or unchanged list. Faster polling does not guarantee new indicators or new sensor alerts.
+
+Confirm background scheduling by checking that **Last attempt** advances after the configured interval. Manual success alone does not prove that cron is running. See [feed scheduling, outcomes and limits](docs/feed-collection.md).
+
 ## SIEM alert and threat-intelligence correlation
 
 When an authenticated security sensor submits a valid event to `POST /api/v1/alerts.php`, the existing SIEM-to-SOAR pipeline stores the event and evaluates incident correlation. The response now includes `threat_intelligence.matched` and the matching public-feed records, if the alert's source IP is listed in `threat_feed_indicators`.
@@ -161,9 +232,20 @@ The backend checks for migration 007 and works without it, returning no matches 
 
 ## Testing and development
 
-The GitHub Actions CI workflow covers PHP syntax checks and database-backed SIEM/SOAR regression tests, including incident workflows and HTTP authorization scenarios. Review the [Actions tab](https://github.com/RISHII-BHARADHWAJ/Blue-Team/actions) for the latest results.
+The [GitHub Actions workflow](https://github.com/RISHII-BHARADHWAJ/Blue-Team/actions) runs four jobs:
 
-The project is still being developed. Before any deployment beyond a controlled local lab, it needs further work on production secrets and account provisioning, deployment configuration, secure upgrade/migration operations, end-to-end browser coverage, operational monitoring, and isolated, authorized response integrations. **A passing CI run is not a production security certification.**
+1. PHP syntax checks.
+2. Disposable Docker Compose database and HTTP smoke tests.
+3. Database-backed SOAR regression suites, including authorization and retry behavior.
+4. Chromium desktop/mobile acceptance: 22 authenticated routes, login, case intake, simulated-stream start/stop, theme persistence/system preference, and report PDF generation.
+
+Browser runs publish screenshots, a report PDF and results as the `visual-acceptance` artifact. Tests use a disposable database and explicitly synthetic fixtures; do not run fixture-heavy integration suites against your retained demo database.
+
+## Completion and remaining scope
+
+The requested local-demo feature set is implemented. Future work should focus on defects and deployment acceptance, rather than an open-ended feature backlog. The existing installation’s schema verifier was reported as **53 passed, 0 failed** after upgrade; that is not evidence that every workflow or subsequent installation is working. Complete the [local acceptance checklist](docs/v1-acceptance.md) before declaring a specific deployment or tagged release finished.
+
+Production secrets/account provisioning, TLS and deployment hardening, independently managed sensor identities, backup/restore operations, retention/archival, monitoring, and live endpoint response integrations remain outside the lab scope. The investigative terminal is simulated, and the application does not implement live firewall blocking, endpoint isolation or account disabling. External feed and map availability depend on their providers. Passing CI is not a production security certification.
 
 ## Documentation
 
