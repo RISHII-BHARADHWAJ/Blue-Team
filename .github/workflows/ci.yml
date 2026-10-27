@@ -249,3 +249,12 @@ jobs:
       - name: Stop disposable services
         if: always()
         run: docker compose down --remove-orphans
+
+  public-demo:
+    name: Free public demo startup
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify isolated public demo under 512 MiB memory limit
+        run: sh tests/check_public_demo.sh
