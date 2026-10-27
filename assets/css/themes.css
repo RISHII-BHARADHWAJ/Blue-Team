@@ -1,0 +1,37 @@
+/* Theme overrides use a root qualifier to outrank legacy page styles. */
+html .tp-app .tp-theme-toggle, html .tp-login .tp-theme-toggle{flex-shrink:0;white-space:nowrap;background:#e6eee3!important;color:#244637!important;border:1px solid #bacbbd!important;padding:7px 10px!important;font:600 12px/1.5 system-ui,sans-serif!important;border-radius:5px;cursor:pointer}
+html .tp-login .tp-theme-toggle{position:absolute;right:25px;top:22px;width:auto;margin:0}
+@media(max-width:800px){html .tp-topbar{gap:8px}html .tp-account{gap:5px}html .tp-breadcrumb{max-width:125px}html .tp-login-form{padding-top:75px}}
+@media screen{
+html[data-theme=dark]{color-scheme:dark;--bg:#111d1e;--panel:#1a2a2b;--panel2:#203334;--line:#3a5050;--text:#e4eee8;--muted:#afc1ba;--accent:#8ed6b9;--bg-dark:#111d1e;--bg-panel:#1a2a2b;--bg-card:#203334;--text-primary:#e4eee8;--text-secondary:#afc1ba;--text-muted:#afc1ba}
+html[data-theme=dark] .tp-app,html[data-theme=dark] .tp-login{background:#111d1e!important;color:#e4eee8!important}
+html[data-theme=dark] .tp-topbar{background:#182728f5;border-color:#3a5050}
+html[data-theme=dark] .tp-app :is(h1,h2,h3),html[data-theme=dark] .tp-login-form h2,html[data-theme=dark] .tp-breadcrumb strong{color:#e4eee8!important}
+html[data-theme=dark] .tp-app :is(p,small,.muted,.note,.label,.metric-label,.m-label,.eyebrow,.fact span,.section-label,.sev-cell-label,.legend span),html[data-theme=dark] .tp-login-form :is(p,footer,.login-kicker){color:#afc1ba!important}
+html[data-theme=dark] .tp-app a{color:#8ed6b9}
+html[data-theme=dark] .tp-app :is(.panel,.card,.metric-card,.m-card,.table-card,.notification,.filter-bar,.control-bar,.panel-title,.modal-panel,.modal-content,.modal-head,.modal-body,.modal-foot,.detail-section,.notif-popup,.notif-row,.step-card),html[data-theme=dark] .tp-app main>section:not(.panel){background:#1a2a2b!important;color:#e4eee8!important;border-color:#3a5050!important;box-shadow:0 2px 4px #0002!important}
+html[data-theme=dark] .tp-app :is(.triage,.info-grid>div,.facts>div,.step,pre,.sev-breakdown,.footer,.key){background:#203334!important;color:#d5e7dc!important;border-color:#3a5050!important}
+html[data-theme=dark] .tp-app :is(.number,.metric-number,.m-value,.cat-badge,.bar-ip,.bar-cnt,.sev-cell-count,.event strong,code,.info-grid strong,.facts dt){color:#c3e3d3!important}
+html[data-theme=dark] .tp-app :is(td,th,.fact,.panel-head,.event){border-color:#3a5050!important}
+html[data-theme=dark] .tp-app td{color:#d5e7dc!important}
+html[data-theme=dark] .tp-app th{background:#243839!important;color:#bdd2c8!important}
+html[data-theme=dark] .tp-app .alerts-tbl tr{background:#1a2a2b!important}
+html[data-theme=dark] .tp-app .alerts-tbl tr:nth-child(even),html[data-theme=dark] .tp-app tbody tr:hover td,html[data-theme=dark] .tp-app tbody tr.selected td{background:#263e3c!important}
+html[data-theme=dark] .tp-app :is(input:not([type=checkbox]):not([type=hidden]),select,textarea),html[data-theme=dark] .tp-login-form input{background:#122222!important;color:#e1eee5!important;border-color:#587369!important}
+html[data-theme=dark] .tp-app label,html[data-theme=dark] .tp-login-form label{color:#c4d7cc!important}
+html[data-theme=dark] .tp-app :is(input,textarea)::placeholder,html[data-theme=dark] .tp-login-form input::placeholder{color:#9eb5a9}
+html[data-theme=dark] .tp-app :is(.badge,.pill,.tag,.tier-tag){background:#293e34!important;color:#c5e4d0!important;border-color:#4c6d58!important}
+html[data-theme=dark] .tp-app :is(.CRITICAL,.HIGH,.badge-P1,.badge-REJECTED,.badge-FAILED){background:#512e28!important;color:#ffc2ac!important;border-color:#9e6251!important}
+html[data-theme=dark] .tp-app :is(.MEDIUM,.WARNING,.simulated,.badge-PENDING,.notice,.callout,.sev){background:#3b3421!important;color:#efdb9d!important;border-color:#7b6b39!important}
+html[data-theme=dark] .tp-app :is(.error,.notice.error,.callout.error),html[data-theme=dark] .login-error{background:#432824!important;color:#ffbca9!important;border-color:#996353!important}
+html[data-theme=dark] .tp-app :is(.btn-secondary,.secondary,.pages a,.pager a),html[data-theme=dark] .tp-avatar,html[data-theme=dark] .tp-theme-toggle{background:#2c4439!important;color:#d7ebdd!important;border-color:#5a7967!important}
+html[data-theme=dark] .tp-app :is(.divider,.track){background:#3a5050!important}
+html[data-theme=dark] .tp-app .tp-overview-banner,html[data-theme=dark] .tp-app main>nav:first-child{border-color:#3a5050}
+html[data-theme=dark] .tp-app .empty{color:#afc1ba!important}
+html[data-theme=dark] .tp-app .modal-body [style*="color:#fff"],html[data-theme=dark] .tp-app .data-table strong[style*="color:#fff"],html[data-theme=dark] .tp-app [style*="color:#E0EEFF"],html[data-theme=dark] .tp-app [style*="color: #E0EEFF"]{color:#e4eee8!important}
+html[data-theme=dark] .tp-app [style*="color:#7BA3CC"],html[data-theme=dark] .tp-app [style*="color: #7BA3CC"]{color:#afc1ba!important}
+html[data-theme=dark] .tp-page-atlas [style*="background:#020B18"],html[data-theme=dark] .tp-page-atlas [style*="background:#050F1F"]{background:#203334!important}
+html[data-theme=dark] .tp-page-atlas .leaflet-tile-pane{filter:brightness(.7) saturate(.6)!important}
+html[data-theme=dark] .tp-app .tp-skip{background:#203334;color:#e4eee8}
+}
+@media print{.tp-theme-toggle{display:none!important}}

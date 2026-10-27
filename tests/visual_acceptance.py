@@ -13,6 +13,10 @@ with sync_playwright() as p:
  page.set_viewport_size({'width':390,'height':844});page.screenshot(path=str(out/'login-mobile.png'),full_page=True)
  assert page.evaluate('document.documentElement.scrollWidth <= window.innerWidth + 2')
  page.set_viewport_size({'width':1440,'height':1000})
+ page.get_by_role('button',name='Switch to dark mode').click()
+ page.reload();assert page.locator('html').get_attribute('data-theme')=='dark'
+ page.screenshot(path=str(out/'login-dark-mobile.png'),full_page=True)
+ page.get_by_role('button',name='Switch to light mode').click()
  context.add_cookies([{'name':'CYBERTECH_SECURE_SESSION','value':f['session'],'url':base}])
  routes=['soc.php','events.php','sources.php','dashboard.php','incidents.php','detections.php','threat-intel.php','feeds.php','notifications.php','audit.php','demo.php','incident-new.php','control_plane/index.php','terminal.php']
  routes += [x+'?id='+str(f['case_id']) for x in ['incidents.php','incident-risk.php','incident-iocs.php','incident-playbooks.php','incident-evidence.php','incident-linked-evidence.php','incident-timeline.php','incident-report.php']]
@@ -52,6 +56,23 @@ with sync_playwright() as p:
  page.goto(base+demo_link)
  assert page.get_by_text('SIMULATED TEST DATA',exact=True).is_visible()
  assert page.get_by_role('link',name='Open simulated incident').is_visible()
+ # Theme choice persists through navigation and covers every route at both widths.
+ page.goto(base+'soc.php');page.get_by_role('button',name='Switch to dark mode').click()
+ for width,label in [(1440,'desktop'),(390,'mobile')]:
+  page.set_viewport_size({'width':width,'height':1000 if width==1440 else 844})
+  for route in routes:
+   page.goto(base+route,wait_until='domcontentloaded')
+   assert page.locator('html').get_attribute('data-theme')=='dark'
+   assert page.evaluate('document.documentElement.scrollWidth <= window.innerWidth + 2'),route
+   name=route.split('?')[0].replace('/','-').replace('.php','')+('-detail' if '?' in route else '')
+   page.screenshot(path=str(out/(name+'-dark-'+label+'.png')),full_page=True)
+ page.get_by_role('button',name='Switch to light mode').click();page.reload()
+ assert page.locator('html').get_attribute('data-theme')=='light'
+ # A fresh browser follows the OS preference before any explicit selection.
+ fresh=browser.new_context(color_scheme='dark')
+ fresh_page=fresh.new_page();fresh_page.goto(base+'login.php')
+ assert fresh_page.locator('html').get_attribute('data-theme')=='dark'
+ fresh.close()
  page.goto(base+'incident-report.php?id='+str(f['case_id']));page.emulate_media(media='print');page.pdf(path=str(out/'case-report.pdf'),format='A4',print_background=True)
  (out/'results.json').write_text(json.dumps({'routes':routes,'failures':failures},indent=2))
  browser.close()
