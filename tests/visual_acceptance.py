@@ -75,6 +75,14 @@ with sync_playwright() as p:
  fresh.close()
  page.goto(base+'incident-report.php?id='+str(f['case_id']));page.emulate_media(media='print');page.pdf(path=str(out/'case-report.pdf'),format='A4',print_background=True)
  (out/'results.json').write_text(json.dumps({'routes':routes,'failures':failures},indent=2))
+ # Terminal payload must render as text without adding executable DOM nodes.
+ page.goto(base+'terminal.php')
+ terminal_input=page.locator('input').first
+ terminal_input.fill('<img src=x onerror="window.securityProbe=1">')
+ terminal_input.press('Enter')
+ page.wait_for_timeout(100)
+ assert page.evaluate('window.securityProbe === undefined')
+ assert page.locator('img[onerror]').count()==0
  browser.close()
  assert not failures,'\n'.join(failures)
  print('PASS: desktop/mobile layout, shared navigation, intake submission and printable report')

@@ -11,15 +11,15 @@ if ($auth['auth_method']==='anonymous') {
 }
 
 // Get stats since last check
-$since = $_GET['since'] ?? date('Y-m-d H:i:s', 
+$since = is_string($_GET['since'] ?? null) ? $_GET['since'] : date('Y-m-d H:i:s',
          strtotime('-1 minute'));
 
 // Validate since parameter
-$since = date('Y-m-d H:i:s', 
+$since = date('Y-m-d H:i:s',
          strtotime($since) ?: strtotime('-1 minute'));
 
 $newLogs = $pdo->prepare("
-    SELECT COUNT(*) FROM logs 
+    SELECT COUNT(*) FROM logs
     WHERE timestamp > ?
 ");
 $newLogs->execute([$since]);
@@ -27,7 +27,7 @@ $newCount = $newLogs->fetchColumn();
 
 // Latest 5 new entries
 $latest = $pdo->prepare("
-    SELECT source_ip, severity, category, 
+    SELECT source_ip, severity, category,
            message, timestamp
     FROM logs
     WHERE timestamp > ?
@@ -39,7 +39,7 @@ $latestRows = $latest->fetchAll();
 
 // Current totals
 $totals = $pdo->query("
-    SELECT 
+    SELECT
         COUNT(*) as total,
         COUNT(DISTINCT source_ip) as attackers,
         SUM(CASE WHEN severity='CRITICAL' THEN 1 ELSE 0 END) as critical,

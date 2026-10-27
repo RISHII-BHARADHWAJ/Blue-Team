@@ -38,6 +38,10 @@ jobs:
         run: |
           docker compose exec -T web bash -n /start.sh /var/www/html/deploy/run-ingestion.sh
           docker compose exec -T -u www-data web bash -c 'source /run/threatpulse/ingestion.env; test "$DB_HOST" = db; test -w /var/log/feodo_realtime.log; test -w /var/log/threat_fetch.log'
+      - name: Adversarial security regression checks
+        run: |
+          docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/security_regression.php
+          python tests/check_security_http.py
       - name: Exercise SIEM-to-SOAR integration (transactional, dry-run only)
         run: docker compose exec -T -e SOAR_INTEGRATION_TEST=1 web php tests/integration_soar_pipeline.php
       - name: Verify durable event evidence and rollback behavior

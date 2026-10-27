@@ -1,7 +1,9 @@
 <?php
-session_name('CYBERTECH_SECURE_SESSION');
-session_start(['cookie_httponly'=>true,'cookie_samesite'=>'Strict','use_strict_mode'=>true]);
-if (empty($_SESSION['analyst'])) {
+require_once __DIR__ . '/includes/session.php';
+tpStartSession();
+require_once __DIR__ . '/includes/db.php';
+require_once __DIR__ . '/includes/soar/SoarAuth.php';
+if (SoarAuth::getContext($pdo)['auth_method'] === 'anonymous') {
     header('Location: login.php');
     exit;
 }
@@ -13,7 +15,7 @@ header_remove('X-Powered-By');
 if (empty($_SESSION['csrf_token'])) $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['filter_submit'])) {
-    if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf'] ?? '')) { http_response_code(403); exit; }
+    if ((!is_string($_POST['csrf'] ?? null) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf']))) { http_response_code(403); exit; }
     $allowed_time = ['all','today','week','month'];
     $allowed_sort = ['time_desc','time_asc','severity_desc','severity_asc'];
     $allowed_cat  = ['','SSH','SQLi','XSS','RCE','SSTI','LFI','Other'];

@@ -16,7 +16,6 @@ header("Permissions-Policy: camera=(), microphone=(), geolocation=()");
 header("Strict-Transport-Security: max-age=31536000; includeSubDomains");
 header("Cache-Control: no-store, no-cache, must-revalidate");
 header("Pragma: no-cache");
-header("Content-Type: text/html; charset=UTF-8");
 
 // Content Security Policy
 header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'nonce-{$nonce}' https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' 'nonce-{$nonce}' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: https://*.basemaps.cartocdn.com https://*.tile.openstreetmap.org; connect-src 'self' http://ip-api.com https://ip-api.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';");
@@ -36,32 +35,18 @@ class RateLimiter {
         $ip = $_SERVER['REMOTE_ADDR'];
         $key = $ip . '_' . $action;
 
-        // Clean up old
-        $stmt = $pdo->prepare("DELETE FROM rate_limits WHERE window_start < DATE_SUB(NOW(), INTERVAL ? SECOND)");
-        $stmt->execute([$window_seconds]);
-
-        // Check current
-        $stmt = $pdo->prepare("SELECT request_count FROM rate_limits WHERE ip_action_key = ?");
+        // Serialize increment/reset for this key; never delete other actions' windows.
+        $stmt = $pdo->prepare("INSERT INTO rate_limits (ip_action_key, request_count, window_start)
+            VALUES (?, 1, NOW()) ON DUPLICATE KEY UPDATE
+            request_count = IF(window_start <= DATE_SUB(NOW(), INTERVAL ? SECOND), 1, request_count + 1),
+            window_start = IF(window_start <= DATE_SUB(NOW(), INTERVAL ? SECOND), NOW(), window_start)");
+        $stmt->execute([$key, $window_seconds, $window_seconds]);
+        $stmt = $pdo->prepare('SELECT request_count FROM rate_limits WHERE ip_action_key = ?');
         $stmt->execute([$key]);
-        $row = $stmt->fetch();
-
-        if ($row) {
-            if ($row['request_count'] >= $limit) {
-                // Log the limit hit
-                if (function_exists('logSecurityAudit')) {
-                   logSecurityAudit($_SESSION['username'] ?? 'guest', 'rate_limit', $action, 'blocked', "Exceeded $limit reqs in $window_seconds s");
-                }
-                http_response_code(429);
-                header("Retry-After: $window_seconds");
-                die("429 Too Many Requests. Rate limit exceeded.");
-            }
-            // Increment
-            $stmt = $pdo->prepare("UPDATE rate_limits SET request_count = request_count + 1 WHERE ip_action_key = ?");
-            $stmt->execute([$key]);
-        } else {
-            // Insert new
-            $stmt = $pdo->prepare("INSERT INTO rate_limits (ip_action_key, request_count, window_start) VALUES (?, 1, NOW())");
-            $stmt->execute([$key]);
+        if ((int)$stmt->fetchColumn() > $limit) {
+            http_response_code(429);
+            header("Retry-After: $window_seconds");
+            exit('429 Too Many Requests. Rate limit exceeded.');
         }
     }
 }

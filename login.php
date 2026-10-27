@@ -13,12 +13,15 @@ $error = (isset($_GET['error']) && $_GET['error'] == 'hijack') ? "Session Hijack
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // CSRF Check
-    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+    if (!is_string($_POST['csrf_token'] ?? null) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
         if (function_exists('logSecurityAudit')) logSecurityAudit('guest', 'login_csrf_fail', 'login.php', 'blocked', 'CSRF token mismatch');
         http_response_code(403);
         die('CSRF validation failed.');
     }
 
+    if (!is_string($_POST['username'] ?? null) || !is_string($_POST['password'] ?? null) || strlen($_POST['username']) > 100 || strlen($_POST['password']) > 1024) {
+        http_response_code(400); exit('Invalid login request.');
+    }
     $username = trim($_POST['username']);
     $password = $_POST['password'];
 
@@ -30,13 +33,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($user) {
         // Check lockout
         if ($user['locked_until'] && strtotime($user['locked_until']) > time()) {
-            $error = "Account locked until " . $user['locked_until'] . ". Try again later.";
+            $error = "Invalid credentials.";
             if (function_exists('logSecurityAudit')) logSecurityAudit($username, 'login', 'login.php', 'blocked', 'Account is locked');
         } else {
             // Verify password
             if (password_verify($password, $user['password'])) {
                 // Success
                 session_regenerate_id(true); // Prevent session fixation
+                $_SESSION['authenticated_at'] = $_SESSION['last_activity'] = time();
+                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['analyst'] = $user['username']; // For new dashboard compatibility
@@ -54,20 +59,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 exit();
             } else {
                 // Failure
-                $attempts = $user['failed_attempts'] + 1;
-                $lock_query = "UPDATE users SET failed_attempts = ?";
-                $params = [$attempts];
-                
-                if ($attempts >= 5) {
-                    $lock_query .= ", locked_until = DATE_ADD(NOW(), INTERVAL 15 MINUTE)";
-                    if (function_exists('logSecurityAudit')) logSecurityAudit($username, 'account_lockout', 'login.php', 'blocked', '5 failed login attempts');
-                }
-                $lock_query .= " WHERE id = ?";
-                $params[] = $user['id'];
-                
-                $stmt = $pdo->prepare($lock_query);
-                $stmt->execute($params);
-                
+                $stmt = $pdo->prepare("UPDATE users SET
+                    locked_until = IF(failed_attempts + 1 >= 5, DATE_ADD(NOW(), INTERVAL 15 MINUTE), locked_until),
+                    failed_attempts = failed_attempts + 1 WHERE id = ?");
+                $stmt->execute([$user['id']]);
+
                 $error = "Invalid credentials.";
                 if (function_exists('logSecurityAudit')) logSecurityAudit($username, 'login', 'login.php', 'failure', 'Invalid password');
             }

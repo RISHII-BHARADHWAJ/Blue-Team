@@ -112,16 +112,27 @@ class SoarAuth {
      * @return array ['actor' => string, 'user_id' => ?int, 'tier' => string, 'role' => string, 'auth_method' => string]
      */
     public static function getContext(?PDO $pdo = null): array {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_name('CYBERTECH_SECURE_SESSION');
-            @session_start(['cookie_httponly' => true, 'cookie_samesite' => 'Strict', 'use_strict_mode' => true]);
-        }
+        require_once __DIR__ . '/../session.php';
+        tpStartSession();
 
         // 1. Session Context
         if (!empty($_SESSION['analyst']) || !empty($_SESSION['username']) || !empty($_SESSION['user_id'])) {
             $username = $_SESSION['analyst'] ?? ($_SESSION['username'] ?? 'user_' . $_SESSION['user_id']);
             $userId = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : null;
-            $role = $_SESSION['role'] ?? 'analyst';
+            $role = $_SESSION['role'] ?? 'user';
+            // A real login always has a user ID. Refresh permissions on every request.
+            if ($pdo !== null && $userId !== null) {
+                $stmt = $pdo->prepare('SELECT username, role FROM users WHERE id = ?');
+                $stmt->execute([$userId]);
+                $current = $stmt->fetch(PDO::FETCH_ASSOC);
+                if (!$current) {
+                    $_SESSION = [];
+                    return ['actor'=>'anonymous','auth_method'=>'anonymous','user_id'=>null,'tier'=>self::TIER_1,'role'=>'guest'];
+                }
+                $username = $current['username'];
+                $role = $current['role'];
+                $_SESSION['role'] = $role;
+            }
             $tier = self::resolveTier($role);
 
             return [

@@ -13,6 +13,7 @@
 class HttpClientSecurityException extends RuntimeException {}
 
 class HttpClient {
+    private array $validatedAddresses = [];
     private int $connectTimeout;
     private int $totalTimeout;
     private int $maxResponseBytes;
@@ -111,55 +112,49 @@ class HttpClient {
             throw new HttpClientSecurityException("Unsupported URL scheme '$scheme'. Only HTTP/HTTPS permitted.");
         }
 
-        $host = strtolower($parts['host']);
-
-        // Check literal hostnames
-        if (in_array($host, ['localhost', '127.0.0.1', '::1', '169.254.169.254', 'metadata.google.internal'], true)) {
-            throw new HttpClientSecurityException("Access to loopback/metadata host '$host' is blocked.");
+        if (isset($parts['user']) || isset($parts['pass'])) {
+            throw new HttpClientSecurityException('URL credentials are not allowed.');
         }
-
-        // If host is an IP, check directly
+        $host = strtolower(trim($parts['host'], '[]'));
+        $ips = [];
         if (filter_var($host, FILTER_VALIDATE_IP)) {
-            $this->assertPublicIp($host);
-            return;
-        }
-
-        // Resolve DNS and verify all returned addresses
-        $resolvedIps = @dns_get_record($host, DNS_A + DNS_AAAA);
-        if (!empty($resolvedIps)) {
-            foreach ($resolvedIps as $rec) {
-                $ip = $rec['ip'] ?? ($rec['ipv6'] ?? null);
-                if ($ip) {
-                    $this->assertPublicIp($ip);
-                }
+            $ips[] = $host;
+        } else {
+            if (!preg_match('/^(?=.{1,253}$)[a-z0-9]+(?:[a-z0-9.-]*[a-z0-9])?$/D', $host)) {
+                throw new HttpClientSecurityException('Invalid hostname.');
+            }
+            foreach (@dns_get_record($host, DNS_A | DNS_AAAA) ?: [] as $record) {
+                $ip = $record['ip'] ?? $record['ipv6'] ?? null;
+                if ($ip !== null) $ips[] = $ip;
             }
         }
+        if (!$ips) throw new HttpClientSecurityException('Host has no validated public address.');
+        foreach ($ips as $ip) self::assertPublicIp($ip);
+        $this->validatedAddresses[$host] = $ips;
     }
 
-    /**
-     * Verify that an IP address is publicly routable and not in private/link-local ranges.
-     */
     public static function assertPublicIp(string $ip): void {
-        // IPv4 Checks
-        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-            if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
-                throw new HttpClientSecurityException("SSRF blocked: IP '$ip' belongs to a private or reserved network range.");
+        $packed = @inet_pton($ip);
+        if ($packed === false) throw new HttpClientSecurityException('Invalid IP address.');
+        if (strlen($packed) === 4) {
+            $n = unpack('C4', $packed);
+            if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) ||
+                $n[1] === 0 || $n[1] === 127 || $n[1] >= 224 ||
+                ($n[1] === 100 && $n[2] >= 64 && $n[2] <= 127) ||
+                ($n[1] === 169 && $n[2] === 254)) {
+                throw new HttpClientSecurityException('Non-public IPv4 address blocked.');
             }
-            if (str_starts_with($ip, '127.') || str_starts_with($ip, '169.254.') || str_starts_with($ip, '100.64.')) {
-                throw new HttpClientSecurityException("SSRF blocked: IP '$ip' is loopback or link-local.");
+        } else {
+            // Accept only global unicast 2000::/3, excluding special-purpose 2001::/23,
+            // documentation and 6to4. This rejects mapped IPv4 and transition tricks.
+            $hex = bin2hex($packed);
+            if ((ord($packed[0]) & 0xe0) !== 0x20 ||
+                (substr($hex,0,4) === '2001' && hexdec(substr($hex,4,4)) <= 0x01ff) ||
+                str_starts_with($hex,'20010db8') || str_starts_with($hex,'2002') ||
+                str_starts_with($hex,'3fff')) {
+                throw new HttpClientSecurityException('Non-public IPv6 address blocked.');
             }
-            return;
         }
-
-        // IPv6 Checks
-        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
-            if ($ip === '::1' || str_starts_with($ip, 'fe80:') || str_starts_with($ip, 'fc00:') || str_starts_with($ip, 'fd00:')) {
-                throw new HttpClientSecurityException("SSRF blocked: IPv6 '$ip' is loopback, unique local, or link-local.");
-            }
-            return;
-        }
-
-        throw new HttpClientSecurityException("Invalid IP address: '$ip'");
     }
 
     /**
@@ -167,13 +162,27 @@ class HttpClient {
      */
     private function executeCurl(string $url, string $method, array $headers, ?string $body): array {
         if (!function_exists('curl_init')) {
-            // Fallback stream context if cURL not available
-            return $this->executeStreamContext($url, $method, $headers, $body);
+            throw new HttpClientSecurityException('The cURL extension is required for pinned outbound requests.');
         }
 
+        $parts = parse_url($url);
+        $host = strtolower(trim($parts['host'], '[]'));
+        $port = $parts['port'] ?? ($parts['scheme'] === 'https' ? 443 : 80);
+        $ip = $this->validatedAddresses[$host][0];
         $ch = curl_init();
+        // Connect to the address already checked, avoiding a second DNS lookup.
+        if (!filter_var($host, FILTER_VALIDATE_IP)) {
+            curl_setopt($ch, CURLOPT_RESOLVE, ["$host:$port:" . (str_contains($ip, ':') ? "[$ip]" : $ip)]);
+        }
+        curl_setopt($ch, CURLOPT_PROXY, '');
+        curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
+        $responseBody = '';
+        curl_setopt($ch, CURLOPT_WRITEFUNCTION, function ($handle, string $chunk) use (&$responseBody): int {
+            if (strlen($responseBody) + strlen($chunk) > $this->maxResponseBytes) return 0;
+            $responseBody .= $chunk;
+            return strlen($chunk);
+        });
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->connectTimeout);
         curl_setopt($ch, CURLOPT_TIMEOUT, $this->totalTimeout);
@@ -188,12 +197,12 @@ class HttpClient {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
         }
 
-        $responseBody = curl_exec($ch);
+        $ok = curl_exec($ch);
         $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curlError = curl_error($ch);
         curl_close($ch);
 
-        if ($responseBody === false && $statusCode === 0) {
+        if ($ok === false) {
             throw new RuntimeException("cURL execution error: $curlError");
         }
 
@@ -205,42 +214,6 @@ class HttpClient {
             'status'  => (int)$statusCode,
             'body'    => (string)$responseBody,
             'headers' => []
-        ];
-    }
-
-    /**
-     * Fallback stream context executor.
-     */
-    private function executeStreamContext(string $url, string $method, array $headers, ?string $body): array {
-        $headerLines = implode("\r\n", $headers);
-        $opts = [
-            'http' => [
-                'method'        => $method,
-                'header'        => $headerLines,
-                'content'       => $body,
-                'timeout'       => $this->totalTimeout,
-                'ignore_errors' => true,
-            ],
-            'ssl' => [
-                'verify_peer'      => true,
-                'verify_peer_name' => true,
-            ]
-        ];
-
-        $ctx = stream_context_create($opts);
-        $result = @file_get_contents($url, false, $ctx);
-        $status = 200;
-
-        if (isset($http_response_header) && isset($http_response_header[0])) {
-            if (preg_match('/HTTP\/\S+\s+(\d+)/', $http_response_header[0], $m)) {
-                $status = (int)$m[1];
-            }
-        }
-
-        return [
-            'status'  => $status,
-            'body'    => (string)$result,
-            'headers' => $http_response_header ?? []
         ];
     }
 
