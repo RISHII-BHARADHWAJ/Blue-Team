@@ -10,7 +10,7 @@ This is a source review and automated regression assessment of the local ThreatP
 | Authorization | Cached roles could survive demotion; real login sessions now refresh role and account existence from the database | Database regression demotes and deletes a test account |
 | Login abuse | Short rate-limit windows could delete longer login windows; concurrent read/increment could lose attempts | Atomic per-key increments, window isolation regression; atomic failed-login increments |
 | Malformed requests | Array-shaped credentials/CSRF fields could cause PHP exceptions | HTTP and PHP malformed-input tests |
-| XSS | Simulated terminal echoed input through innerHTML | Plain-text DOM insertion and a browser image/onerror regression |
+| XSS | Simulated terminal and map/live-alert tooltips interpolated untrusted input into HTML | Plain-text/escaped insertion and browser image/onerror regressions |
 | CSRF | GET logout changed session state | GET confirmation; POST requires valid CSRF; HTTP rejection test |
 | SSRF | Incomplete IPv6/CGNAT checks, DNS re-resolution, unbounded stream fallback and late response-size check | Public-address restrictions, pinned cURL resolution, no redirects/proxies/fallback, streaming cap; deterministic blocked-IP/URL tests |
 | Files and errors | Git/dotfiles and alternate source/backup names could be served; PHP errors could disclose internals | Apache deny rules and 1 MiB request limit; PHP error-display disabled; HTTP file/body-limit checks |

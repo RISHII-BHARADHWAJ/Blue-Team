@@ -13,6 +13,7 @@ for path in ['.git/config','.git/HEAD','.env','.env.local','.github/workflows/ci
     assert status == 403, (path,status)
 for path in ['live_status.php','api/v1/incidents.php','api/v1/approval_queue.php']:
     assert request(path)[0] == 401, path
+jar.clear()
 status,body,headers=request('login.php')
 assert status == 200
 assert headers['X-Frame-Options'] == 'DENY'

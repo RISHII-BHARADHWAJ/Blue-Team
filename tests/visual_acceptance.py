@@ -75,6 +75,14 @@ with sync_playwright() as p:
  fresh.close()
  page.goto(base+'incident-report.php?id='+str(f['case_id']));page.emulate_media(media='print');page.pdf(path=str(out/'case-report.pdf'),format='A4',print_background=True)
  (out/'results.json').write_text(json.dumps({'routes':routes,'failures':failures},indent=2))
+ # Untrusted telemetry fields must not become HTML in map tooltips or live toasts.
+ page.route('**/live_status.php?**', lambda route: route.fulfill(json={'new_count':1,'latest':[{'severity':'INFO','category':'<img src=x onerror="window.securityProbe=1">','message':'<img src=x onerror="window.securityProbe=1">'}],'totals':{},'server_time':'2026-01-01 00:00:00'}))
+ page.goto(base+'dashboard.php')
+ page.evaluate("showMapTooltip({clientX:20,clientY:20}, '<img src=x onerror=window.securityProbe=1>', '<img src=x>', '<img src=x>', 1)")
+ assert page.locator('#mapTooltip img').count()==0
+ page.wait_for_timeout(6000)
+ assert page.evaluate('window.securityProbe === undefined')
+ assert page.locator('img[onerror]').count()==0
  # Terminal payload must render as text without adding executable DOM nodes.
  page.goto(base+'terminal.php')
  terminal_input=page.locator('input').first
