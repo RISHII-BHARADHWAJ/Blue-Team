@@ -11,7 +11,7 @@ function tpStartSession(): void {
         ]);
     }
     $now = time();
-    if (!empty($_SESSION['user_id']) || !empty($_SESSION['analyst'])) {
+    if (!empty($_SESSION['viewer_id']) || !empty($_SESSION['user_id']) || !empty($_SESSION['analyst'])) {
         if (($now - ($_SESSION['last_activity'] ?? $now)) >= 1800 ||
             ($now - ($_SESSION['authenticated_at'] ?? $now)) >= 28800) {
             $_SESSION = [];
