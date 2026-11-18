@@ -28,7 +28,23 @@ try{$pdo->exec("CREATE TABLE forbidden_ddl (id INT)");exit(1);}catch(PDOExceptio
 '
 curl --fail --silent -D /tmp/public-demo-headers http://127.0.0.1:8081/login.php -o /tmp/public-demo-login
 grep -qi 'secure' /tmp/public-demo-headers
-grep -q 'Temporary demo: saved data resets' /tmp/public-demo-login
+grep -q 'accounts and saved data can reset' /tmp/public-demo-login
+grep -q 'href="register.php"' /tmp/public-demo-login
+base=http://127.0.0.1:8081
+jar=$(mktemp)
+form=$(mktemp)
+token(){ sed -n 's/.*name="csrf_token" value="\([^"]*\)".*/\1/p' "$form"; }
+curl -fsS -c "$jar" "$base/register.php" -o "$form"
+[ -n "$(token)" ]
+status=$(curl -sS -o /dev/null -w '%{http_code}' -b "$jar" -c "$jar" --data-urlencode "csrf_token=$(token)" -d 'username=ci_viewer&password=ci-viewer-password&role=admin' "$base/register.php")
+[ "$status" = 303 ]
+curl -fsS -b "$jar" -c "$jar" "$base/login.php" -o "$form"
+status=$(curl -sS -o /dev/null -w '%{http_code}' -b "$jar" -c "$jar" --data-urlencode "csrf_token=$(token)" -d 'username=ci_viewer&password=ci-viewer-password' "$base/login.php")
+[ "$status" = 302 ]
+curl -fsS -b "$jar" "$base/soc.php" -o "$form"
+grep -q 'Signed in as ci_viewer' "$form"
+grep -q '>Viewer<' "$form"
+rm -f "$form" "$jar"
 [ "$(curl --silent -o /dev/null -w '%{http_code}' http://127.0.0.1:8081/deploy/public-demo-accounts.php)" = 403 ]
 docker exec -u www-data "$name" test ! -w /var/www/html/login.php
 # Startup is repeatable on the same container without duplicate schemas or seeded cases.
