@@ -9,11 +9,20 @@ require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/soar/SoarAuth.php';
 
 $auth = SoarAuth::getContext($pdo);
-if ($auth['actor'] === 'anonymous') {
+$viewer = false;
+if (getenv('APP_ENV') === 'public-demo' && isset($_SESSION['viewer_id'])) {
+    $stmt = $pdo->prepare("SELECT username FROM users WHERE id=? AND role='demo_viewer'");
+    $stmt->execute([$_SESSION['viewer_id']]);
+    if (($name = $stmt->fetchColumn()) !== false) {
+        $viewer = true;
+        $auth = ['actor'=>$name,'tier'=>'Viewer','auth_method'=>'viewer'];
+    } else { unset($_SESSION['viewer_id']); }
+}
+if (!$viewer && $auth['actor'] === 'anonymous') {
     header('Location: login.php');
     exit;
 }
-if (!SoarAuth::hasPermission($auth['tier'], 'view_incidents')) {
+if (!$viewer && !SoarAuth::hasPermission($auth['tier'], 'view_incidents')) {
     http_response_code(403);
     exit('Not authorized to view the SOC workspace.');
 }

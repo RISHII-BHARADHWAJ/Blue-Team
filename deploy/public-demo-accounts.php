@@ -19,7 +19,7 @@ try {
     $root->exec("GRANT SELECT, INSERT, UPDATE, DELETE, EXECUTE ON threatpulse_public_demo.* TO 'demo_app'@'localhost'");
     // Replace every shipped account password before Apache is allowed to listen.
     $stmt=$root->prepare('UPDATE users SET password=?, failed_attempts=0, locked_until=NULL WHERE id=?');
-    foreach ($root->query('SELECT id, username FROM users')->fetchAll(PDO::FETCH_ASSOC) as $user) {
+    foreach ($root->query("SELECT id, username FROM users WHERE role <> 'demo_viewer'")->fetchAll(PDO::FETCH_ASSOC) as $user) {
         $password=$user['username']==='admin' ? $adminPassword : bin2hex(random_bytes(32));
         $stmt->execute([password_hash($password, PASSWORD_ARGON2ID), $user['id']]);
     }

@@ -226,7 +226,7 @@ jobs:
 
   visual-acceptance:
     name: Desktop and mobile browser acceptance
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
       FEED_COLLECTION_ENABLED: "0"
